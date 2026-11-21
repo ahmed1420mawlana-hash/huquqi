@@ -1,0 +1,11 @@
+{
+  "name": "huquqi",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "npm run dev -w @huquqi/web",
+    "build": "npm run build -w @huquqi/core && npm run build -w @huquqi/web",
+    "test": "npm run test -w @huquqi/core",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

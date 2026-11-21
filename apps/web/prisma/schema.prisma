@@ -1,0 +1,97 @@
+// SQLite for local development. For production switch the provider to "postgresql"
+// and point DATABASE_URL at a database hosted in Saudi Arabia (PDPL).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique // E.164
+  name      String?
+  role      String   @default("WORKER") // WORKER | LAWYER | ADMIN
+  locale    String   @default("bn")
+  createdAt DateTime @default(now())
+
+  lawyerProfile LawyerProfile?
+  cases         Case[]         @relation("WorkerCases")
+  assigned      Case[]         @relation("LawyerCases")
+  updates       CaseUpdate[]
+  documents     Document[]
+}
+
+model LawyerProfile {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNo  String?   // Saudi Ministry of Justice licence number
+  firm       String?
+  verifiedAt DateTime?
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model Case {
+  id          String    @id @default(cuid())
+  ref         String    @unique // short human reference, e.g. HQ-7K2P9
+  type        String    // salary | eosb | bank | court | accident | property
+  stage       String    @default("submitted")
+  employer    String?
+  bankName    String?
+  exitDate    DateTime?
+  description String
+  workerId    String
+  worker      User      @relation("WorkerCases", fields: [workerId], references: [id])
+  lawyerId    String?
+  lawyer      User?     @relation("LawyerCases", fields: [lawyerId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  updates   CaseUpdate[]
+  documents Document[]
+
+  @@index([workerId])
+  @@index([lawyerId])
+}
+
+model CaseUpdate {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  stage     String?  // set when this update moved the case to a new stage
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  caseId     String
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  uploaderId String
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+  filename   String
+  mime       String
+  size       Int
+  storageKey String   // path inside UPLOAD_DIR (swap for S3-compatible storage in production)
+  createdAt  DateTime @default(now())
+
+  @@index([caseId])
+}
