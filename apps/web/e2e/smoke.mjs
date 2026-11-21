@@ -10,7 +10,23 @@ import path from "node:path";
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const SHOTS = process.env.SHOTS_DIR;
 const seen = (page, sel) => page.locator(sel).first().waitFor({ timeout: 10000 }).then(() => true, () => false);
+const browser = await chromium.launch();
 const ok = (c, m) => { if (!c) throw new Error("FAIL: " + m); console.log("✓", m); };
+
+// On a password-protected demo deployment, pass DEMO_PASSWORD to get past the gate.
+async function newPage(opts = {}, cookies = []) {
+  const ctx = await browser.newContext(opts);
+  if (process.env.DEMO_PASSWORD) {
+    const p = await ctx.newPage();
+    await p.goto(BASE + "/demo");
+    await p.fill("#password", process.env.DEMO_PASSWORD);
+    await p.click("form:has(#password) button");
+    await p.waitForURL(BASE + "/");
+    await p.close();
+  }
+  if (cookies.length) await ctx.addCookies(cookies);
+  return ctx;
+}
 
 async function login(page, phone, name) {
   await page.goto(BASE + "/login");
@@ -25,10 +41,9 @@ async function login(page, phone, name) {
   await page.waitForLoadState("networkidle");
 }
 
-const browser = await chromium.launch();
 try {
   // Worker in Bengali: wrong code is rejected, then logs in and opens a case.
-  const w = await (await browser.newContext({ viewport: { width: 400, height: 860 } })).newPage();
+  const w = await (await newPage({ viewport: { width: 400, height: 860 } })).newPage();
   await w.goto(BASE + "/");
   ok((await w.locator("html").getAttribute("lang")) === "bn", "default language is Bengali");
   ok(await w.locator(".res.alert").count() === 1, "case check shows labour deadline");
@@ -73,17 +88,16 @@ try {
   if (SHOTS) await w.screenshot({ path: path.join(SHOTS, "worker-case.png"), fullPage: true });
 
   // Anonymous and another worker cannot read the document or case.
-  const anon = await browser.newContext();
+  const anon = await newPage();
   ok((await anon.request.get(BASE + docHref)).status() === 401, "anonymous cannot download");
-  const other = await (await browser.newContext()).newPage();
+  const other = await (await newPage()).newPage();
   await login(other, "01999-888777", "Other");
   ok((await other.request.get(BASE + docHref)).status() === 404, "other worker cannot download");
   const r = await other.goto(caseUrl);
   ok(r.status() === 404, "other worker cannot open case");
 
   // Verified lawyer in Arabic takes the case and moves it forward.
-  const lctx = await browser.newContext({ viewport: { width: 1200, height: 900 } });
-  await lctx.addCookies([{ name: "hq_locale", value: "ar", url: BASE }]);
+  const lctx = await newPage({ viewport: { width: 1200, height: 900 } }, [{ name: "hq_locale", value: "ar", url: BASE }]);
   const l = await lctx.newPage();
   await login(l, "+966550000001");
   await l.waitForURL("**/lawyer");
@@ -103,7 +117,7 @@ try {
   ok(await seen(w, "text=استلمت المستندات"), "worker sees lawyer update");
 
   // Admin page loads for admin and is forbidden for worker.
-  const a = await (await browser.newContext()).newPage();
+  const a = await (await newPage()).newPage();
   await login(a, "01700-000000");
   await a.waitForURL("**/admin");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");

@@ -9,11 +9,13 @@
     "typecheck": "tsc --noEmit",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma db push --skip-generate && next build"
   },
   "dependencies": {
     "@huquqi/core": "*",
     "@prisma/client": "6.19.3",
+    "@vercel/blob": "^2.9.0",
     "jose": "6.2.18",
     "next": "15.5.29",
     "react": "19.1.10",

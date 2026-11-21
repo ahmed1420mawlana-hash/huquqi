@@ -1,8 +1,7 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { db } from "@/lib/db";
 import { isVerifiedLawyer } from "@/lib/access";
 import { currentUser } from "@/lib/session";
+import { loadFile } from "@/lib/storage";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await currentUser();
@@ -16,11 +15,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     (c.lawyerId === null && isVerifiedLawyer(user));
   if (!allowed) return new Response("Not found", { status: 404 });
 
-  const root = path.resolve(process.env.UPLOAD_DIR ?? "./uploads");
-  const file = path.resolve(root, doc.storageKey);
-  if (!file.startsWith(root + path.sep)) return new Response("Not found", { status: 404 });
-  const data = await readFile(file);
-  return new Response(new Uint8Array(data), {
+  const body = await loadFile(doc.storageKey);
+  if (!body) return new Response("Not found", { status: 404 });
+  return new Response(body, {
     headers: {
       "Content-Type": doc.mime,
       "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(doc.filename)}`,

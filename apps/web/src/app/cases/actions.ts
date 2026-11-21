@@ -1,7 +1,5 @@
 "use server";
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isCaseType, isStage, nextStages, type Stage } from "@huquqi/core";
@@ -9,6 +7,7 @@ import { db } from "@/lib/db";
 import { canWorkOn, isVerifiedLawyer, loadCaseFor } from "@/lib/access";
 import { caseRef } from "@/lib/ref";
 import { requireUser } from "@/lib/session";
+import { saveFile } from "@/lib/storage";
 
 function str(fd: FormData, k: string, max = 2000) {
   return String(fd.get(k) ?? "").trim().slice(0, max);
@@ -73,13 +72,10 @@ export async function uploadDocument(caseId: string, _: FormState, fd: FormData)
   const ext = ALLOWED.get(file.type);
   if (!ext || file.size > MAX_BYTES) return { error: "file" };
 
-  const dir = path.resolve(process.env.UPLOAD_DIR ?? "./uploads", c.id);
-  await mkdir(dir, { recursive: true });
-  const key = `${c.id}/${randomUUID()}${ext}`;
-  await writeFile(path.resolve(process.env.UPLOAD_DIR ?? "./uploads", key), Buffer.from(await file.arrayBuffer()));
+  const storageKey = await saveFile(`${c.id}/${randomUUID()}${ext}`, Buffer.from(await file.arrayBuffer()), file.type);
   await db.document.create({
     data: {
-      caseId: c.id, uploaderId: user.id, mime: file.type, size: file.size, storageKey: key,
+      caseId: c.id, uploaderId: user.id, mime: file.type, size: file.size, storageKey,
       filename: file.name.replace(/[^\p{L}\p{N}._ -]/gu, "_").slice(0, 120) || `document${ext}`,
     },
   });
