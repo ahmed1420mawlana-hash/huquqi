@@ -1,11 +1,11 @@
-// SQLite for local development. For production switch the provider to "postgresql"
-// and point DATABASE_URL at a database hosted in Saudi Arabia (PDPL).
+// PostgreSQL everywhere (Neon for the demo). Before a real launch, move the database to a
+// provider hosted in Saudi Arabia (PDPL).
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

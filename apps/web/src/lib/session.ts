@@ -3,6 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "./db";
+import { secureCookies } from "./demo";
 
 const COOKIE = "hq_session";
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
@@ -21,7 +22,7 @@ export async function createSession(userId: string) {
     .sign(key());
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: secureCookies(),
     sameSite: "lax",
     path: "/",
     maxAge: MAX_AGE,

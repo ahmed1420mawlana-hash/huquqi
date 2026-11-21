@@ -22,7 +22,9 @@ export async function issueOtp(phone: string): Promise<IssueResult> {
   await db.otpCode.create({
     data: { phone, codeHash: hash(phone, code), expiresAt: new Date(Date.now() + TTL_MS) },
   });
-  if (process.env.DEV_SHOW_OTP === "1" && process.env.NODE_ENV !== "production") {
+  // Codes are shown on screen only in development, or on a password-protected demo deployment.
+  const safeToShow = process.env.NODE_ENV !== "production" || !!process.env.DEMO_PASSWORD;
+  if (process.env.DEV_SHOW_OTP === "1" && safeToShow) {
     return { ok: true, devCode: code };
   }
   // TODO: send `code` by SMS (e.g. SSL Wireless / Alpha SMS for +880, Unifonic for +966).
