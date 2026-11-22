@@ -13,7 +13,7 @@ Bengali, Arabic and English.
 | Area | What works |
 | --- | --- |
 | Home | Scales, gavel and Bangladesh flag emblems; free case check (labour deadline folded inside the labour option, bank account state under SAMA 90/180-day rules); approved client reviews |
-| Login | Email + one-time code (sent through Resend) |
+| Login | Customers and lawyers: email + one-time code (sent through Resend). Admins: mobile number + code, via the "Admin login" link, only for numbers in `ADMIN_PHONES` |
 | Worker | Open a case in one of 8 areas (salary, end of service, bank, court, accident, property, document translation, Hajj & Umrah visas) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
 | Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates, close the case |
 | Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews |
@@ -47,7 +47,7 @@ Demo accounts after seeding:
 
 | Role | Email |
 | --- | --- |
-| Admin | admin@huquqi.test |
+| Admin | admin@huquqi.test, or phone 01700-000000 via "Admin login" |
 | Lawyer (verified) | lawyer@huquqi.test |
 | Worker | worker@huquqi.test |
 
@@ -63,7 +63,8 @@ Demo accounts after seeding:
    | `SESSION_SECRET` | 32+ random characters |
    | `DEMO_PASSWORD` | a password to share with testers |
    | `DEV_SHOW_OTP` | `1` (codes on screen; only works while `DEMO_PASSWORD` is set) |
-   | `ADMIN_EMAILS` | your email address (comma separated for several admins) |
+   | `ADMIN_PHONES` | your mobile number (`+966…` or `+880…`), for admin login by phone |
+   | `ADMIN_EMAILS` | optional: admin email addresses (comma separated) |
    | `RESEND_API_KEY`, `EMAIL_FROM` | optional: a [Resend](https://resend.com) key and a sender on your verified domain, to email the codes |
 
 4. Deploy. The `vercel-build` script creates the tables in Neon before building.
@@ -101,6 +102,6 @@ workers get 401/404), a lawyer taking and closing the case in Arabic, a review, 
 ## Next steps
 
 1. Review the legal model with a Saudi lawyer (see the plan document).
-2. bKash/Nagad payments, database and storage hosted in Saudi Arabia.
+2. SMS gateway for admin phone codes, bKash/Nagad payments, database and storage hosted in Saudi Arabia.
 3. Expo mobile app (Android first) using `packages/core`.
 4. Translation of lawyer updates into the worker's language.

@@ -41,6 +41,7 @@ type Msgs = {
     title: string; email: string; emailHint: string; send: string; code: string; verify: string;
     name: string; badEmail: string; badCode: string; rate: string; codeSent: string; devCode: (c: string) => string;
     emailSubject: string; emailBody: (c: string) => string;
+    phone: string; phoneHint: string; adminLogin: string; emailLogin: string; badPhone: string;
   };
   cases: {
     title: string; none: string; open: string; type: string; employer: string; exitDate: string;
@@ -98,6 +99,7 @@ const bn: Msgs = {
     code: "৬ সংখ্যার কোড", verify: "লগইন", name: "আপনার নাম", badEmail: "সঠিক ইমেইল লিখুন।", badCode: "কোডটি ভুল বা মেয়াদোত্তীর্ণ।",
     rate: "অনেকবার চেষ্টা হয়েছে। এক ঘণ্টা পরে আবার চেষ্টা করুন।", codeSent: "আপনার ইমেইলে কোড পাঠানো হয়েছে:", devCode: (c) => `ডেমো মোড: কোড ${c}`,
     emailSubject: "হুকুকি লগইন কোড", emailBody: (c) => `আপনার লগইন কোড: ${c}\nকোডটি ১০ মিনিট বৈধ। আপনি না চাইলে এই ইমেইল উপেক্ষা করুন।`,
+    phone: "মোবাইল নম্বর", phoneHint: "শুধু অ্যাডমিনের জন্য।", adminLogin: "অ্যাডমিন লগইন (মোবাইল নম্বর)", emailLogin: "ইমেইল দিয়ে লগইন", badPhone: "এই নম্বর দিয়ে লগইন করা যাবে না।",
   },
   cases: {
     title: "আমার মামলা", none: "এখনো কোনো মামলা নেই।", open: "নতুন মামলা খুলুন", type: "সমস্যার ধরন", employer: "কোম্পানি বা কফিলের নাম",
@@ -159,6 +161,7 @@ const ar: Msgs = {
     code: "الرمز المكوّن من 6 أرقام", verify: "دخول", name: "اسمك", badEmail: "اكتب بريداً إلكترونياً صحيحاً.", badCode: "الرمز غير صحيح أو منتهي.",
     rate: "محاولات كثيرة. حاول بعد ساعة.", codeSent: "أرسلنا الرمز إلى بريدك:", devCode: (c) => `الوضع التجريبي: الرمز ${c}`,
     emailSubject: "رمز الدخول إلى حقوقي", emailBody: (c) => `رمز الدخول: ${c}\nالرمز صالح لمدة 10 دقائق. إذا لم تطلبه فتجاهل هذه الرسالة.`,
+    phone: "رقم الجوال", phoneHint: "للإدارة فقط.", adminLogin: "دخول الإدارة برقم الجوال", emailLogin: "الدخول بالبريد الإلكتروني", badPhone: "لا يمكن الدخول بهذا الرقم.",
   },
   cases: {
     title: "قضاياي", none: "لا توجد قضايا بعد.", open: "افتح قضية جديدة", type: "نوع المشكلة", employer: "اسم الشركة أو الكفيل",
@@ -220,6 +223,7 @@ const en: Msgs = {
     code: "6-digit code", verify: "Log in", name: "Your name", badEmail: "Enter a valid email address.", badCode: "The code is wrong or expired.",
     rate: "Too many attempts. Try again in an hour.", codeSent: "We sent a code to:", devCode: (c) => `Demo mode: code ${c}`,
     emailSubject: "Your Huquqi login code", emailBody: (c) => `Your login code: ${c}\nIt is valid for 10 minutes. If you did not ask for it, ignore this email.`,
+    phone: "Mobile number", phoneHint: "For admins only.", adminLogin: "Admin login (mobile number)", emailLogin: "Log in with email", badPhone: "This number cannot log in.",
   },
   cases: {
     title: "My cases", none: "No cases yet.", open: "Open a new case", type: "Type of problem", employer: "Company or sponsor name",

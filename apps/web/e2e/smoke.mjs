@@ -142,8 +142,19 @@ try {
 
   // Admin page loads for admin and is forbidden for worker.
   const a = await (await newPage()).newPage();
-  await login(a, "admin@huquqi.test");
+  // Admins log in with their mobile number; other numbers are refused.
+  await a.goto(BASE + "/login");
+  await a.click('button[value="use-phone"]');
+  await a.fill("#phone", "01811-222333");
+  await a.click('button[value="send"]');
+  ok(await seen(a, ".err"), "non-admin phone refused");
+  await a.fill("#phone", "01700-000000");
+  await a.click('button[value="send"]');
+  await seen(a, ".devcode");
+  await a.fill("#code", (await a.locator(".devcode").textContent()).match(/\d{6}/)[0]);
+  await a.click('button[value="verify"]');
   await a.waitForURL("**/admin");
+  ok(true, "admin logged in by phone");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");
   await a.click(`tr:has-text("${reviewText}") button >> nth=0`);
   await a.waitForLoadState("networkidle");

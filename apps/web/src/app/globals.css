@@ -129,3 +129,4 @@ details.more summary{cursor:pointer;font-weight:600;font-size:14.5px}
 .box3 > .f { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .box-title { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .box-title b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: var(--green-ink); font-size: 12.5px; }
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13.5px;text-decoration:underline;cursor:pointer;justify-self:start;align-self:flex-start}
