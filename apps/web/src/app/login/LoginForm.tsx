@@ -24,8 +24,9 @@ export function LoginForm({ locale, next }: { locale: Locale; next?: string }) {
             <span className="hint">{t.auth.emailHint}</span>
           </label>
         )}
-        {(state.error === "badEmail" || state.error === "send") && !phone && <p className="err" role="alert">{t.auth.badEmail}</p>}
-        {(state.error === "badPhone" || state.error === "send") && phone && <p className="err" role="alert">{t.auth.badPhone}</p>}
+        {state.error === "badEmail" && <p className="err" role="alert">{t.auth.badEmail}</p>}
+        {state.error === "badPhone" && <p className="err" role="alert">{t.auth.badPhone}</p>}
+        {state.error === "send" && <p className="err" role="alert">{t.auth.sendFailed}</p>}
         {state.error === "rate" && <p className="err" role="alert">{t.auth.rate}</p>}
         <button className="btn" name="intent" value="send" disabled={pending}>{t.auth.send}</button>
         <button className="linkbtn" name="intent" value={phone ? "use-email" : "use-phone"} formNoValidate disabled={pending}>
