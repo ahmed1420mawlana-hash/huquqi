@@ -55,6 +55,9 @@ try {
   await w.click('.starter-head[data-type="realestate"]');
   ok(await w.locator("#case-realestate .res.realestate .rules > div").count() === 6, "property option shows ownership rules before the boxes");
   ok(await w.locator("#case-realestate textarea, #case-realestate input[type=file]").count() === 3, "property option has the three boxes");
+  await w.click("#case-realestate details.holy summary");
+  ok(await w.locator("#case-realestate details.holy figure").count() === 6 && (await w.locator("#case-realestate details.holy blockquote").first().textContent()).includes("الْبَلَدَ آمِنًا"), "Makkah and Madinah section shows the verse and hadiths");
+  ok((await w.locator("#case-realestate details.holy audio").first().getAttribute("src")).endsWith("Abdurrahmaan_As-Sudais_192kbps/014035.mp3"), "verse plays in Al-Sudais's voice");
   await w.click('.starter-head[data-type="realestate"]');
   for (const k of ["accident", "property"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 0, `no ${k} option`);
   ok(await w.locator('.starter-head[data-type="translation"]').textContent().then((x) => x.includes("সত্যায়ন")), "translation option includes attestation");

@@ -176,6 +176,29 @@ function TypeInfo({ type, exit, locale }: { type: CaseType; exit: string; locale
           ))}
         </dl>
         <p className="muted" style={{ fontSize: 13 }}>{t.check.reNote}</p>
+        <details className="holy">
+          <summary>{t.check.holyTitle}</summary>
+          <p className="muted" style={{ fontSize: 14 }}>{t.check.holyLead}</p>
+          {(["makkah", "madinah"] as const).map((city) => (
+            <section key={city}>
+              <h4>{t.check[city]}</h4>
+              {t.check.holy.filter((x) => x.city === city).map((x) => (
+                <figure key={x.text}>
+                  <blockquote lang="ar" dir="rtl">{x.text}</blockquote>
+                  <figcaption>{x.ref}</figcaption>
+                  {x.audio && (
+                    <div className="recite">
+                      <span>{t.check.listen}</span>
+                      <audio controls preload="none" src={x.audio} />
+                    </div>
+                  )}
+                  <p>{x.note}</p>
+                </figure>
+              ))}
+            </section>
+          ))}
+          <p className="muted" style={{ fontSize: 12.5 }}>{t.check.source}</p>
+        </details>
       </div>
     );
   }

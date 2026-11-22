@@ -204,3 +204,12 @@ button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inher
 .res .rules{margin:8px 0;display:grid;gap:8px}
 .res .rules dt{font-weight:700}
 .res .rules dd{margin:2px 0 0}
+.res details.holy{margin-top:10px;border:1.5px solid color-mix(in srgb,var(--green) 35%,transparent);border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--green) 6%,transparent)}
+.res details.holy summary{cursor:pointer;font-weight:700;color:var(--green)}
+.res details.holy h4{margin:14px 0 6px;font-size:16px}
+.res details.holy figure{margin:0 0 12px}
+.res details.holy blockquote{margin:0;font-family:"Amiri","Noto Naskh Arabic",serif;font-size:20px;line-height:1.9;text-align:right}
+.res details.holy figcaption{font-size:12.5px;color:var(--muted);margin-top:2px}
+.res details.holy figure p{margin:4px 0 0}
+.res details.holy .recite{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;font-size:13.5px;color:var(--green);font-weight:600}
+.res details.holy .recite audio{width:100%;max-width:320px;height:36px}
