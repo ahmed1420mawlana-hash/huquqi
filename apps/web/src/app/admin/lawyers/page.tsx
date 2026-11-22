@@ -1,4 +1,4 @@
-import { formatDate, localNum } from "@huquqi/core";
+import { formatDate, localNum, type ProviderService } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
@@ -16,13 +16,14 @@ export default async function LawyerApplications() {
   const Card = ({ a }: { a: (typeof apps)[number] }) => (
     <li className="card stack app-card">
       <div className="inline" style={{ justifyContent: "space-between" }}>
-        <b>{a.name}</b>
+        <span className="inline" style={{ gap: 8 }}><b>{a.name}</b><span className="pill">{a.kind === "provider" ? t.staff.kindProvider : t.staff.kindLawyer}</span></span>
         <span className={`pill ${a.status === "pending" ? "new" : a.status === "rejected" ? "closed" : ""}`}>
           {a.status === "pending" ? t.staff.pendingLabel : a.status === "approved" ? t.staff.approved : t.staff.rejected}
         </span>
       </div>
       <dl className="kv">
-        <dt>{t.lawyer.license}</dt><dd dir="ltr" style={{ textAlign: "start" }}>{a.licenseNo}</dd>
+        {a.kind === "provider" && a.service && <><dt>{t.staff.service}</dt><dd>{t.staff.services[a.service as ProviderService] ?? a.service}</dd></>}
+        {a.licenseNo && <><dt>{t.lawyer.license}</dt><dd dir="ltr" style={{ textAlign: "start" }}>{a.licenseNo}</dd></>}
         {a.firm && <><dt>{t.lawyer.firm}</dt><dd>{a.firm}</dd></>}
         {a.city && <><dt>{t.staff.city}</dt><dd>{a.city}</dd></>}
         {a.years != null && <><dt>{t.staff.years}</dt><dd className="num">{localNum(a.years, locale)}</dd></>}
@@ -31,6 +32,7 @@ export default async function LawyerApplications() {
         <dt>{t.staff.joined}</dt><dd className="num">{formatDate(a.createdAt, locale)}</dd>
       </dl>
       {a.about && <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{a.about}</p>}
+      {a.status === "pending" && a.kind === "provider" && <p className="muted" style={{ margin: 0, fontSize: 13 }}>{t.staff.provApproveNote}</p>}
       {a.status === "pending" && (
         <div className="inline" style={{ gap: 8 }}>
           <form action={decideApplication.bind(null, a.id, true)}><button className="btn small">{t.staff.approve}</button></form>

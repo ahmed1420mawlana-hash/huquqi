@@ -50,7 +50,8 @@ export async function decideApplication(id: string, approve: boolean) {
   if (!app || app.status !== "pending") return;
   await db.$transaction(async (tx) => {
     await tx.lawyerApplication.update({ where: { id }, data: { status: approve ? "approved" : "rejected", decidedAt: new Date() } });
-    if (!approve) return;
+    // A service provider is only marked approved; the admin contacts them. Only lawyers get the lawyer role.
+    if (!approve || app.kind !== "lawyer") return;
     // An admin who applies keeps the admin role, but still gets a verified lawyer profile.
     if (app.user.role !== "ADMIN") await tx.user.update({ where: { id: app.userId }, data: { role: "LAWYER", name: app.user.name ?? app.name } });
     const profile = { licenseNo: app.licenseNo, firm: app.firm, verifiedAt: new Date() };

@@ -192,7 +192,9 @@ model LawyerApplication {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   phone     String
-  licenseNo String
+  kind      String    @default("lawyer") // lawyer | provider
+  service   String? // provider only: consultant | translator | agent | expert | office | other
+  licenseNo String // empty for a provider without a licence
   firm      String?
   city      String?
   years     Int?
