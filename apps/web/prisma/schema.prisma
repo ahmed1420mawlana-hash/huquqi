@@ -18,14 +18,15 @@ model User {
   locale    String   @default("bn")
   createdAt DateTime @default(now())
 
-  lawyerProfile LawyerProfile?
-  cases         Case[]         @relation("WorkerCases")
-  assigned      Case[]         @relation("LawyerCases")
-  updates       CaseUpdate[]
-  documents     Document[]
-  reviewsGiven  Review[]       @relation("ReviewAuthor")
-  reviewsGot    Review[]       @relation("ReviewLawyer")
-  notes         CaseNote[]     @relation("NoteAuthor")
+  lawyerProfile      LawyerProfile?
+  cases              Case[]              @relation("WorkerCases")
+  assigned           Case[]              @relation("LawyerCases")
+  updates            CaseUpdate[]
+  documents          Document[]
+  reviewsGiven       Review[]            @relation("ReviewAuthor")
+  reviewsGot         Review[]            @relation("ReviewLawyer")
+  notes              CaseNote[]          @relation("NoteAuthor")
+  lawyerApplications LawyerApplication[]
 }
 
 model LawyerProfile {
@@ -167,7 +168,7 @@ model MediaItem {
 /// One page view. `visitor` is a random id kept in a cookie, never linked to an account.
 model PageView {
   id        String   @id @default(cuid())
-  day       String   // YYYY-MM-DD in Riyadh time
+  day       String // YYYY-MM-DD in Riyadh time
   visitor   String
   path      String
   createdAt DateTime @default(now())
@@ -180,4 +181,23 @@ model PageView {
 model RefCounter {
   period String @id
   last   Int
+}
+
+/// A lawyer's request to join. Approving makes the user a verified LAWYER.
+model LawyerApplication {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  licenseNo String
+  firm      String?
+  city      String?
+  years     Int?
+  about     String?
+  status    String    @default("pending") // pending | approved | rejected
+  createdAt DateTime  @default(now())
+  decidedAt DateTime?
+
+  @@index([status, createdAt])
 }

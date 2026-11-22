@@ -56,6 +56,14 @@ type Msgs = {
     title: string; assigned: string; unassigned: string; take: string; moveTo: string; update: string;
     updateHint: string; post: string; notVerified: string; license: string; firm: string; saveProfile: string;
   };
+  staff: {
+    nav: string; clients: string; clientsLead: string; apps: string; appsLead: string; pending: (n: string) => string;
+    cases: string; lastCase: string; joined: string; search: string; noCases: string; openInbox: string;
+    approve: string; reject: string; approved: string; rejected: string; pendingLabel: string; history: string;
+    city: string; years: string; about: string; phone: string;
+    applyTitle: string; applyLead: string; applyLogin: string; applySend: string; applySent: string; applyError: string;
+    applyStatus: string; alreadyLawyer: string;
+  };
   admin: { title: string; lawyers: string; verify: string; verified: string; cases: string; assign: string; none: string; makeLawyer: string; phone: string; email: string; reviews: string };
   common: { save: string; back: string; required: string; forbidden: string; notFound: string };
   info: {
@@ -137,6 +145,16 @@ const bn: Msgs = {
     title: "উকিল প্যানেল", assigned: "আমার মামলা", unassigned: "নতুন মামলা", take: "মামলা নিন", moveTo: "পরবর্তী ধাপ", update: "আপডেট লিখুন",
     updateHint: "ক্লায়েন্ট এটি নিজের ভাষায় দেখবেন।", post: "আপডেট দিন", notVerified: "আপনার লাইসেন্স এখনো যাচাই হয়নি।",
     license: "লাইসেন্স নম্বর", firm: "ল ফার্ম", saveProfile: "সংরক্ষণ",
+  },
+  staff: {
+    nav: "পরিচালনা", clients: "গ্রাহক ও তাদের মামলা", clientsLead: "প্রতিটি গ্রাহক, তাদের মামলা সংখ্যা ও সর্বশেষ মামলা।",
+    apps: "উকিলদের আবেদন", appsLead: "যোগ দিতে চাওয়া উকিলদের আবেদন। গ্রহণ করলে তিনি যাচাইকৃত উকিল হবেন।", pending: (n) => `${n}টি অপেক্ষমাণ`,
+    cases: "মামলা", lastCase: "সর্বশেষ মামলা", joined: "যোগদান", search: "নাম, ইমেইল, মোবাইল বা মামলা নম্বর দিয়ে খুঁজুন", noCases: "কোনো মামলা নেই", openInbox: "মামলার ইনবক্সে দেখুন",
+    approve: "গ্রহণ করুন", reject: "প্রত্যাখ্যান", approved: "গৃহীত", rejected: "প্রত্যাখ্যাত", pendingLabel: "অপেক্ষমাণ", history: "আগের আবেদন",
+    city: "শহর", years: "অভিজ্ঞতার বছর", about: "আপনার সম্পর্কে সংক্ষেপে", phone: "মোবাইল",
+    applyTitle: "উকিল হিসেবে আবেদন", applyLead: "তথ্য দিন। অ্যাডমিন লাইসেন্স যাচাই করে আবেদন গ্রহণ করবেন।", applyLogin: "আবেদন করতে আগে ইমেইল দিয়ে লগইন করুন",
+    applySend: "আবেদন পাঠান", applySent: "আপনার আবেদন পৌঁছেছে। যাচাইয়ের পর জানানো হবে।", applyError: "লাইসেন্স নম্বর ও মোবাইল দিন।",
+    applyStatus: "আবেদনের অবস্থা", alreadyLawyer: "আপনি ইতিমধ্যে উকিল হিসেবে নিবন্ধিত।",
   },
   admin: { title: "অ্যাডমিন", lawyers: "উকিল", verify: "যাচাই করুন", verified: "যাচাইকৃত", cases: "সব মামলা", assign: "উকিল দিন", none: "কিছু নেই", makeLawyer: "উকিল হিসেবে যোগ করুন", phone: "মোবাইল", email: "ইমেইল", reviews: "মূল্যায়ন" },
   common: { save: "সংরক্ষণ", back: "পেছনে", required: "এই ঘরটি পূরণ করুন।", forbidden: "এই পাতায় আপনার প্রবেশাধিকার নেই।", notFound: "পাওয়া যায়নি।" },
@@ -243,6 +261,16 @@ const ar: Msgs = {
     updateHint: "يراه العميل بلغته.", post: "انشر التحديث", notVerified: "لم يتم التحقق من ترخيصك بعد.",
     license: "رقم الترخيص", firm: "مكتب المحاماة", saveProfile: "حفظ",
   },
+  staff: {
+    nav: "الإدارة", clients: "العملاء وقضاياهم", clientsLead: "كل عميل مع عدد قضاياه وآخر قضية له.",
+    apps: "طلبات المحامين", appsLead: "طلبات المحامين الراغبين بالانضمام. القبول يجعله محامياً موثّقاً.", pending: (n) => `${n} بانتظار القرار`,
+    cases: "القضايا", lastCase: "آخر قضية", joined: "التسجيل", search: "ابحث بالاسم أو البريد أو الجوال أو رقم القضية", noCases: "لا توجد قضايا", openInbox: "عرضها في صندوق القضايا",
+    approve: "قبول", reject: "رفض", approved: "مقبول", rejected: "مرفوض", pendingLabel: "بانتظار القرار", history: "طلبات سابقة",
+    city: "المدينة", years: "سنوات الخبرة", about: "نبذة مختصرة عنك", phone: "الجوال",
+    applyTitle: "طلب الانضمام كمحامٍ", applyLead: "عبّئ بياناتك، وتتحقق الإدارة من الترخيص ثم تقبل الطلب.", applyLogin: "سجّل الدخول بالبريد أولاً لتقديم الطلب",
+    applySend: "أرسل الطلب", applySent: "وصلنا طلبك، وسنبلغك بعد التحقق.", applyError: "أدخل رقم الترخيص ورقم الجوال.",
+    applyStatus: "حالة الطلب", alreadyLawyer: "أنت مسجّل محامياً بالفعل.",
+  },
   admin: { title: "الإدارة", lawyers: "المحامون", verify: "توثيق", verified: "موثّق", cases: "كل القضايا", assign: "تعيين محامٍ", none: "لا شيء", makeLawyer: "إضافة كمحامٍ", phone: "الجوال", email: "البريد", reviews: "التقييمات" },
   common: { save: "حفظ", back: "رجوع", required: "هذا الحقل مطلوب.", forbidden: "ليست لديك صلاحية لهذه الصفحة.", notFound: "غير موجود." },
   info: {
@@ -347,6 +375,16 @@ const en: Msgs = {
     title: "Lawyer panel", assigned: "My cases", unassigned: "New cases", take: "Take case", moveTo: "Next stage", update: "Write an update",
     updateHint: "The client sees it in their language.", post: "Post update", notVerified: "Your licence has not been verified yet.",
     license: "Licence number", firm: "Law firm", saveProfile: "Save",
+  },
+  staff: {
+    nav: "Admin", clients: "Clients and their cases", clientsLead: "Each client with their case count and latest case.",
+    apps: "Lawyer applications", appsLead: "Lawyers asking to join. Approving makes them a verified lawyer.", pending: (n) => `${n} pending`,
+    cases: "Cases", lastCase: "Latest case", joined: "Joined", search: "Search by name, email, mobile or case number", noCases: "No cases", openInbox: "View in the case inbox",
+    approve: "Approve", reject: "Reject", approved: "Approved", rejected: "Rejected", pendingLabel: "Pending", history: "Earlier applications",
+    city: "City", years: "Years of experience", about: "A short note about you", phone: "Mobile",
+    applyTitle: "Apply as a lawyer", applyLead: "Fill in your details. The admin checks your licence and approves.", applyLogin: "Log in with your email first to apply",
+    applySend: "Send application", applySent: "We received your application and will tell you after checking.", applyError: "Enter your licence number and mobile.",
+    applyStatus: "Application status", alreadyLawyer: "You are already registered as a lawyer.",
   },
   admin: { title: "Admin", lawyers: "Lawyers", verify: "Verify", verified: "Verified", cases: "All cases", assign: "Assign lawyer", none: "Nothing here", makeLawyer: "Add as lawyer", phone: "Mobile", email: "Email", reviews: "Reviews" },
   common: { save: "Save", back: "Back", required: "This field is required.", forbidden: "You don't have access to this page.", notFound: "Not found." },

@@ -7,6 +7,7 @@ import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { assignLawyer } from "@/app/admin/actions";
+import { AdminNav } from "@/components/AdminNav";
 
 type Search = { q?: string; type?: string; status?: string; lawyer?: string; awaiting?: string };
 
@@ -59,6 +60,7 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
 
   return (
     <div className="wrap stack">
+      {admin && <AdminNav active="inbox" t={t} locale={locale} />}
       <div className="inline" style={{ justifyContent: "space-between" }}>
         <h1 className="page-title">{t.inbox.title}</h1>
         {waiting > 0 && (

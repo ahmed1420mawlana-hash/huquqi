@@ -8,6 +8,7 @@ import { Stars } from "@/components/Stars";
 import { directUploads } from "@/lib/storage";
 import { visitStats } from "@/lib/visits";
 import { MediaForm } from "./MediaForm";
+import { AdminNav } from "@/components/AdminNav";
 import { removeMedia } from "./media-actions";
 import { assignLawyer, makeLawyer, setReviewApproved, verifyLawyer } from "./actions";
 
@@ -28,6 +29,7 @@ export default async function Admin() {
 
   return (
     <div className="wrap stack">
+      <AdminNav active="home" t={t} locale={locale} />
       <h1 className="page-title">{t.admin.title}</h1>
 
       <section className="card stack">

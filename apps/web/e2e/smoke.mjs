@@ -260,6 +260,37 @@ try {
   ok(await seen(w, `.reviews >> text=${reviewText}`), "approved review shows on the home page");
   await w.goto(BASE + "/admin");
   ok(w.url().endsWith("/forbidden"), "worker is kept out of admin");
+
+  // Admin: clients and their cases.
+  await a.goto(BASE + "/admin/clients?q=" + ref);
+  ok(await a.locator(".admin-nav a").count() === 4, "admin tabs: dashboard, inbox, clients, lawyer applications");
+  await a.click(".clients-table tbody a");
+  await a.waitForURL(/\/admin\/clients\/[^/?]+$/);
+  ok(await seen(a, `.list >> text=${ref}`), "client page lists their cases");
+  await w.goto(BASE + "/admin/clients");
+  ok(w.url().endsWith("/forbidden"), "worker is kept out of the clients page");
+
+  // A lawyer applies from the join page; the admin approves.
+  const lp = await (await newPage()).newPage();
+  await lp.goto(BASE + "/join");
+  ok(await lp.locator('a[href="/login?next=/join"]').isVisible(), "join page asks to log in first");
+  const lawyerName = `Applicant ${Date.now()}`;
+  await login(lp, `applicant${Date.now()}@example.com`, lawyerName);
+  await lp.goto(BASE + "/join");
+  await lp.fill("#a-phone", "+966551234567");
+  await lp.fill("#a-license", "MOJ-12345");
+  await lp.fill("#a-firm", "Test Law Firm");
+  await lp.fill("#a-years", "7");
+  await lp.click("#apply button.btn");
+  ok(await seen(lp, ".okmsg"), "lawyer application sent");
+  await a.goto(BASE + "/admin/lawyers");
+  const card = a.locator(`.app-card:has-text("${lawyerName}")`);
+  ok(await card.locator("text=MOJ-12345").isVisible(), "admin sees the lawyer application");
+  await card.locator("button.btn:not(.ghost)").click();
+  await card.locator("button").first().waitFor({ state: "detached", timeout: 30000 });
+  await lp.goto(BASE + "/lawyer");
+  ok(!lp.url().endsWith("/forbidden") && (await lp.locator("#licenseNo").inputValue()) === "MOJ-12345", "approved applicant is now a lawyer with their licence");
+  ok(await lp.locator(".devcode").count() === 0, "approved lawyer is verified");
   console.log("\nAll checks passed");
 } finally {
   await browser.close();
