@@ -191,3 +191,6 @@ button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inher
 .admin-nav a:hover{background:var(--line)}
 .admin-nav a.on{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
 .apps{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.daily-article{margin-bottom:24px}
+.daily-article .card{border-inline-start:4px solid var(--green)}
+.art-form textarea{min-height:70px}

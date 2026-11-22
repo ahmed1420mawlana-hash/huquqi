@@ -5,6 +5,7 @@ import { Marks } from "@/components/Marks";
 import { Reviews } from "@/components/Reviews";
 import { Gallery } from "@/components/Gallery";
 import { CaseStarter } from "@/components/CaseStarter";
+import { DailyArticle } from "@/components/DailyArticle";
 import { directUploads } from "@/lib/storage";
 
 export default async function Home() {
@@ -33,6 +34,7 @@ export default async function Home() {
           )}
         </div>
       </div>
+      <DailyArticle t={t} locale={locale} />
       <Reviews t={t} locale={locale} />
       <Gallery t={t} locale={locale} admin={user?.role === "ADMIN"} />
     </>

@@ -56,6 +56,11 @@ type Msgs = {
     title: string; assigned: string; unassigned: string; take: string; moveTo: string; update: string;
     updateHint: string; post: string; notVerified: string; license: string; firm: string; saveProfile: string;
   };
+  article: {
+    title: string; num: (n: string) => string; note: string; manage: string; manageLead: string;
+    law: string; number: string; textAr: string; textBn: string; textEn: string; add: string; publish: string; unpublish: string;
+    published: string; draft: string; remove: string; starter: string; starterDone: string; today: string;
+  };
   staff: {
     nav: string; clients: string; clientsLead: string; apps: string; appsLead: string; pending: (n: string) => string;
     cases: string; lastCase: string; joined: string; search: string; noCases: string; openInbox: string;
@@ -145,6 +150,13 @@ const bn: Msgs = {
     title: "উকিল প্যানেল", assigned: "আমার মামলা", unassigned: "নতুন মামলা", take: "মামলা নিন", moveTo: "পরবর্তী ধাপ", update: "আপডেট লিখুন",
     updateHint: "ক্লায়েন্ট এটি নিজের ভাষায় দেখবেন।", post: "আপডেট দিন", notVerified: "আপনার লাইসেন্স এখনো যাচাই হয়নি।",
     license: "লাইসেন্স নম্বর", firm: "ল ফার্ম", saveProfile: "সংরক্ষণ",
+  },
+  article: {
+    title: "আজকের আইনি ধারা", num: (n) => `ধারা ${n}`, note: "সংক্ষিপ্ত ব্যাখ্যা, আইনের হুবহু ভাষা নয়। আপনার মামলার জন্য উকিলের পরামর্শ নিন।",
+    manage: "আজকের ধারা", manageLead: "প্রতিদিন হোম পেজে একটি প্রকাশিত ধারা দেখানো হয়, রিয়াদ সময় অনুযায়ী পালাক্রমে।",
+    law: "আইনের নাম", number: "ধারা নম্বর", textAr: "ব্যাখ্যা (আরবি)", textBn: "ব্যাখ্যা (বাংলা)", textEn: "ব্যাখ্যা (ইংরেজি)", add: "ধারা যোগ করুন",
+    publish: "প্রকাশ করুন", unpublish: "প্রকাশ বন্ধ", published: "প্রকাশিত", draft: "পর্যালোচনার অপেক্ষায়", remove: "মুছুন",
+    starter: "শ্রম আইনের প্রাথমিক ধারাগুলো যোগ করুন", starterDone: "যোগ হয়েছে। প্রকাশের আগে প্রতিটি পর্যালোচনা করুন।", today: "আজ দেখানো হচ্ছে",
   },
   staff: {
     nav: "পরিচালনা", clients: "গ্রাহক ও তাদের মামলা", clientsLead: "প্রতিটি গ্রাহক, তাদের মামলা সংখ্যা ও সর্বশেষ মামলা।",
@@ -261,6 +273,13 @@ const ar: Msgs = {
     updateHint: "يراه العميل بلغته.", post: "انشر التحديث", notVerified: "لم يتم التحقق من ترخيصك بعد.",
     license: "رقم الترخيص", firm: "مكتب المحاماة", saveProfile: "حفظ",
   },
+  article: {
+    title: "مادة اليوم", num: (n) => `المادة ${n}`, note: "شرح مختصر وليس نص النظام حرفياً. استشر محامياً في قضيتك.",
+    manage: "مادة اليوم", manageLead: "تظهر في الصفحة الرئيسية كل يوم مادة واحدة من المواد المنشورة، بالتناوب حسب توقيت الرياض.",
+    law: "اسم النظام", number: "رقم المادة", textAr: "الشرح بالعربي", textBn: "الشرح بالبنغالي", textEn: "الشرح بالإنجليزي", add: "أضف المادة",
+    publish: "نشر", unpublish: "إيقاف النشر", published: "منشورة", draft: "بانتظار المراجعة", remove: "حذف",
+    starter: "أضف الدفعة الأولى من مواد نظام العمل", starterDone: "تمت الإضافة. راجع كل مادة قبل نشرها.", today: "معروضة اليوم",
+  },
   staff: {
     nav: "الإدارة", clients: "العملاء وقضاياهم", clientsLead: "كل عميل مع عدد قضاياه وآخر قضية له.",
     apps: "طلبات المحامين", appsLead: "طلبات المحامين الراغبين بالانضمام. القبول يجعله محامياً موثّقاً.", pending: (n) => `${n} بانتظار القرار`,
@@ -375,6 +394,13 @@ const en: Msgs = {
     title: "Lawyer panel", assigned: "My cases", unassigned: "New cases", take: "Take case", moveTo: "Next stage", update: "Write an update",
     updateHint: "The client sees it in their language.", post: "Post update", notVerified: "Your licence has not been verified yet.",
     license: "Licence number", firm: "Law firm", saveProfile: "Save",
+  },
+  article: {
+    title: "Article of the day", num: (n) => `Article ${n}`, note: "A short explanation, not the exact legal text. Ask a lawyer about your case.",
+    manage: "Article of the day", manageLead: "Each day the home page shows one published article, in turn, by Riyadh time.",
+    law: "Law", number: "Article number", textAr: "Explanation (Arabic)", textBn: "Explanation (Bengali)", textEn: "Explanation (English)", add: "Add article",
+    publish: "Publish", unpublish: "Unpublish", published: "Published", draft: "Awaiting review", remove: "Delete",
+    starter: "Add the starter Labour Law articles", starterDone: "Added. Review each article before publishing.", today: "Showing today",
   },
   staff: {
     nav: "Admin", clients: "Clients and their cases", clientsLead: "Each client with their case count and latest case.",

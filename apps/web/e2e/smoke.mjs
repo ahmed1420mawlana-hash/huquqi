@@ -263,7 +263,7 @@ try {
 
   // Admin: clients and their cases.
   await a.goto(BASE + "/admin/clients?q=" + ref);
-  ok(await a.locator(".admin-nav a").count() === 4, "admin tabs: dashboard, inbox, clients, lawyer applications");
+  ok(await a.locator(".admin-nav a").count() === 5, "admin tabs: dashboard, inbox, clients, lawyer applications, article of the day");
   await a.click(".clients-table tbody a");
   await a.waitForURL(/\/admin\/clients\/[^/?]+$/);
   ok(await seen(a, `.list >> text=${ref}`), "client page lists their cases");
@@ -291,6 +291,27 @@ try {
   await lp.goto(BASE + "/lawyer");
   ok(!lp.url().endsWith("/forbidden") && (await lp.locator("#licenseNo").inputValue()) === "MOJ-12345", "approved applicant is now a lawyer with their licence");
   ok(await lp.locator(".devcode").count() === 0, "approved lawyer is verified");
+
+  // Article of the day: the starter set arrives unpublished; publishing one shows it on the home page.
+  await a.goto(BASE + "/admin/articles");
+  if (await a.locator("#add-starter").count()) {
+    await a.click("#add-starter");
+    await a.locator("#add-starter").waitFor({ state: "detached" });
+  }
+  ok(await a.locator('.art-card:has-text("84")').count() >= 1, "starter Labour Law articles added");
+  const anyPublished = await a.locator(".art-card .pill:not(.closed):not(.new)").count();
+  if (!anyPublished) {
+    await a.locator(".art-card").first().locator("button.pub").click();
+    await a.locator(".art-card .pill:not(.closed):not(.new)").first().waitFor();
+  }
+  const todayCard = a.locator('.art-card:has(.pill.new)');
+  await a.reload();
+  ok(await todayCard.count() === 1, "admin sees which article shows today");
+  const todayTitle = (await todayCard.locator("b").textContent()).trim();
+  const home = await (await newPage({ locale: "ar" })).newPage();
+  await home.goto(BASE + "/");
+  ok(await seen(home, ".daily-article"), "article of the day shows on the home page");
+  ok((await home.locator(".daily-article .pill").textContent()).includes(todayTitle.split(" · ")[0]), "home shows the same article the admin sees as today's");
   console.log("\nAll checks passed");
 } finally {
   await browser.close();

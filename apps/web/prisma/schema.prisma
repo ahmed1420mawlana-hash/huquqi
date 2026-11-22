@@ -201,3 +201,19 @@ model LawyerApplication {
 
   @@index([status, createdAt])
 }
+
+/// A short article of a Saudi law with a plain explanation, shown on the home page one per day.
+/// Only published articles are shown; the starter set is added unpublished for review.
+model LegalArticle {
+  id        String   @id @default(cuid())
+  law       String // law name in Arabic, e.g. "نظام العمل"
+  number    String // article number, e.g. "84"
+  ar        String // short explanation in Arabic
+  bn        String?
+  en        String?
+  starter   String?  @unique // key of a starter article, so the set is added only once
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([published, createdAt])
+}
