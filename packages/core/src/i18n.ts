@@ -46,6 +46,7 @@ type Msgs = {
   cases: {
     title: string; none: string; open: string; type: string; employer: string; exitDate: string;
     bank: string; description: string; descriptionHint: string; submit: string; created: string;
+    whatsTitle: string; whatsLead: string; whatsBtn: string; whatsMsg: (ref: string) => string;
     timeline: string; updates: string; noUpdates: string; documents: string; upload: string;
     noDocs: string; lawyer: string; noLawyer: string; deadline: string; channel: string;
     message: string; send: string; uploadHint: string;
@@ -124,7 +125,7 @@ const bn: Msgs = {
   cases: {
     title: "আমার মামলা", none: "এখনো কোনো মামলা নেই।", open: "নতুন মামলা খুলুন", type: "সমস্যার ধরন", employer: "কোম্পানি বা কফিলের নাম",
     exitDate: "সৌদি ছাড়ার তারিখ", bank: "ব্যাংকের নাম", description: "সংক্ষেপে ঘটনা", descriptionHint: "কী হয়েছে এবং কবে, সংক্ষেপে যেকোনো ভাষায় লিখুন।",
-    submit: "মামলা জমা দিন", created: "মামলা জমা হয়েছে। ৪৮ ঘণ্টার মধ্যে একজন উকিল দেখবেন।", timeline: "অগ্রগতি", updates: "আপডেট",
+    submit: "মামলা জমা দিন", whatsTitle: "হোয়াটসঅ্যাপে যোগাযোগ", whatsLead: "দ্রুত যোগাযোগের জন্য আমাদের হোয়াটসঅ্যাপে মেসেজ দিন। মামলা নম্বর সাথে যাবে।", whatsBtn: "হোয়াটসঅ্যাপে মেসেজ দিন", whatsMsg: (ref: string) => `আসসালামু আলাইকুম, আমি হুকুকি-তে মামলা ${ref} জমা দিয়েছি।`, created: "মামলা জমা হয়েছে। ৪৮ ঘণ্টার মধ্যে একজন উকিল দেখবেন।", timeline: "অগ্রগতি", updates: "আপডেট",
     noUpdates: "এখনো কোনো আপডেট নেই।", documents: "কাগজপত্র", upload: "আপলোড", noDocs: "কোনো কাগজ আপলোড হয়নি।", lawyer: "উকিল",
     noLawyer: "উকিল নিয়োগের অপেক্ষায়", deadline: "শ্রম মামলার শেষ তারিখ", channel: "সরকারি মাধ্যম", message: "উকিলকে বার্তা", send: "পাঠান",
     uploadHint: "পাসপোর্ট, ইকামা, চুক্তি, বেতনের স্লিপ। PDF, ছবি বা Word, ১০০০ পৃষ্ঠা পর্যন্ত (প্রতি ফাইল ৫০০ MB পর্যন্ত), একসাথে কয়েকটি ফাইল দেওয়া যায়।",
@@ -229,7 +230,7 @@ const ar: Msgs = {
   cases: {
     title: "قضاياي", none: "لا توجد قضايا بعد.", open: "افتح قضية جديدة", type: "نوع المشكلة", employer: "اسم الشركة أو الكفيل",
     exitDate: "تاريخ الخروج", bank: "اسم البنك", description: "الوقائع باختصار", descriptionHint: "ماذا حدث ومتى، باختصار وبأي لغة.",
-    submit: "قدّم القضية", created: "تم تقديم القضية. سيراجعها محامٍ خلال 48 ساعة.", timeline: "المراحل", updates: "التحديثات",
+    submit: "قدّم القضية", whatsTitle: "التواصل عبر واتساب", whatsLead: "للتواصل السريع راسلنا على واتساب، وسيُرسل رقم القضية مع رسالتك.", whatsBtn: "راسلنا على واتساب", whatsMsg: (ref: string) => `السلام عليكم، قدّمت طلبي في منصة حقوقي برقم ${ref}.`, created: "تم تقديم القضية. سيراجعها محامٍ خلال 48 ساعة.", timeline: "المراحل", updates: "التحديثات",
     noUpdates: "لا توجد تحديثات بعد.", documents: "المستندات", upload: "رفع", noDocs: "لم تُرفع مستندات.", lawyer: "المحامي",
     noLawyer: "بانتظار تعيين محامٍ", deadline: "آخر موعد للقضية العمالية", channel: "القناة الرسمية", message: "رسالة للمحامي", send: "إرسال",
     uploadHint: "الجواز، الإقامة، العقد، كشوف الراتب. PDF أو صور أو Word حتى 1000 صفحة (حتى 500 ميجابايت للملف)، ويمكن رفع عدة ملفات معاً.",
@@ -334,7 +335,7 @@ const en: Msgs = {
   cases: {
     title: "My cases", none: "No cases yet.", open: "Open a new case", type: "Type of problem", employer: "Company or sponsor name",
     exitDate: "Exit date", bank: "Bank name", description: "The facts, in brief", descriptionHint: "What happened and when, briefly, in any language.",
-    submit: "Submit case", created: "Case submitted. A lawyer will review it within 48 hours.", timeline: "Progress", updates: "Updates",
+    submit: "Submit case", whatsTitle: "Contact us on WhatsApp", whatsLead: "For a quick reply, message us on WhatsApp. Your case number is included.", whatsBtn: "Message us on WhatsApp", whatsMsg: (ref: string) => `Hello, I submitted case ${ref} on Huquqi.`, created: "Case submitted. A lawyer will review it within 48 hours.", timeline: "Progress", updates: "Updates",
     noUpdates: "No updates yet.", documents: "Documents", upload: "Upload", noDocs: "No documents uploaded.", lawyer: "Lawyer",
     noLawyer: "Waiting for a lawyer", deadline: "Labour claim deadline", channel: "Official channel", message: "Message your lawyer", send: "Send",
     uploadHint: "Passport, iqama, contract, payslips. PDF, images or Word, up to 1,000 pages (500 MB per file); you can pick several files at once.",

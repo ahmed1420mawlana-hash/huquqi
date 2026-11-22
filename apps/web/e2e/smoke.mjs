@@ -121,6 +121,8 @@ try {
   const caseUrl = w.url().split("?")[0];
   const ref = (await w.locator("p.num").first().textContent()).match(/HQ-[A-Z0-9]+/)[0];
   ok(await w.locator(".okmsg").isVisible(), "case created");
+  const wa = await w.locator("#whatsapp a.btn.wa").getAttribute("href");
+  ok(/^https:\/\/wa\.me\/8801700000000\?text=/.test(wa) && decodeURIComponent(wa).includes(ref), "whatsapp link with case ref");
   ok(await seen(w, "text=খিদমার টাকা আদায় করুন।"), "requests shown on case");
   ok(await w.locator('a.item[href^="/api/documents/"]').count() === 2, "documents uploaded with the case, incl. a 15 MB file");
   ok(!(await w.locator(".track").count()), "no stage tracking");

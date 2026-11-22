@@ -68,6 +68,7 @@ Demo accounts after seeding:
    | `DEMO_PASSWORD` | a password to share with testers |
    | `DEV_SHOW_OTP` | `1` (codes on screen; only works while `DEMO_PASSWORD` is set) |
    | `ADMIN_PHONES` | your mobile number (`+966…` or `+880…`), for admin login by phone |
+   | `WHATSAPP_NUMBER` | optional: the WhatsApp number clients see after submitting a case (defaults to the first `ADMIN_PHONES` number) |
    | `ADMIN_EMAILS` | optional: admin email addresses (comma separated) |
    | `RESEND_API_KEY`, `EMAIL_FROM` | optional: a [Resend](https://resend.com) key and a sender on your verified domain, to email the codes |
 

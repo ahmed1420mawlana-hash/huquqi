@@ -183,3 +183,6 @@ button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inher
 .bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:4px}
 .bar i{display:block;width:100%;min-height:2px;background:var(--green);border-radius:4px 4px 0 0}
 .bar span{font-size:10.5px;color:var(--muted)}
+.card.whats{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.card.whats.fresh{border:2px solid #25d366}
+.btn.wa{background:#25d366;color:#fff}
