@@ -5,18 +5,19 @@ import { loginAction, type LoginState } from "./actions";
 
 export function LoginForm({ locale }: { locale: Locale }) {
   const t = messages[locale];
-  const [state, action, pending] = useActionState<LoginState, FormData>(loginAction, { step: "phone" });
+  const [state, action, pending] = useActionState<LoginState, FormData>(loginAction, { step: "email" });
 
-  if (state.step === "phone") {
+  if (state.step === "email") {
     return (
       <form action={action} className="card stack" noValidate>
-        <label className="f" htmlFor="phone">
-          {t.auth.phone}
-          <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" required placeholder="01712-345678" />
-          <span className="hint">{t.auth.phoneHint}</span>
+        <label className="f" htmlFor="email">
+          {t.auth.email}
+          <input id="email" name="email" type="email" inputMode="email" autoComplete="email" dir="ltr" required placeholder="name@example.com" />
+          <span className="hint">{t.auth.emailHint}</span>
         </label>
-        {state.error === "badPhone" && <p className="err" role="alert">{t.auth.badPhone}</p>}
+        {state.error === "badEmail" && <p className="err" role="alert">{t.auth.badEmail}</p>}
         {state.error === "rate" && <p className="err" role="alert">{t.auth.rate}</p>}
+        {state.error === "send" && <p className="err" role="alert">{t.auth.badEmail}</p>}
         <button className="btn" name="intent" value="send" disabled={pending}>{t.auth.send}</button>
       </form>
     );
@@ -24,7 +25,7 @@ export function LoginForm({ locale }: { locale: Locale }) {
 
   return (
     <form action={action} className="card stack" noValidate>
-      <p className="okmsg" style={{ margin: 0 }}>{t.auth.codeSent} <span dir="ltr">{state.phone}</span></p>
+      <p className="okmsg" style={{ margin: 0 }}>{t.auth.codeSent} <span dir="ltr">{state.email}</span></p>
       {state.devCode && <p className="devcode" style={{ margin: 0 }}>{t.auth.devCode(state.devCode)}</p>}
       <label className="f" htmlFor="code">
         {t.auth.code}

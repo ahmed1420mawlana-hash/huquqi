@@ -12,20 +12,20 @@ Bengali, Arabic and English.
 
 | Area | What works |
 | --- | --- |
-| Home | Free case check: 12-month labour-claim countdown, likely bank account state (SAMA 90/180-day rules), wage-insurance hint |
-| Login | Mobile number + one-time code (Bangladesh `+880` for workers, Saudi `+966` for lawyers) |
-| Worker | Open a case, upload documents (PDF/images up to 10 MB), message the lawyer, follow the stage timeline |
-| Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates and move the stage |
-| Admin | Add lawyers by phone, verify licences, assign cases |
+| Home | Scales, gavel and Bangladesh flag emblems; free case check (labour deadline folded inside the labour option, bank account state under SAMA 90/180-day rules); approved client reviews |
+| Login | Email + one-time code (sent through Resend) |
+| Worker | Open a case in one of 8 areas (salary, end of service, bank, court, accident, property, document translation, Hajj & Umrah visas) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
+| Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates, close the case |
+| Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews |
 | Languages | Bengali (default), Arabic (right-to-left), English, switchable on every page |
 
-Not yet built: SMS delivery of codes, payments (bKash/Nagad), the Expo mobile app, machine translation
+Not yet built: payments (bKash/Nagad), the Expo mobile app, machine translation
 of updates, a database hosted in Saudi Arabia. See "Next steps".
 
 ## Layout
 
 ```
-packages/core   Shared domain logic: case types, stages, deadlines, phone rules, translations (+ tests)
+packages/core   Shared domain logic: case types, deadlines, email and phone rules, translations (+ tests)
 apps/web        Next.js 15 app (pages, server actions, Prisma)
 ```
 
@@ -45,11 +45,11 @@ With `DEV_SHOW_OTP=1` the login code is shown on screen in development (never in
 
 Demo accounts after seeding:
 
-| Role | Phone |
+| Role | Email |
 | --- | --- |
-| Admin | 01700-000000 |
-| Lawyer (verified) | +966 55 000 0001 |
-| Worker | 01712-345678 |
+| Admin | admin@huquqi.test |
+| Lawyer (verified) | lawyer@huquqi.test |
+| Worker | worker@huquqi.test |
 
 ## Deploy a demo on Vercel + Neon
 
@@ -63,13 +63,15 @@ Demo accounts after seeding:
    | `SESSION_SECRET` | 32+ random characters |
    | `DEMO_PASSWORD` | a password to share with testers |
    | `DEV_SHOW_OTP` | `1` (codes on screen; only works while `DEMO_PASSWORD` is set) |
-   | `ADMIN_PHONES` | your number in `+880…` or `+966…` form |
+   | `ADMIN_EMAILS` | your email address (comma separated for several admins) |
+   | `RESEND_API_KEY`, `EMAIL_FROM` | optional: a [Resend](https://resend.com) key and a sender on your verified domain, to email the codes |
 
 4. Deploy. The `vercel-build` script creates the tables in Neon before building.
 5. **Storage**: in the Vercel project, Storage → Create → Blob, and connect it to the project. This adds
-   `BLOB_READ_WRITE_TOKEN`; uploaded documents are then stored as private blobs. Redeploy after connecting.
+   `BLOB_READ_WRITE_TOKEN`; the browser then uploads documents straight to private blobs (large files in parts,
+   so 1,000-page PDFs work despite Vercel's 4.5 MB request limit). Redeploy after connecting.
 
-Without `DEMO_PASSWORD`, a production deployment never shows login codes, so it needs an SMS gateway.
+Without `DEMO_PASSWORD`, a production deployment never shows login codes, so it needs `RESEND_API_KEY` and `EMAIL_FROM`.
 
 ## Tests
 
@@ -81,14 +83,14 @@ BASE_URL=http://localhost:3000 NODE_PATH=$(npm root -g) node apps/web/e2e/smoke.
 # (a local production build over http also needs INSECURE_COOKIES=1 on the server)
 ```
 
-The smoke test needs Playwright installed globally. It walks through worker login, case creation,
-document upload, access control (anonymous and other workers get 401/404), a lawyer taking the case
-in Arabic and moving it to the next stage, and the admin page.
+The smoke test needs Playwright installed globally. It walks through the home emblems and case check, email login,
+case creation with the three boxes and two documents (one of 15 MB), access control (anonymous and other
+workers get 401/404), a lawyer taking and closing the case in Arabic, a review, and admin approval.
 
 ## Security notes
 
 - Sessions are signed HTTP-only cookies (`SESSION_SECRET`, 32+ characters).
-- One-time codes are hashed, expire after 10 minutes, allow 5 attempts, and at most 5 codes per hour per number.
+- One-time codes are hashed, expire after 10 minutes, allow 5 attempts, and at most 5 codes per hour per email.
 - A case and its documents are visible only to the worker, the assigned lawyer, admins, and verified
   lawyers while the case is still unassigned. Others get "not found".
 - Uploaded files are stored privately (Vercel Blob or local disk) and only served through an
@@ -99,6 +101,6 @@ in Arabic and moving it to the next stage, and the admin page.
 ## Next steps
 
 1. Review the legal model with a Saudi lawyer (see the plan document).
-2. SMS gateway for codes, bKash/Nagad payments, database and storage hosted in Saudi Arabia.
+2. bKash/Nagad payments, database and storage hosted in Saudi Arabia.
 3. Expo mobile app (Android first) using `packages/core`.
 4. Translation of lawyer updates into the worker's language.

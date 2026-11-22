@@ -18,35 +18,38 @@ export function CaseCheck({ locale }: { locale: Locale }) {
   const [exit, setExit] = useState(monthsAgo(4));
   const [stopped, setStopped] = useState(false);
 
+  const exitDate = exit ? new Date(exit + "T00:00:00Z") : null;
+  const hasLabour = [...issues].some(isLabourType);
+  const labour = useMemo(() => {
+    if (!exitDate || !hasLabour) return null;
+    const r = labourDeadline(exitDate);
+    return r.expired
+      ? { tone: "warn", title: t.check.labourLateTitle, body: t.check.labourLateBody }
+      : {
+          tone: "alert",
+          title: t.check.labourTitle,
+          tag: t.check.daysLeft(localNum(r.daysLeft, locale)),
+          body: t.check.labourBody(formatDate(r.deadline, locale)),
+          meter: Math.max(0.03, r.used),
+        };
+  }, [exit, hasLabour, locale, t]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const results = useMemo(() => {
     const out: { tone: string; title: string; tag?: string; body: string; meter?: number }[] = [];
-    const exitDate = exit ? new Date(exit + "T00:00:00Z") : null;
-    if (exitDate && [...issues].some(isLabourType)) {
-      const r = labourDeadline(exitDate);
-      out.push(
-        r.expired
-          ? { tone: "warn", title: t.check.labourLateTitle, body: t.check.labourLateBody }
-          : {
-              tone: "alert",
-              title: t.check.labourTitle,
-              tag: t.check.daysLeft(localNum(r.daysLeft, locale)),
-              body: t.check.labourBody(formatDate(r.deadline, locale)),
-              meter: Math.max(0.03, r.used),
-            },
-      );
-    }
     if (issues.has("bank")) {
       const s = exitDate ? bankStatus(exitDate) : "frozen";
       out.push({ tone: "ok", title: t.check.bankTitle, tag: t.bankStatus[s], body: t.check.bankBody });
     }
-    if (stopped && [...issues].some(isLabourType)) {
+    if (stopped && hasLabour) {
       out.push({ tone: "warn", title: t.check.insTitle, body: t.check.insBody });
     }
     if (issues.has("court") || issues.has("accident") || issues.has("property")) {
       out.push({ tone: "", title: t.check.otherTitle, body: t.check.otherBody });
     }
+    if (issues.has("translation")) out.push({ tone: "", title: t.check.transTitle, body: t.check.transBody });
+    if (issues.has("hajj")) out.push({ tone: "", title: t.check.hajjTitle, body: t.check.hajjBody });
     return out;
-  }, [issues, exit, stopped, locale, t]);
+  }, [issues, exit, stopped, locale, t, hasLabour]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggle(k: CaseType) {
     setIssues((prev) => {
@@ -84,6 +87,21 @@ export function CaseCheck({ locale }: { locale: Locale }) {
       </label>
       <div className="stack" style={{ gap: 10 }} aria-live="polite">
         {issues.size === 0 && <div className="res"><p>{t.check.empty}</p></div>}
+        {labour && (
+          <details className="more">
+            <summary>{t.labour.more}</summary>
+            <div className={`res ${labour.tone}`} style={{ marginTop: 10 }}>
+              <h3>
+                {labour.title}
+                {labour.tag && <span className="tag num">{labour.tag}</span>}
+              </h3>
+              <p>{labour.body}</p>
+              {labour.meter !== undefined && (
+                <div className="meter" aria-hidden="true"><i style={{ width: `${labour.meter * 100}%` }} /></div>
+              )}
+            </div>
+          </details>
+        )}
         {results.map((r, i) => (
           <div key={i} className={`res ${r.tone}`}>
             <h3>

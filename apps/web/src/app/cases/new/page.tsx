@@ -1,5 +1,6 @@
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
+import { directUploads } from "@/lib/storage";
 import { NewCaseForm } from "./NewCaseForm";
 
 export default async function NewCase() {
@@ -8,7 +9,7 @@ export default async function NewCase() {
   return (
     <div className="wrap stack" style={{ maxWidth: 720 }}>
       <h1 className="page-title">{t.nav.newCase}</h1>
-      <NewCaseForm locale={locale} />
+      <NewCaseForm locale={locale} direct={directUploads()} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import "server-only";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { get, put } from "@vercel/blob";
+import { get, head, put } from "@vercel/blob";
 
 /**
  * Document storage. Uses private Vercel Blob storage when BLOB_READ_WRITE_TOKEN is set
@@ -20,6 +20,18 @@ export async function saveFile(key: string, data: Buffer, contentType: string): 
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, data);
   return key;
+}
+
+export const directUploads = useBlob;
+
+/** Size and type of a blob the browser uploaded directly. */
+export async function blobInfo(pathname: string): Promise<{ size: number; contentType: string } | null> {
+  try {
+    const r = await head(pathname);
+    return { size: r.size, contentType: r.contentType };
+  } catch {
+    return null;
+  }
 }
 
 export async function loadFile(storageKey: string): Promise<BodyInit | null> {

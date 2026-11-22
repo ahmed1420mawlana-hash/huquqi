@@ -7,6 +7,8 @@ export const CASE_TYPES = [
   "court", // an existing court case
   "accident", // traffic accident / injury compensation
   "property", // car or property registered in the worker's name
+  "translation", // certified translation of documents
+  "hajj", // Hajj and Umrah visas
 ] as const;
 export type CaseType = (typeof CASE_TYPES)[number];
 
@@ -42,6 +44,8 @@ export const CHANNEL: Record<CaseType, string> = {
   court: "Najiz",
   accident: "Najm / Najiz",
   property: "Absher / Najiz",
+  translation: "Certified translation office",
+  hajj: "Nusuk",
 };
 
 export function stageIndex(s: Stage): number {

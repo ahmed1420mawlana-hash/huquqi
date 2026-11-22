@@ -11,7 +11,8 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  phone     String   @unique // E.164
+  email     String?  @unique // login identifier (lower-case)
+  phone     String?  @unique // optional, E.164
   name      String?
   role      String   @default("WORKER") // WORKER | LAWYER | ADMIN
   locale    String   @default("bn")
@@ -22,6 +23,8 @@ model User {
   assigned      Case[]         @relation("LawyerCases")
   updates       CaseUpdate[]
   documents     Document[]
+  reviewsGiven  Review[]       @relation("ReviewAuthor")
+  reviewsGot    Review[]       @relation("ReviewLawyer")
 }
 
 model LawyerProfile {
@@ -35,25 +38,27 @@ model LawyerProfile {
 
 model OtpCode {
   id        String   @id @default(cuid())
-  phone     String
+  email     String?
+  phone     String?  // legacy: phone codes from the first version
   codeHash  String
   expiresAt DateTime
   attempts  Int      @default(0)
   usedAt    DateTime?
   createdAt DateTime @default(now())
 
-  @@index([phone])
+  @@index([email])
 }
 
 model Case {
   id          String    @id @default(cuid())
   ref         String    @unique // short human reference, e.g. HQ-7K2P9
-  type        String    // salary | eosb | bank | court | accident | property
+  type        String    // salary | eosb | bank | court | accident | property | translation | hajj
   stage       String    @default("submitted")
   employer    String?
   bankName    String?
   exitDate    DateTime?
-  description String
+  description String    // the facts, in brief
+  requests    String?   // what the worker asks for now
   workerId    String
   worker      User      @relation("WorkerCases", fields: [workerId], references: [id])
   lawyerId    String?
@@ -63,6 +68,7 @@ model Case {
 
   updates   CaseUpdate[]
   documents Document[]
+  review    Review?
 
   @@index([workerId])
   @@index([lawyerId])
@@ -89,9 +95,26 @@ model Document {
   uploader   User     @relation(fields: [uploaderId], references: [id])
   filename   String
   mime       String
-  size       Int
-  storageKey String   // path inside UPLOAD_DIR (swap for S3-compatible storage in production)
+  size       Int      // bytes; Int holds up to 2 GB
+  storageKey String   // "blob:<pathname>" for Vercel Blob, otherwise a path inside UPLOAD_DIR
   createdAt  DateTime @default(now())
 
   @@index([caseId])
+}
+
+/// A worker's rating of the lawyer on one case. Shown publicly only after an admin approves it.
+model Review {
+  id         String    @id @default(cuid())
+  caseId     String    @unique
+  case       Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User      @relation("ReviewAuthor", fields: [authorId], references: [id])
+  lawyerId   String
+  lawyer     User      @relation("ReviewLawyer", fields: [lawyerId], references: [id])
+  rating     Int       // 1..5
+  comment    String?
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([approvedAt])
 }

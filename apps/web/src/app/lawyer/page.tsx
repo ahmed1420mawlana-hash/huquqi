@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { formatDate, type CaseType, type Stage } from "@huquqi/core";
+import { formatDate, type CaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { isVerifiedLawyer } from "@/lib/access";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
+import { who } from "@/lib/who";
 import { saveLawyerProfile } from "./actions";
 
-type Row = { id: string; ref: string; type: string; stage: string; createdAt: Date; worker: { name: string | null; phone: string } };
+type Row = { id: string; ref: string; type: string; stage: string; createdAt: Date; worker: { name: string | null; email: string | null; phone: string | null } };
 
 function CaseList({ rows, t, locale, empty }: { rows: Row[]; t: Awaited<ReturnType<typeof getT>>["t"]; locale: Awaited<ReturnType<typeof getT>>["locale"]; empty: string }) {
   if (!rows.length) return <p className="muted" style={{ margin: 0 }}>{empty}</p>;
@@ -17,9 +18,9 @@ function CaseList({ rows, t, locale, empty }: { rows: Row[]; t: Awaited<ReturnTy
           <Link href={`/cases/${c.id}`} className="item">
             <span>
               <b>{t.caseType[c.type as CaseType]}</b>
-              <span className="muted num" style={{ fontSize: 14 }}>{c.ref} · {c.worker.name ?? c.worker.phone} · {formatDate(c.createdAt, locale)}</span>
+              <span className="muted num" style={{ fontSize: 14 }}>{c.ref} · {who(c.worker)} · {formatDate(c.createdAt, locale)}</span>
             </span>
-            <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{t.stage[c.stage as Stage]}</span>
+            <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span>
           </Link>
         </li>
       ))}
@@ -31,7 +32,7 @@ export default async function LawyerPanel() {
   const user = await requireUser(["LAWYER", "ADMIN"]);
   const { locale, t } = await getT();
   const verified = isVerifiedLawyer(user);
-  const include = { worker: { select: { name: true, phone: true } } };
+  const include = { worker: { select: { name: true, email: true, phone: true } } };
   const [mine, open] = await Promise.all([
     db.case.findMany({ where: { lawyerId: user.id }, include, orderBy: { updatedAt: "desc" } }),
     verified || user.role === "ADMIN"

@@ -1,43 +1,39 @@
-import { CHANNEL, STAGES, formatDate, isLabourType, labourDeadline, localNum, nextStages, stageIndex, type CaseType, type Stage } from "@huquqi/core";
+import { CHANNEL, formatDate, isLabourType, labourDeadline, localNum, type CaseType } from "@huquqi/core";
 import { canWorkOn, isVerifiedLawyer, loadCaseFor } from "@/lib/access";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
+import { who } from "@/lib/who";
+import { Stars } from "@/components/Stars";
+import { directUploads } from "@/lib/storage";
 import { takeCase } from "../actions";
-import { MessageForm, UploadForm } from "./CaseForms";
+import { MessageForm, ReviewForm, UploadForm } from "./CaseForms";
 
 export default async function CasePage({
   params, searchParams,
-}: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
+}: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; upload?: string }> }) {
   const { id } = await params;
-  const { created } = await searchParams;
+  const { created, upload } = await searchParams;
   const user = await requireUser();
   const { locale, t } = await getT();
   const c = await loadCaseFor(user, id);
   const type = c.type as CaseType;
-  const stage = c.stage as Stage;
+  const closed = c.stage === "closed";
   const isOwner = c.workerId === user.id;
   const worker = canWorkOn(user, c);
   const canTake = !c.lawyerId && isVerifiedLawyer(user);
-  const deadline = c.exitDate && isLabourType(type) && stageIndex(stage) < stageIndex("filed") ? labourDeadline(c.exitDate) : null;
-  const shown = STAGES.filter((s) => s !== "closed");
+  const deadline = c.exitDate && isLabourType(type) ? labourDeadline(c.exitDate) : null;
 
   return (
     <div className="wrap stack">
       {created && <p className="okmsg" style={{ margin: 0 }}>{t.cases.created}</p>}
-      <div>
-        <h1 className="page-title">{t.caseType[type]}</h1>
-        <p className="muted num" style={{ margin: 0 }}>{c.ref} · {formatDate(c.createdAt, locale)}</p>
-      </div>
-
-      {deadline && (
-        <div className={`res ${deadline.expired ? "warn" : "alert"}`}>
-          <h3>
-            {t.cases.deadline}: {formatDate(deadline.deadline, locale)}
-            <span className="tag num">{deadline.expired ? t.check.labourLateTitle : t.check.daysLeft(localNum(deadline.daysLeft, locale))}</span>
-          </h3>
-          {!deadline.expired && <div className="meter" aria-hidden="true"><i style={{ width: `${Math.max(3, deadline.used * 100)}%` }} /></div>}
+      {upload === "failed" && <p className="err" role="alert" style={{ margin: 0 }}>{t.cases.uploadFailed}</p>}
+      <div className="inline" style={{ justifyContent: "space-between" }}>
+        <div>
+          <h1 className="page-title">{t.caseType[type]}</h1>
+          <p className="muted num" style={{ margin: 0 }}>{c.ref} · {formatDate(c.createdAt, locale)}</p>
         </div>
-      )}
+        <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
+      </div>
 
       <div className="cols">
         <div className="stack">
@@ -47,8 +43,8 @@ export default async function CasePage({
             {c.updates.map((u) => (
               <div key={u.id} className={`update ${u.authorId !== c.workerId ? "lawyer" : ""}`}>
                 <small>
-                  {u.author.name ?? u.author.phone} · {formatDate(u.createdAt, locale)}
-                  {u.stage && <> · <b>{t.stage[u.stage as Stage]}</b></>}
+                  {who(u.author)} · {formatDate(u.createdAt, locale)}
+                  {u.stage === "closed" && <> · <b>{t.status.closed}</b></>}
                 </small>
                 {u.body && <p>{u.body}</p>}
               </div>
@@ -57,7 +53,7 @@ export default async function CasePage({
               <MessageForm
                 caseId={c.id}
                 locale={locale}
-                stages={worker ? nextStages(stage) : []}
+                canClose={worker && !closed}
                 label={worker ? t.lawyer.update : t.cases.message}
                 hint={worker ? t.lawyer.updateHint : undefined}
               />
@@ -67,6 +63,12 @@ export default async function CasePage({
           <section className="card stack">
             <h2>{t.cases.description}</h2>
             <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{c.description}</p>
+            {c.requests && (
+              <>
+                <h2>{t.cases.requests}</h2>
+                <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{c.requests}</p>
+              </>
+            )}
           </section>
         </div>
 
@@ -76,33 +78,45 @@ export default async function CasePage({
               <button className="btn" style={{ width: "100%" }}>{t.lawyer.take}</button>
             </form>
           )}
-          <section className="card stack">
-            <h2>{t.cases.timeline}</h2>
-            <ol className="track">
-              {shown.map((s, i) => {
-                const cur = stageIndex(stage);
-                const cls = stage === "closed" || i < cur ? "done" : i === cur ? "now" : "";
-                return (
-                  <li key={s} className={cls}>
-                    <span className="dot">{cls === "done" ? "✓" : localNum(i + 1, locale)}</span>
-                    <span>{t.stage[s]}</span>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
 
-          <section className="card">
+          <section className="card stack">
             <dl className="kv">
               <dt>{t.cases.lawyer}</dt>
-              <dd>{c.lawyer ? `${c.lawyer.name ?? c.lawyer.phone}${c.lawyer.lawyerProfile?.firm ? ` · ${c.lawyer.lawyerProfile.firm}` : ""}` : t.cases.noLawyer}</dd>
+              <dd>{c.lawyer ? `${who(c.lawyer)}${c.lawyer.lawyerProfile?.firm ? ` · ${c.lawyer.lawyerProfile.firm}` : ""}` : t.cases.noLawyer}</dd>
               <dt>{t.cases.channel}</dt><dd dir="ltr" style={{ textAlign: "start" }}>{CHANNEL[type]}</dd>
               {c.employer && <><dt>{t.cases.employer}</dt><dd>{c.employer}</dd></>}
               {c.bankName && <><dt>{t.cases.bank}</dt><dd>{c.bankName}</dd></>}
               {c.exitDate && <><dt>{t.cases.exitDate}</dt><dd>{formatDate(c.exitDate, locale)}</dd></>}
-              {!isOwner && <><dt>{t.admin.phone}</dt><dd dir="ltr" style={{ textAlign: "start" }}>{c.worker.phone}</dd></>}
+              {!isOwner && <><dt>{t.admin.email}</dt><dd dir="ltr" style={{ textAlign: "start" }}>{c.worker.email ?? c.worker.phone}</dd></>}
             </dl>
+            {deadline && (
+              <details className="more">
+                <summary>{t.labour.more}</summary>
+                <div className={`res ${deadline.expired ? "warn" : "alert"}`} style={{ marginTop: 10 }}>
+                  <h3>
+                    {t.cases.deadline}: {formatDate(deadline.deadline, locale)}
+                    <span className="tag num">{deadline.expired ? t.check.labourLateTitle : t.check.daysLeft(localNum(deadline.daysLeft, locale))}</span>
+                  </h3>
+                  <p>{deadline.expired ? t.check.labourLateBody : t.check.labourBody(formatDate(deadline.deadline, locale))}</p>
+                </div>
+              </details>
+            )}
           </section>
+
+          {isOwner && c.lawyerId && (
+            <section className="card stack">
+              <h2>{c.review ? t.reviews.yours : t.reviews.write}</h2>
+              {c.review && !c.review.approvedAt && <p className="hint" style={{ margin: 0 }}>{t.reviews.pending}</p>}
+              <ReviewForm caseId={c.id} locale={locale} initial={c.review ?? undefined} />
+            </section>
+          )}
+          {!isOwner && c.review && (
+            <section className="card stack">
+              <h2>{t.reviews.title}</h2>
+              <Stars value={c.review.rating} label={t.reviews.stars(c.review.rating)} />
+              {c.review.comment && <p style={{ margin: 0 }}>{c.review.comment}</p>}
+            </section>
+          )}
 
           <section className="card stack">
             <h2>{t.cases.documents}</h2>
@@ -114,13 +128,13 @@ export default async function CasePage({
                   <li key={d.id}>
                     <a className="item" href={`/api/documents/${d.id}`} target="_blank" rel="noopener">
                       <span>{d.filename}</span>
-                      <span className="muted num" style={{ fontSize: 13 }}>{Math.ceil(d.size / 1024)} KB</span>
+                      <span className="muted num" style={{ fontSize: 13 }}>{d.size >= 1048576 ? `${(d.size / 1048576).toFixed(1)} MB` : `${Math.ceil(d.size / 1024)} KB`}</span>
                     </a>
                   </li>
                 ))}
               </ul>
             )}
-            {(isOwner || worker) && <UploadForm caseId={c.id} locale={locale} />}
+            {(isOwner || worker) && <UploadForm caseId={c.id} locale={locale} direct={directUploads()} />}
           </section>
         </div>
       </div>
