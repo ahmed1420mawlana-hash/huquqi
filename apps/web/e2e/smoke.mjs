@@ -47,6 +47,7 @@ try {
   await w.goto(BASE + "/");
   ok((await w.locator("html").getAttribute("lang")) === "bn", "default language is Bengali");
   ok(await w.locator(".marks li").count() === 3, "home shows scales, gavel and flag");
+  ok(await w.locator("section.gallery").count() === 1, "photos and videos section on the home page");
   ok(await w.locator(".hero details.more, .hero .res").count() === 0, "no labour details on the home page itself");
   ok(await w.locator(".starter-head").count() === 11, "eleven options, salary and end of service merged");
   for (const k of ["poa", "invest"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 1, `${k} option`);
@@ -209,10 +210,12 @@ try {
   const vid = path.join(tmpdir(), "hq-clip.webm");
   writeFileSync(vid, Buffer.alloc(4096, 1));
   const cap = `Gallery test ${Date.now()}`;
+  await a.goto(BASE + "/");
+  ok(await seen(a, "section.gallery #media-file"), "admin can upload right on the home page");
   await a.setInputFiles("#media-file", [png, vid]);
   await a.fill("#media-caption", cap);
   await a.click("form:has(#media-file) button");
-  await a.waitForFunction((c) => [...document.querySelectorAll(".gallery-grid.admin p")].filter((p) => p.textContent === c).length === 2, cap);
+  await a.waitForFunction((c) => [...document.querySelectorAll(".gallery-grid p")].filter((p) => p.textContent === c).length === 2, cap);
   ok(true, "admin uploaded a photo and a video");
   const anonHome = await (await newPage()).newPage();
   await anonHome.goto(BASE + "/");
@@ -221,6 +224,7 @@ try {
   const vsrc = await anonHome.locator(".gallery video").first().getAttribute("src");
   const part = await anonHome.request.get(BASE + vsrc, { headers: { Range: "bytes=0-99" } });
   ok(part.status() === 206 && (await part.body()).length === 100, "video supports seeking (range requests)");
+  await a.goto(BASE + "/admin");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");
   await a.waitForLoadState("networkidle");
   await a.click(`tr:has-text("${reviewText}") button >> nth=0`);

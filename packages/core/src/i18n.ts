@@ -65,7 +65,7 @@ type Msgs = {
     how: string; howSteps: { title: string; body: string }[]; faq: string; faqItems: { q: string; a: string }[];
     privacy: string; privacyBody: string[]; joinLawyer: string; joinLawyerBody: string[]; joinLawyerCta: string;
   };
-  gallery: { title: string; lead: string; add: string; caption: string; file: string; hint: string; upload: string; remove: string; done: string; failed: string };
+  gallery: { title: string; lead: string; empty: string; add: string; caption: string; file: string; hint: string; upload: string; remove: string; done: string; failed: string };
   marks: { scales: string; gavel: string; flag: string };
   labour: { more: string };
   status: { open: string; closed: string; close: string };
@@ -161,7 +161,7 @@ const bn: Msgs = {
     joinLawyerBody: ["আপনি যদি সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল হন, বিদেশি কর্মীদের মামলায় আমাদের সঙ্গে কাজ করুন।", "লাইসেন্স যাচাইয়ের পর আপনি নতুন মামলা নিতে পারবেন।"],
     joinLawyerCta: "আবেদন করতে যোগাযোগ করুন",
   },
-  gallery: { title: "ছবি ও ভিডিও", lead: "আমাদের কাজ ও খবর।", add: "ছবি বা ভিডিও যোগ করুন", caption: "ক্যাপশন (ঐচ্ছিক)", file: "ফাইল", hint: "ছবি (JPG, PNG, WEBP) বা ভিডিও (MP4, WEBM), ভিডিও ৫০০ MB পর্যন্ত।", upload: "আপলোড", remove: "সরান", done: "যোগ হয়েছে।", failed: "আপলোড হয়নি।" },
+  gallery: { title: "ছবি ও ভিডিও", lead: "আমাদের কাজ ও খবর।", empty: "শিগগিরই ছবি ও ভিডিও আসছে।", add: "ছবি বা ভিডিও যোগ করুন", caption: "ক্যাপশন (ঐচ্ছিক)", file: "ফাইল", hint: "ছবি (JPG, PNG, WEBP) বা ভিডিও (MP4, WEBM), ভিডিও ৫০০ MB পর্যন্ত।", upload: "আপলোড", remove: "সরান", done: "যোগ হয়েছে।", failed: "আপলোড হয়নি।" },
   marks: { scales: "ন্যায়ের দাঁড়িপাল্লা", gavel: "বিচারকের হাতুড়ি", flag: "বাংলাদেশের পতাকা" },
   labour: { more: "শ্রম মামলার সময়সীমা ও বিস্তারিত" },
   status: { open: "চলমান", closed: "বন্ধ", close: "মামলা বন্ধ করুন" },
@@ -258,7 +258,7 @@ const ar: Msgs = {
     joinLawyerBody: ["إذا كنت محامياً سعودياً مرخّصاً، انضم إلينا لمتابعة قضايا العمالة الوافدة.", "بعد التحقق من الترخيص تقدر تستلم القضايا الجديدة."],
     joinLawyerCta: "تواصل معنا للتقديم",
   },
-  gallery: { title: "الصور والفيديوهات", lead: "من أعمالنا وأخبارنا.", add: "إضافة صور أو فيديو", caption: "وصف (اختياري)", file: "الملف", hint: "صور (JPG أو PNG أو WEBP) أو فيديو (MP4 أو WEBM) حتى 500 ميجابايت.", upload: "رفع", remove: "حذف", done: "تمت الإضافة.", failed: "تعذّر الرفع." },
+  gallery: { title: "الصور والفيديوهات", lead: "من أعمالنا وأخبارنا.", empty: "قريباً نضيف الصور والفيديوهات.", add: "إضافة صور أو فيديو", caption: "وصف (اختياري)", file: "الملف", hint: "صور (JPG أو PNG أو WEBP) أو فيديو (MP4 أو WEBM) حتى 500 ميجابايت.", upload: "رفع", remove: "حذف", done: "تمت الإضافة.", failed: "تعذّر الرفع." },
   marks: { scales: "ميزان العدالة", gavel: "مطرقة القاضي", flag: "علم بنغلاديش" },
   labour: { more: "مهلة القضية العمالية وتفاصيلها" },
   status: { open: "قائمة", closed: "مغلقة", close: "إغلاق القضية" },
@@ -355,7 +355,7 @@ const en: Msgs = {
     joinLawyerBody: ["If you are a licensed Saudi lawyer, work with us on cases for migrant workers.", "Once your licence is verified you can take new cases."],
     joinLawyerCta: "Contact us to apply",
   },
-  gallery: { title: "Photos & videos", lead: "Our work and news.", add: "Add photos or a video", caption: "Caption (optional)", file: "File", hint: "Images (JPG, PNG, WEBP) or video (MP4, WEBM), up to 500 MB.", upload: "Upload", remove: "Remove", done: "Added.", failed: "Upload failed." },
+  gallery: { title: "Photos & videos", lead: "Our work and news.", empty: "Photos and videos are coming soon.", add: "Add photos or a video", caption: "Caption (optional)", file: "File", hint: "Images (JPG, PNG, WEBP) or video (MP4, WEBM), up to 500 MB.", upload: "Upload", remove: "Remove", done: "Added.", failed: "Upload failed." },
   marks: { scales: "Scales of justice", gavel: "Judge's gavel", flag: "Flag of Bangladesh" },
   labour: { more: "Labour claim deadline and details" },
   status: { open: "Open", closed: "Closed", close: "Close case" },

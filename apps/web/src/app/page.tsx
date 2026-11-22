@@ -34,7 +34,7 @@ export default async function Home() {
         </div>
       </div>
       <Reviews t={t} locale={locale} />
-      <Gallery t={t} />
+      <Gallery t={t} locale={locale} admin={user?.role === "ADMIN"} />
     </>
   );
 }
