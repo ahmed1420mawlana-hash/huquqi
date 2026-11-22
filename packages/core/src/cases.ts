@@ -7,6 +7,7 @@ export const CASE_TYPES = [
   "court", // an existing court case
   "commercial", // commercial disputes: debts, contracts, a business or partnership
   "invest", // investing in Saudi Arabia and Premium Residency
+  "realestate", // owning property and a home in Saudi Arabia
   "poa", // issuing a power of attorney
   "translation", // certified translation and attestation of documents
   "hajj", // Hajj and Umrah visas
@@ -56,6 +57,7 @@ export const CHANNEL: Record<CaseType, string> = {
   commercial: "Commercial Court (Najiz)",
   poa: "Saudi Embassy (Dhaka) / Najiz",
   invest: "MISA / Premium Residency Center",
+  realestate: "Real Estate General Authority / Real Estate Registry",
   general: "Najiz",
 };
 

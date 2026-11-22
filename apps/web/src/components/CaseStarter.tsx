@@ -165,6 +165,20 @@ function TypeInfo({ type, exit, locale }: { type: CaseType; exit: string; locale
       </details>
     );
   }
+  if (type === "realestate") {
+    return (
+      <div className="res realestate">
+        <h3>{t.check.reTitle}</h3>
+        <p>{t.check.reLead}</p>
+        <dl className="rules">
+          {t.check.reRules.map((r) => (
+            <div key={r.h}><dt>{r.h}</dt><dd>{r.p}</dd></div>
+          ))}
+        </dl>
+        <p className="muted" style={{ fontSize: 13 }}>{t.check.reNote}</p>
+      </div>
+    );
+  }
   const info =
     type === "bank" ? { title: t.check.bankTitle, body: t.check.bankBody, tag: t.bankStatus[exitDate ? bankStatus(exitDate) : "frozen"] }
     : type === "translation" ? { title: t.check.transTitle, body: t.check.transBody }

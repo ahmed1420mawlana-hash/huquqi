@@ -51,7 +51,11 @@ try {
   ok(await w.locator(".marks li").count() === 3, "home shows scales, gavel and flag");
   ok(await w.locator("section.gallery").count() === 1, "photos and videos section on the home page");
   ok(await w.locator(".hero details.more, .hero .res").count() === 0, "no labour details on the home page itself");
-  ok(await w.locator(".starter-head").count() === 9, "nine options, salary and end of service merged");
+  ok(await w.locator(".starter-head").count() === 10, "ten options, salary and end of service merged, property ownership added");
+  await w.click('.starter-head[data-type="realestate"]');
+  ok(await w.locator("#case-realestate .res.realestate .rules > div").count() === 6, "property option shows ownership rules before the boxes");
+  ok(await w.locator("#case-realestate textarea, #case-realestate input[type=file]").count() === 3, "property option has the three boxes");
+  await w.click('.starter-head[data-type="realestate"]');
   for (const k of ["accident", "property"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 0, `no ${k} option`);
   ok(await w.locator('.starter-head[data-type="translation"]').textContent().then((x) => x.includes("সত্যায়ন")), "translation option includes attestation");
   for (const k of ["poa", "invest"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 1, `${k} option`);

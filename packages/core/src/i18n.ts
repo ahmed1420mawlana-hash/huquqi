@@ -32,7 +32,7 @@ type Msgs = {
     labourTitle: string; daysLeft: (n: string) => string; labourBody: (date: string) => string;
     labourLateTitle: string; labourLateBody: string;
     bankTitle: string; bankBody: string; insTitle: string; insBody: string;
-    otherTitle: string; otherBody: string; transTitle: string; transBody: string; hajjTitle: string; hajjBody: string; comTitle: string; comBody: string; poaTitle: string; poaBody: string; invTitle: string; invBody: string; genTitle: string; genBody: string; disclaimer: string;
+    otherTitle: string; otherBody: string; transTitle: string; transBody: string; hajjTitle: string; hajjBody: string; comTitle: string; comBody: string; poaTitle: string; poaBody: string; invTitle: string; invBody: string; reTitle: string; reLead: string; reRules: { h: string; p: string }[]; reNote: string; genTitle: string; genBody: string; disclaimer: string;
   };
   bankStatus: Record<BankStatus, string>;
   caseType: Record<CaseType, string>;
@@ -104,7 +104,7 @@ const bn: Msgs = {
   home: {
     eyebrow: "সৌদিতে থাকা ও সৌদি থেকে ফেরা প্রবাসীদের জন্য",
     title: "সৌদিতে আপনার মামলা ও টাকা, যেখানেই থাকুন দেখুন",
-    lead: "সাধারণ, আদালতের ও ব্যবসায়িক মামলা, বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি, ওকালা তৈরি, কাগজপত্র অনুবাদ ও সত্যায়ন, হজ ও উমরাহ ভিসা, বেতন ও খিদমার শ্রম মামলা, আর ব্যাংকের টাকা। সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল আপনার হয়ে কাজ করবেন, আর আপনি বাংলায় প্রতিটি ধাপ দেখবেন।",
+    lead: "সাধারণ, আদালতের ও ব্যবসায়িক মামলা, বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি, জমি ও বাড়ির মালিকানা, ওকালা তৈরি, কাগজপত্র অনুবাদ ও সত্যায়ন, হজ ও উমরাহ ভিসা, বেতন ও খিদমার শ্রম মামলা, আর ব্যাংকের টাকা। লাইসেন্সপ্রাপ্ত উকিল, আইন পরামর্শক ও অভিজ্ঞ বিশেষজ্ঞরা আপনার হয়ে কাজ করবেন, আর আপনি বাংলায় প্রতিটি ধাপ দেখবেন।",
     cta: "মামলা শুরু করুন",
     checkTitle: "বিনামূল্যে আপনার অবস্থা যাচাই করুন",
     checkLead: "৩টি প্রশ্নের উত্তর দিন। আমরা জানাব কোন অধিকার এখনো আদায় করা যায় এবং কত সময় বাকি।", pick: "কোন বিষয়ে সাহায্য চান?", pickLead: "একটি বিষয় বেছে নিন, তারপর তিনটি ঘর পূরণ করুন: ঘটনা, দাবি ও কাগজপত্র।" },
@@ -121,12 +121,22 @@ const bn: Msgs = {
     hajjTitle: "হজ ও উমরাহ ভিসা", hajjBody: "নুসুক (Nusuk) ও লাইসেন্সপ্রাপ্ত এজেন্টের মাধ্যমে আবেদন, আর আগের ইকামা থেকে কোনো প্রবেশ নিষেধাজ্ঞা আছে কিনা তা যাচাই।",
     comTitle: "ব্যবসায়িক মামলা", comBody: "পাওনা টাকা, চুক্তি, ব্যবসা বা অংশীদারিত্বের বিরোধ। সৌদি উকিল বাণিজ্যিক আদালতে (নাজিজ) ওকালার মাধ্যমে কাজ করবেন।",
     poaTitle: "ওকালা তৈরি", poaBody: "সৌদিতে উকিল বা আত্মীয়কে আপনার হয়ে কাজ করার ক্ষমতা দিতে ওকালা লাগে। ঢাকার সৌদি দূতাবাসের মাধ্যমে, অথবা স্থানীয় ওকালা সত্যায়ন করে, আমরা ধাপে ধাপে সাহায্য করি।",
+    reTitle: "বিদেশিদের সম্পত্তি মালিকানার নিয়ম", reLead: "জানুয়ারি ২০২৬ থেকে কার্যকর অ-সৌদিদের সম্পত্তি মালিকানা আইন ও তার বিধিমালার সারসংক্ষেপ:",
+    reRules: [
+      { h: "সাধারণ ইকামাধারী", p: "বৈধ ইকামাধারী নিজের থাকার জন্য একটি বাড়ি কিনতে পারেন। মন্ত্রিসভা নির্ধারিত ও রিয়েল এস্টেট কর্তৃপক্ষ ঘোষিত এলাকাতেও কিনতে পারেন, রিয়েল এস্টেট রেজিস্ট্রিতে নিবন্ধনসহ।" },
+      { h: "প্রিমিয়াম রেসিডেন্সিধারী", p: "আবাসিক, বাণিজ্যিক ও শিল্প সম্পত্তির মালিক হতে পারেন, মক্কা, মদিনা ও সীমান্ত এলাকা ছাড়া। ওই দুই শহরে নির্দিষ্ট মেয়াদে ব্যবহারের অধিকার পান।" },
+      { h: "সৌদিতে না থাকা বিদেশি", p: "শুধু অনুমোদিত এলাকায় কিনতে পারেন, আবশিরে ডিজিটাল পরিচয় চালু করার পর।" },
+      { h: "মক্কা ও মদিনা", p: "শুধু মুসলিমরা, নির্দিষ্ট এলাকায় ও বিশেষ শর্তে মালিক হতে পারেন।" },
+      { h: "ব্যতিক্রম", p: "পারস্পরিকতার শর্তে দূতাবাস ও আন্তর্জাতিক সংস্থা, বিদেশি অংশীদারসহ কোম্পানি ও ফান্ড, এবং বিশেষ শর্তে অলাভজনক সংস্থা। উপসাগরীয় দেশের নাগরিকদের আলাদা আইন আছে।" },
+      { h: "ফি ও শাস্তি", p: "অ-সৌদির সম্পত্তি লেনদেনে মূল্যের সর্বোচ্চ ৫% ফি, সঙ্গে রিয়েল এস্টেট লেনদেন কর। নিয়ম ভাঙলে ১ কোটি রিয়াল পর্যন্ত জরিমানা, আর ভুল তথ্যে কেনা সম্পত্তি নিলামে বিক্রি হতে পারে।" },
+    ],
+    reNote: "এটি নির্দেশনার জন্য সারসংক্ষেপ। এলাকা ও বিস্তারিত রিয়েল এস্টেট কর্তৃপক্ষ প্রকাশ ও হালনাগাদ করে। কেনার আগে উকিল আপনার অবস্থা যাচাই করবেন।",
     invTitle: "বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি", invBody: "সৌদিতে ব্যবসা শুরু, বিনিয়োগ লাইসেন্স (MISA) এবং প্রিমিয়াম রেসিডেন্সির শর্ত ও আবেদন নিয়ে উকিলের পরামর্শ।",
     genTitle: "অন্যান্য বিষয়", genBody: "উপরের কোনোটির সঙ্গে না মিললে এখানে লিখুন। একজন উকিল দেখে জানাবেন কী করা যায়।",
     disclaimer: "এটি একটি প্রাথমিক নির্দেশিকা, আইনি পরামর্শ নয়। চূড়ান্ত মূল্যায়ন করবেন সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল।",
   },
   bankStatus: { active: "এখনো চালু থাকতে পারে", frozen: "সম্ভবত ফ্রিজ", holding: "টাকা আলাদা অ্যাকাউন্টে", unclaimed: "দাবিহীন, কিন্তু টাকা আপনারই" },
-  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ ও সত্যায়ন", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "সাধারণ মামলা", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি" },
+  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ ও সত্যায়ন", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "সাধারণ মামলা", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি", realestate: "জমি ও বাড়ির মালিকানা" },
   stage: { submitted: "জমা হয়েছে", review: "উকিল দেখছেন", poa: "ওকালা প্রস্তুত", filed: "আবেদন জমা", hearing: "বৈঠক / শুনানি", judgment: "রায় / উত্তর", payout: "টাকা পাঠানো", closed: "বন্ধ" },
   auth: {
     title: "ইমেইল দিয়ে লগইন", email: "ইমেইল", emailHint: "আমরা আপনার ইমেইলে একটি ৬ সংখ্যার কোড পাঠাব।", send: "কোড পাঠান",
@@ -226,7 +236,7 @@ const ar: Msgs = {
   home: {
     eyebrow: "للعمالة الوافدة في السعودية والعائدة منها",
     title: "قضاياك وأموالك في السعودية، تتابعها أينما كنت",
-    lead: "القضايا العامة والقضايا القائمة في المحاكم والقضايا التجارية، والاستثمار والإقامة المميزة، وإصدار الوكالات، وترجمة المستندات ومصادقتها، وتأشيرات الحج والعمرة، والقضايا العمالية من رواتب ومكافأة نهاية خدمة، والرصيد البنكي. محامٍ سعودي مرخّص يعمل نيابةً عنك، وأنت تتابع كل خطوة بلغتك.",
+    lead: "القضايا العامة والقضايا القائمة في المحاكم والقضايا التجارية، والاستثمار والإقامة المميزة، وتملك العقارات والمنازل، وإصدار الوكالات، وترجمة المستندات ومصادقتها، وتأشيرات الحج والعمرة، والقضايا العمالية من رواتب ومكافأة نهاية خدمة، والرصيد البنكي. مع محامين مرخّصين ومستشارين قانونيين وأصحاب خبرة يعملون نيابةً عنك، وأنت تتابع كل خطوة بلغتك.",
     cta: "ابدأ قضيتك",
     checkTitle: "افحص حالتك مجاناً",
     checkLead: "أجب عن 3 أسئلة، ونخبرك بما يمكن استرداده وكم بقي من الوقت.", pick: "بماذا نساعدك؟", pickLead: "اختر نوع القضية، ثم عبّئ الخانات الثلاث: الوقائع، والطلبات، والمستندات." },
@@ -243,12 +253,22 @@ const ar: Msgs = {
     hajjTitle: "تأشيرات الحج والعمرة", hajjBody: "التقديم عبر منصة نُسُك والوكلاء المرخصين، والتحقق من عدم وجود منع دخول بسبب إقامتك السابقة.",
     comTitle: "القضايا التجارية", comBody: "المطالبات المالية والعقود وخلافات الشراكة والأعمال، يتابعها محامٍ سعودي بالوكالة أمام المحكمة التجارية عبر ناجز.",
     poaTitle: "إصدار الوكالات", poaBody: "لتوكيل محامٍ أو قريب في السعودية ليتابع عنك. نساعدك خطوة بخطوة: عبر السفارة السعودية في دكا، أو توثيق وكالة محلية وتصديقها.",
+    reTitle: "ضوابط تملك غير السعوديين للعقار", reLead: "ملخص النظام المحدث لتملك غير السعوديين للعقار، النافذ من يناير 2026، ولائحته التنفيذية:",
+    reRules: [
+      { h: "المقيم إقامة عادية", p: "يحق للمقيم إقامة نظامية تملك عقار لسكنه الخاص، ويتملك كذلك في النطاقات الجغرافية التي يحددها مجلس الوزراء وتعلنها الهيئة العامة للعقار، مع التسجيل في السجل العقاري." },
+      { h: "حامل الإقامة المميزة", p: "يتملك العقار السكني والتجاري والصناعي وفق نظام الإقامة المميزة، عدا مكة المكرمة والمدينة المنورة والمناطق الحدودية، وله فيهما حق الانتفاع لمدة محددة بحسب الأنظمة." },
+      { h: "غير المقيم", p: "يتملك داخل النطاقات المعتمدة فقط، بعد تفعيل هويته الرقمية في أبشر." },
+      { h: "مكة المكرمة والمدينة المنورة", p: "التملك فيهما للمسلمين فقط، داخل النطاقات المحددة وبضوابط خاصة." },
+      { h: "الاستثناءات", p: "البعثات الدبلوماسية والمنظمات الدولية بشرط المعاملة بالمثل وموافقة وزارة الخارجية، والشركات والصناديق التي فيها شريك غير سعودي، والجهات غير الربحية بضوابط خاصة. ولمواطني دول الخليج نظام تملك مستقل." },
+      { h: "الرسوم والعقوبات", p: "رسم على التصرف العقاري لغير السعودي لا يزيد على 5% من قيمته، إضافة إلى ضريبة التصرفات العقارية. والمخالفة غرامتها حتى 10 ملايين ريال، وقد يُباع العقار بالمزاد إذا تم تملكه بمعلومات مضللة." },
+    ],
+    reNote: "هذا ملخص للإرشاد، والنطاقات والتفاصيل تصدر وتتحدث من الهيئة العامة للعقار. يتحقق المحامي من وضعك قبل أي شراء.",
     invTitle: "الاستثمار والإقامة المميزة", invBody: "استشارة محامٍ في بدء نشاط تجاري بالسعودية، وتراخيص وزارة الاستثمار، وشروط الإقامة المميزة وطريقة التقديم.",
     genTitle: "قضايا عامة", genBody: "إذا لم تجد خياراً يناسب مشكلتك فاكتبها هنا، ويراجعها محامٍ ويخبرك بما يمكن عمله.",
     disclaimer: "هذا إرشاد أولي وليس استشارة قانونية. التقييم النهائي يقدمه محامٍ سعودي مرخّص.",
   },
   bankStatus: { active: "قد يكون نشطاً", frozen: "مجمّد غالباً", holding: "الرصيد في حساب موحّد", unclaimed: "غير مطالَب به، والمال ما زال لك" },
-  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات ومصادقتها", hajj: "تأشيرات الحج والعمرة", labour: "قضية عمالية (رواتب ونهاية خدمة)", commercial: "قضايا تجارية", general: "قضايا عامة", poa: "إصدار الوكالات", invest: "الاستثمار في السعودية والإقامة المميزة" },
+  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات ومصادقتها", hajj: "تأشيرات الحج والعمرة", labour: "قضية عمالية (رواتب ونهاية خدمة)", commercial: "قضايا تجارية", general: "قضايا عامة", poa: "إصدار الوكالات", invest: "الاستثمار في السعودية والإقامة المميزة", realestate: "تملك العقارات والمنازل" },
   stage: { submitted: "مُقدَّمة", review: "قيد المراجعة", poa: "إعداد الوكالة", filed: "تم التقديم", hearing: "جلسات", judgment: "الحكم / الرد", payout: "التحويل", closed: "مغلقة" },
   auth: {
     title: "الدخول بالبريد الإلكتروني", email: "البريد الإلكتروني", emailHint: "نرسل إلى بريدك رمزاً من 6 أرقام.", send: "أرسل الرمز",
@@ -348,7 +368,7 @@ const en: Msgs = {
   home: {
     eyebrow: "For expatriate workers in Saudi Arabia and those who have returned",
     title: "Your cases and money in Saudi Arabia, followed wherever you are",
-    lead: "General, court and commercial cases, investment and Premium Residency, powers of attorney, document translation and attestation, Hajj and Umrah visas, labour claims for salary and end-of-service benefit, and bank balances. A licensed Saudi lawyer acts for you, and you follow every step in your language.",
+    lead: "General, court and commercial cases, investment and Premium Residency, owning property and a home, powers of attorney, document translation and attestation, Hajj and Umrah visas, labour claims for salary and end-of-service benefit, and bank balances. Licensed lawyers, legal advisers and experienced specialists act for you, and you follow every step in your language.",
     cta: "Start your case",
     checkTitle: "Check your situation for free",
     checkLead: "Answer 3 questions. We tell you what you can still recover and how much time is left.", pick: "What do you need help with?", pickLead: "Pick a type of case, then fill in the three boxes: the facts, your requests and the documents." },
@@ -365,12 +385,22 @@ const en: Msgs = {
     hajjTitle: "Hajj & Umrah visas", hajjBody: "Applying through Nusuk and licensed agents, and checking that your old residency left no entry ban.",
     comTitle: "Commercial cases", comBody: "Money owed, contracts, business or partnership disputes. A Saudi lawyer acts for you in the Commercial Court through Najiz.",
     poaTitle: "Power of attorney", poaBody: "To let a lawyer or relative in Saudi Arabia act for you. We guide you step by step: through the Saudi Embassy in Dhaka, or by notarising and attesting a local power of attorney.",
+    reTitle: "Rules for non-Saudis owning property", reLead: "Summary of the updated Law of Real Estate Ownership by Non-Saudis, in force from January 2026, and its regulation:",
+    reRules: [
+      { h: "Ordinary residents", p: "A legal resident may own a property for their own home, and may also own within the zones set by the Council of Ministers and published by the Real Estate General Authority, registered in the Real Estate Registry." },
+      { h: "Premium Residency holders", p: "May own residential, commercial and industrial property under the Premium Residency Law, except in Makkah, Madinah and border areas, where they get a time-limited right of use." },
+      { h: "Non-residents", p: "May own only within the approved zones, after activating a digital identity on Absher." },
+      { h: "Makkah and Madinah", p: "Ownership there is for Muslims only, within the set zones and under special conditions." },
+      { h: "Exceptions", p: "Diplomatic missions and international organisations on reciprocity with Foreign Ministry approval; companies and funds with non-Saudi shareholders; non-profits under special rules. GCC citizens have a separate law." },
+      { h: "Fees and penalties", p: "A fee of up to 5% of the value on a non-Saudi's property transaction, plus the real estate transaction tax. Violations carry fines up to SAR 10 million, and property bought with misleading information can be sold at auction." },
+    ],
+    reNote: "This is a guide only; the zones and details are issued and updated by the Real Estate General Authority. A lawyer checks your situation before any purchase.",
     invTitle: "Investment & Premium Residency", invBody: "A lawyer advises on starting a business in Saudi Arabia, investment licences (MISA), and Premium Residency requirements and applications.",
     genTitle: "General", genBody: "If nothing above fits, describe it here. A lawyer reviews it and tells you what can be done.",
     disclaimer: "This is first guidance, not legal advice. A licensed Saudi lawyer gives the final review.",
   },
   bankStatus: { active: "May still be active", frozen: "Likely frozen", holding: "Balance in holding account", unclaimed: "Unclaimed, but still yours" },
-  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation & attestation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General cases", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency" },
+  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation & attestation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General cases", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency", realestate: "Owning property & a home" },
   stage: { submitted: "Submitted", review: "Under review", poa: "Power of attorney", filed: "Filed", hearing: "Sessions", judgment: "Decision", payout: "Paid out", closed: "Closed" },
   auth: {
     title: "Log in with your email", email: "Email", emailHint: "We send a 6-digit code to your email.", send: "Send code",

@@ -201,3 +201,6 @@ button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inher
 .skyline .dome{fill:#3fbf7f;opacity:1}
 .skyline .gold{fill:#e0b84a}
 @media (max-width:820px){.hero-text{padding-bottom:120px}.skyline{height:150px}}
+.res .rules{margin:8px 0;display:grid;gap:8px}
+.res .rules dt{font-weight:700}
+.res .rules dd{margin:2px 0 0}
