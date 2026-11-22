@@ -23,6 +23,7 @@ export async function loadCaseFor(user: SessionUser, caseId: string) {
       updates: { include: { author: true }, orderBy: { createdAt: "asc" } },
       documents: { orderBy: { createdAt: "desc" } },
       review: true,
+      notes: { include: { author: true }, orderBy: { createdAt: "desc" } },
     },
   });
   if (!c) notFound();

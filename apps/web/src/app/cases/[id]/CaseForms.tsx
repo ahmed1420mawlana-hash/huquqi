@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { localNum, messages, type Locale } from "@huquqi/core";
 import { ACCEPT } from "@/lib/documents";
 import { uploadFiles } from "@/lib/upload-client";
-import { postMessage, submitReview, type FormState } from "../actions";
+import { addNote, postMessage, submitReview, type FormState } from "../actions";
 
 export function MessageForm({
   caseId, locale, canClose, label, hint,
@@ -93,6 +93,23 @@ export function ReviewForm({
       {state?.error && <p className="err" role="alert">{t.common.required}</p>}
       {state && !state.error && <p className="okmsg" style={{ margin: 0 }}>{t.reviews.thanks}</p>}
       <div><button className="btn small" disabled={pending || rating === 0}>{t.reviews.submit}</button></div>
+    </form>
+  );
+}
+
+export function NoteForm({ caseId, locale }: { caseId: string; locale: Locale }) {
+  const t = messages[locale];
+  const [state, action, pending] = useActionState<FormState, FormData>(addNote.bind(null, caseId), undefined);
+  const ref = useRef<HTMLFormElement>(null);
+  useEffect(() => { if (state && !state.error) ref.current?.reset(); }, [state]);
+  return (
+    <form ref={ref} action={action} className="stack" style={{ gap: 8 }}>
+      <label className="f" htmlFor="note-body">
+        <span className="sr-only">{t.inbox.addNote}</span>
+        <textarea id="note-body" name="body" required style={{ minHeight: 70 }} />
+      </label>
+      {state?.error && <p className="err" role="alert">{t.common.required}</p>}
+      <div><button className="btn small ghost" disabled={pending}>{t.inbox.addNote}</button></div>
     </form>
   );
 }

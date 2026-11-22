@@ -74,3 +74,28 @@ describe("email", () => {
     expect(normaliseEmail("not an email")).toBeNull();
   });
 });
+
+import { censor, hasProfanity } from "./profanity";
+describe("censor", () => {
+  it("masks obscene words in Arabic, English and Bengali", () => {
+    expect(censor("أنت كلب")).toBe("أنت ***");
+    expect(censor("يا حمار!")).toBe("***!");
+    expect(censor("المحامي حقيرة جداً")).toBe("المحامي *** جداً");
+    expect(censor("this is shit, FUUUCK")).toBe("this is ***, ***");
+    expect(censor("তুই একটা কুত্তা")).toBe("তুই একটা ***");
+    expect(censor("you are a khanki")).toBe("you are a ***");
+  });
+  it("ignores diacritics and tatweel", () => {
+    expect(censor("كـــلب")).toBe("***");
+    expect(censor("حِمَار")).toBe("***");
+  });
+  it("leaves ordinary words alone", () => {
+    const ok = [
+      "أريد استرداد راتبي من الكفيل", "كسبت القضية", "مكافأة نهاية الخدمة", "الزبون", "طيزان", "حمارة الصيف",
+      "Scunthorpe assessment cocktail", "class passed dickens", "আমার বেতন পাইনি", "শালার", "the shitake mushroom",
+    ];
+    for (const s of ok) expect(censor(s)).toBe(s);
+    expect(hasProfanity("أريد حقي")).toBe(false);
+    expect(hasProfanity("kutta")).toBe(true);
+  });
+});

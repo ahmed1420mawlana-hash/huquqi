@@ -33,6 +33,7 @@ export async function assignLawyer(caseId: string, fd: FormData) {
   if (!lawyer) return;
   await db.case.update({ where: { id: caseId }, data: { lawyerId: lawyer.id } });
   revalidatePath("/admin");
+  revalidatePath("/inbox");
 }
 
 export async function setReviewApproved(reviewId: string, approved: boolean) {

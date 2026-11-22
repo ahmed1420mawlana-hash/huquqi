@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BrandMenu } from "@/components/BrandMenu";
+import { VisitBeacon } from "@/components/VisitBeacon";
 import { dir, LOCALES } from "@huquqi/core";
 import { getT } from "@/lib/locale";
 import { currentUser } from "@/lib/session";
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <nav className="nav" aria-label="Main">
               {user?.role === "WORKER" && <Link href="/cases">{t.nav.myCases}</Link>}
               {user?.role === "LAWYER" && <Link href="/lawyer">{t.nav.lawyer}</Link>}
+              {(user?.role === "LAWYER" || user?.role === "ADMIN") && <Link href="/inbox">{t.inbox.title}</Link>}
               {user?.role === "ADMIN" && (
                 <>
                   <Link href="/lawyer">{t.nav.lawyer}</Link>
@@ -59,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
         <main>{children}</main>
+        <VisitBeacon />
       </body>
     </html>
   );

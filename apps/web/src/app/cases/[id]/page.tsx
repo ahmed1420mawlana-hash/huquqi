@@ -6,7 +6,7 @@ import { who } from "@/lib/who";
 import { Stars } from "@/components/Stars";
 import { directUploads } from "@/lib/storage";
 import { takeCase } from "../actions";
-import { MessageForm, ReviewForm, UploadForm } from "./CaseForms";
+import { MessageForm, NoteForm, ReviewForm, UploadForm } from "./CaseForms";
 
 export default async function CasePage({
   params, searchParams,
@@ -32,7 +32,10 @@ export default async function CasePage({
           <h1 className="page-title">{t.caseType[type]}</h1>
           <p className="muted num" style={{ margin: 0 }}>{c.ref} · {formatDate(c.createdAt, locale)}</p>
         </div>
-        <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
+        <span className="inline" style={{ gap: 6 }}>
+          {!isOwner && c.awaitingReply && <span className="pill new">{t.inbox.newReply}</span>}
+          <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
+        </span>
       </div>
 
       <div className="cols">
@@ -102,6 +105,23 @@ export default async function CasePage({
               </details>
             )}
           </section>
+
+          {worker && !isOwner && (
+            <section className="card stack notes">
+              <div>
+                <h2>{t.inbox.notes}</h2>
+                <p className="hint" style={{ margin: "2px 0 0" }}>{t.inbox.notesHint}</p>
+              </div>
+              {c.notes.length === 0 && <p className="muted" style={{ margin: 0 }}>{t.inbox.noNotes}</p>}
+              {c.notes.map((n) => (
+                <div key={n.id} className="note">
+                  <small className="muted">{who(n.author)} · {formatDate(n.createdAt, locale)}</small>
+                  <p style={{ margin: "2px 0 0", whiteSpace: "pre-wrap" }}>{n.body}</p>
+                </div>
+              ))}
+              <NoteForm caseId={c.id} locale={locale} />
+            </section>
+          )}
 
           {isOwner && c.lawyerId && (
             <section className="card stack">

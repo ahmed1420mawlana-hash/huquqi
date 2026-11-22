@@ -14,8 +14,10 @@ const browser = await chromium.launch();
 const ok = (c, m) => { if (!c) throw new Error("FAIL: " + m); console.log("✓", m); };
 
 // On a password-protected demo deployment, pass DEMO_PASSWORD to get past the gate.
+// A normal phone browser user agent: the visit counter ignores headless browsers and bots.
+const UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36";
 async function newPage(opts = {}, cookies = []) {
-  const ctx = await browser.newContext(opts);
+  const ctx = await browser.newContext({ userAgent: UA, ...opts });
   if (process.env.DEMO_PASSWORD) {
     const p = await ctx.newPage();
     await p.goto(BASE + "/demo");
@@ -49,7 +51,9 @@ try {
   ok(await w.locator(".marks li").count() === 3, "home shows scales, gavel and flag");
   ok(await w.locator("section.gallery").count() === 1, "photos and videos section on the home page");
   ok(await w.locator(".hero details.more, .hero .res").count() === 0, "no labour details on the home page itself");
-  ok(await w.locator(".starter-head").count() === 11, "eleven options, salary and end of service merged");
+  ok(await w.locator(".starter-head").count() === 9, "nine options, salary and end of service merged");
+  for (const k of ["accident", "property"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 0, `no ${k} option`);
+  ok(await w.locator('.starter-head[data-type="translation"]').textContent().then((x) => x.includes("সত্যায়ন")), "translation option includes attestation");
   for (const k of ["poa", "invest"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 1, `${k} option`);
   ok(await w.locator('.starter-head[data-type="commercial"]').count() === 1 && await w.locator('.starter-head[data-type="general"]').count() === 1, "commercial and general options");
   await w.click('.starter-head[data-type="labour"]');
@@ -115,6 +119,7 @@ try {
   await w.click("#case-labour button.btn");
   await w.waitForURL(/\/cases\/[^/]+\?created=1/, { timeout: 60000 });
   const caseUrl = w.url().split("?")[0];
+  const ref = (await w.locator("p.num").first().textContent()).match(/HQ-[A-Z0-9]+/)[0];
   ok(await w.locator(".okmsg").isVisible(), "case created");
   ok(await seen(w, "text=খিদমার টাকা আদায় করুন।"), "requests shown on case");
   ok(await w.locator('a.item[href^="/api/documents/"]').count() === 2, "documents uploaded with the case, incl. a 15 MB file");
@@ -161,13 +166,19 @@ try {
   await login(l, "lawyer@huquqi.test");
   await l.waitForURL("**/lawyer");
   ok((await l.locator("html").getAttribute("dir")) === "rtl", "Arabic is right-to-left");
+  await l.goto(BASE + "/inbox");
+  ok(await seen(l, `tr.awaiting:has-text("${ref}") .pill.new`), "new case shows in the inbox as awaiting a reply");
   await l.goto(caseUrl);
   await l.click("text=استلم القضية");
   await l.waitForURL(caseUrl);
   await l.fill("#msg-body", "استلمت المستندات، سأجهز الوكالة.");
   await l.click('form:has(#msg-body) button');
   await l.waitForSelector("text=استلمت المستندات");
-  ok(await l.locator(".pill:not(.closed)").count() === 1, "case is open");
+  ok(await l.locator(".pill:not(.closed)").count() === 1, "case is open and no longer awaiting a reply");
+  const note = `Internal note ${Date.now()}`;
+  await l.fill("#note-body", note);
+  await l.click('form:has(#note-body) button');
+  ok(await seen(l, `.note >> text=${note}`), "lawyer added an internal note");
   await l.fill("#msg-body", "تم صرف المكافأة.");
   await l.check("#msg-close");
   await l.click('form:has(#msg-body) button');
@@ -177,6 +188,12 @@ try {
   // Worker sees the update.
   await w.goto(caseUrl);
   ok(await seen(w, "text=استلمت المستندات"), "worker sees lawyer update");
+  ok(!(await w.locator(`text=${note}`).count()) && !(await w.locator("#note-body").count()), "client cannot see internal notes");
+  await w.fill("#msg-body", "ধন্যবাদ, আরও কাগজ পাঠাচ্ছি। test shit কুত্তা");
+  await w.click('form:has(#msg-body) button');
+  await w.waitForSelector("text=আরও কাগজ পাঠাচ্ছি");
+  const msgText = await w.locator(".update", { hasText: "আরও কাগজ পাঠাচ্ছি" }).textContent();
+  ok(msgText.includes("test *** ***") && !msgText.includes("shit") && !msgText.includes("কুত্তা"), "obscene words are masked automatically");
 
   // Worker rates the lawyer; the review waits for admin approval.
   await w.click(".star-input label:nth-child(5)");
@@ -226,6 +243,14 @@ try {
   ok(part.status() === 206 && (await part.body()).length === 100, "video supports seeking (range requests)");
   await a.goto(BASE + "/admin");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");
+  const digits = (x) => x.replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d)).replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g, "");
+  const totalVisitors = Number(digits(await a.locator(".visits .stat b").last().textContent()));
+  ok(await a.locator(".visits .bar").count() === 14 && totalVisitors > 0, "visitor counts show on the admin page");
+  await a.goto(BASE + `/inbox?awaiting=1&q=${ref}`);
+  ok(await a.locator("tbody tr").count() === 1 && await seen(a, `tr.awaiting:has-text("${ref}")`), "client reply puts the case back as awaiting; search by number works");
+  await a.goto(BASE + "/inbox?type=hajj&q=" + ref);
+  ok(await seen(a, "tbody td.muted"), "type filter narrows the list");
+  await a.goto(BASE + "/admin");
   await a.waitForLoadState("networkidle");
   await a.click(`tr:has-text("${reviewText}") button >> nth=0`);
   await a.locator(`tr:has-text("${reviewText}") button.ghost`).waitFor({ timeout: 10000 });
