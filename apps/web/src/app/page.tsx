@@ -6,7 +6,7 @@ import { Reviews } from "@/components/Reviews";
 import { Gallery } from "@/components/Gallery";
 import { CaseStarter } from "@/components/CaseStarter";
 import { DailyArticle } from "@/components/DailyArticle";
-import { HeroSkyline } from "@/components/HeroSkyline";
+import { HeroPhotos } from "@/components/HeroPhotos";
 import { directUploads } from "@/lib/storage";
 
 export default async function Home() {
@@ -16,6 +16,7 @@ export default async function Home() {
   return (
     <>
       <div className="hero">
+        <HeroPhotos />
         <div className="wrap hero-grid">
           <div className="stack hero-text">
             <Marks labels={t.marks} />
@@ -23,7 +24,6 @@ export default async function Home() {
             <h1>{t.home.title}</h1>
             <p className="lead">{t.home.lead}</p>
             <div><Link href={start} className="btn">{t.home.cta}</Link></div>
-            <HeroSkyline />
           </div>
           {user?.role === "LAWYER" ? <div /> : (
             <div className="card stack" id="start">
