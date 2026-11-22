@@ -55,6 +55,7 @@ try {
   await w.click('.starter-head[data-type="realestate"]');
   ok(await w.locator("#case-realestate .res.realestate .rules > div").count() === 6, "property option shows ownership rules before the boxes");
   ok(await w.locator("#case-realestate textarea, #case-realestate input[type=file]").count() === 3, "property option has the three boxes");
+  ok(!(await w.locator("#case-realestate .box3 .hint, #case-realestate .hint").allTextContents()).join(" ").match(/বেতন|ব্যাংক স্টেটমেন্ট/), "property boxes have their own hints, not salary or bank ones");
   await w.click("#case-realestate details.holy summary");
   ok(await w.locator("#case-realestate details.holy figure").count() === 6 && (await w.locator("#case-realestate details.holy blockquote").first().textContent()).includes("الْبَلَدَ آمِنًا"), "Makkah and Madinah section shows the verse and hadiths");
   ok((await w.locator("#case-realestate details.holy audio").first().getAttribute("src")).endsWith("Abdurrahmaan_As-Sudais_192kbps/014035.mp3"), "verse plays in Al-Sudais's voice");
@@ -128,6 +129,7 @@ try {
   const caseUrl = w.url().split("?")[0];
   const ref = (await w.locator("p.num").first().textContent()).match(/\b20\d{4}0\d+\b/)[0];
   ok(await w.locator(".okmsg").isVisible(), "case created");
+  ok((await w.locator(".okmsg").first().textContent()).includes("১০"), "after submitting, client is told: reply within 3 days, at most 10");
   const wa = await w.locator("#whatsapp a.btn.wa").getAttribute("href");
   ok(/^https:\/\/wa\.me\/8801700000000\?text=/.test(wa) && decodeURIComponent(wa).includes(ref), "whatsapp link with case ref");
   ok(await seen(w, "text=খিদমার টাকা আদায় করুন।"), "requests shown on case");
@@ -257,6 +259,15 @@ try {
   ok(await a.locator(".visits .bar").count() === 14 && totalVisitors > 0, "visitor counts show on the admin page");
   await a.goto(BASE + `/inbox?awaiting=1&q=${ref}`);
   ok(await a.locator("tbody tr").count() === 1 && await seen(a, `tr.awaiting:has-text("${ref}")`), "client reply puts the case back as awaiting; search by number works");
+  await a.goto(BASE + `/inbox?q=${ref}&replied=no`);
+  ok(await a.locator("tbody tr").count() === 1 && !(await a.locator("tbody .tick").getAttribute("class")).includes("on"), "case starts as not replied");
+  await a.goto(BASE + `/inbox?q=${ref}`);
+  await a.locator("tbody .tick").click();
+  await a.locator("tbody .tick.on").waitFor({ timeout: 30000 });
+  await a.goto(BASE + `/inbox?q=${ref}&replied=no`);
+  ok(await a.locator("tbody tr .tick").count() === 0, "admin marked the case as replied with the green tick");
+  await a.goto(BASE + `/inbox?q=${ref}&replied=yes`);
+  ok(await a.locator("tbody .tick.on").count() === 1, "replied filter finds it");
   await a.goto(BASE + "/inbox?type=hajj&q=" + ref);
   ok(await seen(a, "tbody td.muted"), "type filter narrows the list");
   await a.goto(BASE + "/admin");

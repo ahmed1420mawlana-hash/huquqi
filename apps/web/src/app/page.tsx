@@ -18,12 +18,12 @@ export default async function Home() {
       <div className="hero">
         <div className="wrap hero-grid">
           <div className="stack hero-text">
-            <HeroSkyline />
             <Marks labels={t.marks} />
             <div className="eyebrow">{t.home.eyebrow}</div>
             <h1>{t.home.title}</h1>
             <p className="lead">{t.home.lead}</p>
             <div><Link href={start} className="btn">{t.home.cta}</Link></div>
+            <HeroSkyline />
           </div>
           {user?.role === "LAWYER" ? <div /> : (
             <div className="card stack" id="start">

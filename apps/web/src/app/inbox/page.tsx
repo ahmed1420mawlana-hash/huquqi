@@ -8,8 +8,9 @@ import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { assignLawyer } from "@/app/admin/actions";
 import { AdminNav } from "@/components/AdminNav";
+import { RepliedToggle } from "@/components/RepliedToggle";
 
-type Search = { q?: string; type?: string; status?: string; lawyer?: string; awaiting?: string };
+type Search = { q?: string; type?: string; status?: string; lawyer?: string; awaiting?: string; replied?: string };
 
 /**
  * Case inbox for admins (all cases) and lawyers (their cases and unassigned ones).
@@ -30,6 +31,8 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
   if (sp.lawyer === "assigned") and.push({ lawyerId: { not: null } });
   if (sp.lawyer === "unassigned") and.push({ lawyerId: null });
   if (sp.awaiting === "1") and.push({ awaitingReply: true });
+  if (sp.replied === "yes") and.push({ replied: true });
+  if (sp.replied === "no") and.push({ replied: false });
   if (q) {
     and.push({
       OR: [
@@ -56,7 +59,7 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
       ? db.user.findMany({ where: { role: "LAWYER", lawyerProfile: { verifiedAt: { not: null } } }, orderBy: { name: "asc" } })
       : Promise.resolve([]),
   ]);
-  const filtered = !!(q || sp.type || sp.status || sp.lawyer || sp.awaiting);
+  const filtered = !!(q || sp.type || sp.status || sp.lawyer || sp.awaiting || sp.replied);
 
   return (
     <div className="wrap stack">
@@ -86,6 +89,11 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
             <option value="unassigned">{t.inbox.unassigned}</option>
           </select>
         )}
+        <select name="replied" defaultValue={sp.replied ?? ""} aria-label={t.inbox.anyReplied}>
+          <option value="">{t.inbox.anyReplied}</option>
+          <option value="no">{t.inbox.notReplied}</option>
+          <option value="yes">{t.inbox.replied}</option>
+        </select>
         <label className="inline" style={{ fontSize: 14.5 }}>
           <input type="checkbox" name="awaiting" value="1" defaultChecked={sp.awaiting === "1"} />
           {t.inbox.awaiting}
@@ -102,11 +110,11 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
           <thead>
             <tr>
               <th>#</th><th>{t.cases.type}</th><th>{t.inbox.client}</th><th>{t.cases.lawyer}</th>
-              <th>{t.inbox.lastActivity}</th><th>{t.inbox.status}</th>
+              <th>{t.inbox.replied}</th><th>{t.inbox.lastActivity}</th><th>{t.inbox.status}</th>
             </tr>
           </thead>
           <tbody>
-            {cases.length === 0 && <tr><td colSpan={6} className="muted">{t.admin.none}</td></tr>}
+            {cases.length === 0 && <tr><td colSpan={7} className="muted">{t.admin.none}</td></tr>}
             {cases.map((c) => (
               <tr key={c.id} className={c.awaitingReply ? "awaiting" : ""}>
                 <td className="num">
@@ -129,6 +137,7 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<Se
                     </form>
                   ) : <span className="muted">{t.cases.noLawyer}</span>}
                 </td>
+                <td><RepliedToggle c={c} t={t} locale={locale} admin={admin} /></td>
                 <td className="muted num" style={{ fontSize: 13 }}>{formatDate(c.lastActivityAt, locale)}</td>
                 <td><span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span></td>
               </tr>

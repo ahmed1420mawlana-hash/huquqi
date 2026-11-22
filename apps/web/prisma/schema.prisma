@@ -68,6 +68,8 @@ model Case {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   /// True when the client wrote or uploaded something that no lawyer or admin has answered yet.
+  replied        Boolean    @default(false) // set by the admin by hand: the client has been answered
+  repliedAt      DateTime?
   awaitingReply  Boolean   @default(false)
   lastActivityAt DateTime  @default(now())
 

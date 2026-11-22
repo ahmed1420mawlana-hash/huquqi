@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { localNum, messages, type Locale } from "@huquqi/core";
+import { isLabourType, localNum, messages, type CaseType, type Locale } from "@huquqi/core";
 import { ACCEPT } from "@/lib/documents";
 import { uploadFiles } from "@/lib/upload-client";
 import { addNote, postMessage, submitReview, type FormState } from "../actions";
@@ -32,7 +32,7 @@ export function MessageForm({
   );
 }
 
-export function UploadForm({ caseId, locale, direct }: { caseId: string; locale: Locale; direct: boolean }) {
+export function UploadForm({ caseId, locale, direct, type }: { caseId: string; locale: Locale; direct: boolean; type: string }) {
   const t = messages[locale];
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -57,7 +57,7 @@ export function UploadForm({ caseId, locale, direct }: { caseId: string; locale:
   return (
     <form onSubmit={onSubmit} className="stack" style={{ gap: 8 }}>
       <label className="f" htmlFor="doc-file">
-        <span className="hint">{t.cases.uploadHint}</span>
+        <span className="hint">{(t.cases.box as Record<string, { docs: string }>)[isLabourType(type as CaseType) ? "labour" : type]?.docs ?? ""} {t.cases.formats}</span>
         <input id="doc-file" name="files" type="file" multiple accept={ACCEPT} required />
       </label>
       {msg && <p className={msg.ok ? "hint num" : "err"} role={msg.ok ? "status" : "alert"} style={{ margin: 0 }}>{msg.text}</p>}
