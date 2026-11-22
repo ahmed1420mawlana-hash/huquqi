@@ -1,5 +1,6 @@
 // Real photos of Saudi Arabia behind the home hero, crossfading with a slow zoom.
-// All photos are free under the Unsplash License and are served from Unsplash's CDN.
+// All photos are free under the Unsplash License (no attribution required) and are served from Unsplash's CDN.
+// Photographers: سيف الظاهر, Helmi Tan, Islamic Inspiration, Ibrahim Abdullah, Juned Khatri.
 const PHOTOS = [
   { id: "1663900108404-a05e8bf82cda", pos: "50% 60%", by: "سيف الظاهر", place: "Riyadh" },
   { id: "1729931421786-7bbd6c7d78f6", pos: "50% 70%", by: "Helmi Tan", place: "Madinah" },
@@ -26,9 +27,6 @@ export function HeroPhotos() {
           style={{ objectPosition: p.pos, animationDelay: `${i * 7}s` }}
         />
       ))}
-      <span className="hero-credit">
-        Photos: {PHOTOS.map((p) => p.by).filter((v, i, a) => a.indexOf(v) === i).join(", ")} / Unsplash
-      </span>
     </div>
   );
 }
