@@ -14,7 +14,7 @@ Bengali, Arabic and English.
 | --- | --- |
 | Home | Scales, gavel and Bangladesh flag emblems; free case check (labour deadline folded inside the labour option, bank account state under SAMA 90/180-day rules); approved client reviews |
 | Login | Customers and lawyers: email + one-time code (sent through Resend). Admins: mobile number + code, via the "Admin login" link, only for numbers in `ADMIN_PHONES` |
-| Worker | Open a case in one of 9 areas (labour: salary and end of service, bank, court, commercial, accident, property, document translation, Hajj & Umrah visas, general) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
+| Worker | Open a case in one of 11 areas (labour: salary and end of service, bank, court, power of attorney, commercial, investment & Premium Residency, accident, property, document translation, Hajj & Umrah visas, general) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
 | Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates, close the case |
 | Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews, read contact messages, suggestions and complaints, add photos and videos to the home page |
 | Site menu | The "Huquqi" name opens: contact us, suggestions & complaints, partners, about us, how it works, FAQ, join as a lawyer, privacy |

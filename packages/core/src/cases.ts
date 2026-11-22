@@ -5,7 +5,9 @@ export const CASE_TYPES = [
   "labour", // unpaid salary and end-of-service benefit, one labour claim
   "bank", // balance left in a Saudi bank account
   "court", // an existing court case
+  "poa", // issuing a power of attorney
   "commercial", // commercial disputes: debts, contracts, a business or partnership
+  "invest", // investing in Saudi Arabia and Premium Residency
   "accident", // traffic accident / injury compensation
   "property", // car or property registered in the worker's name
   "translation", // certified translation of documents
@@ -53,6 +55,8 @@ export const CHANNEL: Record<CaseType, string> = {
   translation: "Certified translation office",
   hajj: "Nusuk",
   commercial: "Commercial Court (Najiz)",
+  poa: "Saudi Embassy (Dhaka) / Najiz",
+  invest: "MISA / Premium Residency Center",
   general: "Najiz",
 };
 

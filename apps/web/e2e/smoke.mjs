@@ -48,7 +48,8 @@ try {
   ok((await w.locator("html").getAttribute("lang")) === "bn", "default language is Bengali");
   ok(await w.locator(".marks li").count() === 3, "home shows scales, gavel and flag");
   ok(await w.locator(".hero details.more, .hero .res").count() === 0, "no labour details on the home page itself");
-  ok(await w.locator(".starter-head").count() === 9, "nine options, salary and end of service merged");
+  ok(await w.locator(".starter-head").count() === 11, "eleven options, salary and end of service merged");
+  for (const k of ["poa", "invest"]) ok(await w.locator(`.starter-head[data-type="${k}"]`).count() === 1, `${k} option`);
   ok(await w.locator('.starter-head[data-type="commercial"]').count() === 1 && await w.locator('.starter-head[data-type="general"]').count() === 1, "commercial and general options");
   await w.click('.starter-head[data-type="labour"]');
   ok(await w.locator("#case-labour details.more").count() === 1, "labour details are inside the labour option");
@@ -64,7 +65,7 @@ try {
   const complaint = `Slow reply test ${Date.now()}`;
   await w.click('label.chip:has(input[value="complaint"])');
   await w.fill("#c-name", "Rahim");
-  await w.fill("#c-email", "rahim@example.com");
+  await w.fill("#c-email", `rahim${Date.now()}@example.com`);
   await w.fill("#c-body", complaint);
   await w.click("form:has(#c-body) button.btn");
   ok(await seen(w, ".okmsg"), "complaint sent");

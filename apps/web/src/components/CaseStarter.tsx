@@ -170,6 +170,8 @@ function TypeInfo({ type, exit, locale }: { type: CaseType; exit: string; locale
     : type === "translation" ? { title: t.check.transTitle, body: t.check.transBody }
     : type === "hajj" ? { title: t.check.hajjTitle, body: t.check.hajjBody }
     : type === "commercial" ? { title: t.check.comTitle, body: t.check.comBody }
+    : type === "poa" ? { title: t.check.poaTitle, body: t.check.poaBody }
+    : type === "invest" ? { title: t.check.invTitle, body: t.check.invBody }
     : type === "general" ? { title: t.check.genTitle, body: t.check.genBody }
     : { title: t.check.otherTitle, body: t.check.otherBody };
   return (
