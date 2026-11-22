@@ -33,6 +33,7 @@ export async function assignLawyer(caseId: string, fd: FormData) {
   if (!lawyer) return;
   await db.case.update({ where: { id: caseId }, data: { lawyerId: lawyer.id } });
   revalidatePath("/admin");
+  revalidatePath("/inbox");
 }
 
 export async function setReviewApproved(reviewId: string, approved: boolean) {
@@ -40,4 +41,21 @@ export async function setReviewApproved(reviewId: string, approved: boolean) {
   await db.review.update({ where: { id: reviewId }, data: { approvedAt: approved ? new Date() : null } });
   revalidatePath("/admin");
   revalidatePath("/");
+}
+
+/** Approve a lawyer application: the applicant becomes a verified lawyer with the licence they gave. */
+export async function decideApplication(id: string, approve: boolean) {
+  await requireUser(["ADMIN"]);
+  const app = await db.lawyerApplication.findUnique({ where: { id }, include: { user: true } });
+  if (!app || app.status !== "pending") return;
+  await db.$transaction(async (tx) => {
+    await tx.lawyerApplication.update({ where: { id }, data: { status: approve ? "approved" : "rejected", decidedAt: new Date() } });
+    if (!approve) return;
+    // An admin who applies keeps the admin role, but still gets a verified lawyer profile.
+    if (app.user.role !== "ADMIN") await tx.user.update({ where: { id: app.userId }, data: { role: "LAWYER", name: app.user.name ?? app.name } });
+    const profile = { licenseNo: app.licenseNo, firm: app.firm, verifiedAt: new Date() };
+    await tx.lawyerProfile.upsert({ where: { userId: app.userId }, update: profile, create: { userId: app.userId, ...profile } });
+  });
+  revalidatePath("/admin/lawyers");
+  revalidatePath("/admin");
 }

@@ -8,14 +8,12 @@ export const CASE_TYPES = [
   "poa", // issuing a power of attorney
   "commercial", // commercial disputes: debts, contracts, a business or partnership
   "invest", // investing in Saudi Arabia and Premium Residency
-  "accident", // traffic accident / injury compensation
-  "property", // car or property registered in the worker's name
-  "translation", // certified translation of documents
+  "translation", // certified translation and attestation of documents
   "hajj", // Hajj and Umrah visas
   "general", // anything else
 ] as const;
 /** Types from earlier versions, still shown on old cases but no longer offered. */
-export const LEGACY_CASE_TYPES = ["salary", "eosb"] as const;
+export const LEGACY_CASE_TYPES = ["salary", "eosb", "accident", "property"] as const;
 export type CaseType = (typeof CASE_TYPES)[number] | (typeof LEGACY_CASE_TYPES)[number];
 
 export const STAGES = [

@@ -46,6 +46,7 @@ type Msgs = {
   cases: {
     title: string; none: string; open: string; type: string; employer: string; exitDate: string;
     bank: string; description: string; descriptionHint: string; submit: string; created: string;
+    whatsTitle: string; whatsLead: string; whatsBtn: string; whatsMsg: (ref: string) => string;
     timeline: string; updates: string; noUpdates: string; documents: string; upload: string;
     noDocs: string; lawyer: string; noLawyer: string; deadline: string; channel: string;
     message: string; send: string; uploadHint: string;
@@ -54,6 +55,19 @@ type Msgs = {
   lawyer: {
     title: string; assigned: string; unassigned: string; take: string; moveTo: string; update: string;
     updateHint: string; post: string; notVerified: string; license: string; firm: string; saveProfile: string;
+  };
+  article: {
+    title: string; num: (n: string) => string; note: string; manage: string; manageLead: string;
+    law: string; number: string; textAr: string; textBn: string; textEn: string; add: string; publish: string; unpublish: string;
+    published: string; draft: string; remove: string; starter: string; starterDone: string; today: string;
+  };
+  staff: {
+    nav: string; clients: string; clientsLead: string; apps: string; appsLead: string; pending: (n: string) => string;
+    cases: string; lastCase: string; joined: string; search: string; noCases: string; openInbox: string;
+    approve: string; reject: string; approved: string; rejected: string; pendingLabel: string; history: string;
+    city: string; years: string; about: string; phone: string;
+    applyTitle: string; applyLead: string; applyLogin: string; applySend: string; applySent: string; applyError: string;
+    applyStatus: string; alreadyLawyer: string;
   };
   admin: { title: string; lawyers: string; verify: string; verified: string; cases: string; assign: string; none: string; makeLawyer: string; phone: string; email: string; reviews: string };
   common: { save: string; back: string; required: string; forbidden: string; notFound: string };
@@ -65,6 +79,14 @@ type Msgs = {
     how: string; howSteps: { title: string; body: string }[]; faq: string; faqItems: { q: string; a: string }[];
     privacy: string; privacyBody: string[]; joinLawyer: string; joinLawyerBody: string[]; joinLawyerCta: string;
   };
+  inbox: {
+    title: string; open: string; search: string; allTypes: string; allStatus: string; anyLawyer: string;
+    assigned: string; unassigned: string; awaiting: string; newReply: string; filter: string; clear: string;
+    waiting: (n: string) => string; lastActivity: string; results: (n: string) => string; status: string; client: string;
+    notes: string; notesHint: string; addNote: string; noNotes: string;
+    notifySubject: (ref: string) => string; notifyBody: (ref: string, url: string) => string;
+  };
+  visits: { title: string; today: string; week: string; month: string; total: string; visitors: string; views: string; pages: string; daily: string };
   gallery: { title: string; lead: string; empty: string; add: string; caption: string; file: string; hint: string; upload: string; remove: string; done: string; failed: string };
   marks: { scales: string; gavel: string; flag: string };
   labour: { more: string };
@@ -95,7 +117,7 @@ const bn: Msgs = {
     bankTitle: "ব্যাংকের টাকা আপনারই", bankBody: "ইকামার মেয়াদ শেষের ৯০ দিন পর অ্যাকাউন্ট ফ্রিজ হয়, ১৮০ দিন পর টাকা আলাদা অ্যাকাউন্টে যায়। টাকা হারায় না। উকিল ওকালার মাধ্যমে বাংলাদেশে টাকা পাঠানোর ব্যবস্থা করতে পারেন।",
     insTitle: "বেতন বীমা দাবি করা যেতে পারে", insBody: "অক্টোবর ২০২৪ থেকে কোম্পানি বেতন না দিলে বকেয়া বেতন ও দেশে ফেরার টিকিট বীমা থেকে দেওয়া হয়। বিদেশ থেকে কীভাবে দাবি করবেন, উকিল যাচাই করবেন।",
     otherTitle: "উকিলের মূল্যায়ন দরকার", otherBody: "মামলা, দুর্ঘটনা বা সম্পত্তির জন্য ওকালা দিয়ে একজন সৌদি উকিল নাজিজ (Najiz)-এ কাজ করবেন।",
-    transTitle: "কাগজপত্র অনুবাদ", transBody: "সৌদি আদালত ও দপ্তরের জন্য বাংলা বা ইংরেজি কাগজপত্রের প্রত্যয়িত আরবি অনুবাদ (এবং উল্টোটাও)।",
+    transTitle: "কাগজপত্র অনুবাদ ও সত্যায়ন", transBody: "সৌদি আদালত ও দপ্তরের জন্য বাংলা বা ইংরেজি কাগজপত্রের প্রত্যয়িত আরবি অনুবাদ (এবং উল্টোটাও), আর প্রয়োজনীয় সত্যায়ন: নোটারি, বাংলাদেশ পররাষ্ট্র মন্ত্রণালয় ও সৌদি দূতাবাস।",
     hajjTitle: "হজ ও উমরাহ ভিসা", hajjBody: "নুসুক (Nusuk) ও লাইসেন্সপ্রাপ্ত এজেন্টের মাধ্যমে আবেদন, আর আগের ইকামা থেকে কোনো প্রবেশ নিষেধাজ্ঞা আছে কিনা তা যাচাই।",
     comTitle: "ব্যবসায়িক মামলা", comBody: "পাওনা টাকা, চুক্তি, ব্যবসা বা অংশীদারিত্বের বিরোধ। সৌদি উকিল বাণিজ্যিক আদালতে (নাজিজ) ওকালার মাধ্যমে কাজ করবেন।",
     poaTitle: "ওকালা তৈরি", poaBody: "সৌদিতে উকিল বা আত্মীয়কে আপনার হয়ে কাজ করার ক্ষমতা দিতে ওকালা লাগে। ঢাকার সৌদি দূতাবাসের মাধ্যমে, অথবা স্থানীয় ওকালা সত্যায়ন করে, আমরা ধাপে ধাপে সাহায্য করি।",
@@ -104,7 +126,7 @@ const bn: Msgs = {
     disclaimer: "এটি একটি প্রাথমিক নির্দেশিকা, আইনি পরামর্শ নয়। চূড়ান্ত মূল্যায়ন করবেন সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল।",
   },
   bankStatus: { active: "এখনো চালু থাকতে পারে", frozen: "সম্ভবত ফ্রিজ", holding: "টাকা আলাদা অ্যাকাউন্টে", unclaimed: "দাবিহীন, কিন্তু টাকা আপনারই" },
-  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "অন্যান্য বিষয়", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি" },
+  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ ও সত্যায়ন", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "অন্যান্য বিষয়", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি" },
   stage: { submitted: "জমা হয়েছে", review: "উকিল দেখছেন", poa: "ওকালা প্রস্তুত", filed: "আবেদন জমা", hearing: "বৈঠক / শুনানি", judgment: "রায় / উত্তর", payout: "টাকা পাঠানো", closed: "বন্ধ" },
   auth: {
     title: "ইমেইল দিয়ে লগইন", email: "ইমেইল", emailHint: "আমরা আপনার ইমেইলে একটি ৬ সংখ্যার কোড পাঠাব।", send: "কোড পাঠান",
@@ -116,7 +138,7 @@ const bn: Msgs = {
   cases: {
     title: "আমার মামলা", none: "এখনো কোনো মামলা নেই।", open: "নতুন মামলা খুলুন", type: "সমস্যার ধরন", employer: "কোম্পানি বা কফিলের নাম",
     exitDate: "সৌদি ছাড়ার তারিখ", bank: "ব্যাংকের নাম", description: "সংক্ষেপে ঘটনা", descriptionHint: "কী হয়েছে এবং কবে, সংক্ষেপে যেকোনো ভাষায় লিখুন।",
-    submit: "মামলা জমা দিন", created: "মামলা জমা হয়েছে। ৪৮ ঘণ্টার মধ্যে একজন উকিল দেখবেন।", timeline: "অগ্রগতি", updates: "আপডেট",
+    submit: "মামলা জমা দিন", whatsTitle: "হোয়াটসঅ্যাপে যোগাযোগ", whatsLead: "দ্রুত যোগাযোগের জন্য আমাদের হোয়াটসঅ্যাপে মেসেজ দিন। মামলা নম্বর সাথে যাবে।", whatsBtn: "হোয়াটসঅ্যাপে মেসেজ দিন", whatsMsg: (ref: string) => `আসসালামু আলাইকুম, আমি হুকুকি-তে মামলা ${ref} জমা দিয়েছি।`, created: "মামলা জমা হয়েছে। ৪৮ ঘণ্টার মধ্যে একজন উকিল দেখবেন।", timeline: "অগ্রগতি", updates: "আপডেট",
     noUpdates: "এখনো কোনো আপডেট নেই।", documents: "কাগজপত্র", upload: "আপলোড", noDocs: "কোনো কাগজ আপলোড হয়নি।", lawyer: "উকিল",
     noLawyer: "উকিল নিয়োগের অপেক্ষায়", deadline: "শ্রম মামলার শেষ তারিখ", channel: "সরকারি মাধ্যম", message: "উকিলকে বার্তা", send: "পাঠান",
     uploadHint: "পাসপোর্ট, ইকামা, চুক্তি, বেতনের স্লিপ। PDF, ছবি বা Word, ১০০০ পৃষ্ঠা পর্যন্ত (প্রতি ফাইল ৫০০ MB পর্যন্ত), একসাথে কয়েকটি ফাইল দেওয়া যায়।",
@@ -128,6 +150,23 @@ const bn: Msgs = {
     title: "উকিল প্যানেল", assigned: "আমার মামলা", unassigned: "নতুন মামলা", take: "মামলা নিন", moveTo: "পরবর্তী ধাপ", update: "আপডেট লিখুন",
     updateHint: "ক্লায়েন্ট এটি নিজের ভাষায় দেখবেন।", post: "আপডেট দিন", notVerified: "আপনার লাইসেন্স এখনো যাচাই হয়নি।",
     license: "লাইসেন্স নম্বর", firm: "ল ফার্ম", saveProfile: "সংরক্ষণ",
+  },
+  article: {
+    title: "আজকের আইনি ধারা", num: (n) => `ধারা ${n}`, note: "সংক্ষিপ্ত ব্যাখ্যা, আইনের হুবহু ভাষা নয়। আপনার মামলার জন্য উকিলের পরামর্শ নিন।",
+    manage: "আজকের ধারা", manageLead: "প্রতিদিন হোম পেজে একটি প্রকাশিত ধারা দেখানো হয়, রিয়াদ সময় অনুযায়ী পালাক্রমে।",
+    law: "আইনের নাম", number: "ধারা নম্বর", textAr: "ব্যাখ্যা (আরবি)", textBn: "ব্যাখ্যা (বাংলা)", textEn: "ব্যাখ্যা (ইংরেজি)", add: "ধারা যোগ করুন",
+    publish: "প্রকাশ করুন", unpublish: "প্রকাশ বন্ধ", published: "প্রকাশিত", draft: "পর্যালোচনার অপেক্ষায়", remove: "মুছুন",
+    starter: "শ্রম আইনের প্রাথমিক ধারাগুলো যোগ করুন", starterDone: "যোগ হয়েছে। প্রকাশের আগে প্রতিটি পর্যালোচনা করুন।", today: "আজ দেখানো হচ্ছে",
+  },
+  staff: {
+    nav: "পরিচালনা", clients: "গ্রাহক ও তাদের মামলা", clientsLead: "প্রতিটি গ্রাহক, তাদের মামলা সংখ্যা ও সর্বশেষ মামলা।",
+    apps: "উকিলদের আবেদন", appsLead: "যোগ দিতে চাওয়া উকিলদের আবেদন। গ্রহণ করলে তিনি যাচাইকৃত উকিল হবেন।", pending: (n) => `${n}টি অপেক্ষমাণ`,
+    cases: "মামলা", lastCase: "সর্বশেষ মামলা", joined: "যোগদান", search: "নাম, ইমেইল, মোবাইল বা মামলা নম্বর দিয়ে খুঁজুন", noCases: "কোনো মামলা নেই", openInbox: "মামলার ইনবক্সে দেখুন",
+    approve: "গ্রহণ করুন", reject: "প্রত্যাখ্যান", approved: "গৃহীত", rejected: "প্রত্যাখ্যাত", pendingLabel: "অপেক্ষমাণ", history: "আগের আবেদন",
+    city: "শহর", years: "অভিজ্ঞতার বছর", about: "আপনার সম্পর্কে সংক্ষেপে", phone: "মোবাইল",
+    applyTitle: "উকিল হিসেবে আবেদন", applyLead: "তথ্য দিন। অ্যাডমিন লাইসেন্স যাচাই করে আবেদন গ্রহণ করবেন।", applyLogin: "আবেদন করতে আগে ইমেইল দিয়ে লগইন করুন",
+    applySend: "আবেদন পাঠান", applySent: "আপনার আবেদন পৌঁছেছে। যাচাইয়ের পর জানানো হবে।", applyError: "লাইসেন্স নম্বর ও মোবাইল দিন।",
+    applyStatus: "আবেদনের অবস্থা", alreadyLawyer: "আপনি ইতিমধ্যে উকিল হিসেবে নিবন্ধিত।",
   },
   admin: { title: "অ্যাডমিন", lawyers: "উকিল", verify: "যাচাই করুন", verified: "যাচাইকৃত", cases: "সব মামলা", assign: "উকিল দিন", none: "কিছু নেই", makeLawyer: "উকিল হিসেবে যোগ করুন", phone: "মোবাইল", email: "ইমেইল", reviews: "মূল্যায়ন" },
   common: { save: "সংরক্ষণ", back: "পেছনে", required: "এই ঘরটি পূরণ করুন।", forbidden: "এই পাতায় আপনার প্রবেশাধিকার নেই।", notFound: "পাওয়া যায়নি।" },
@@ -156,11 +195,19 @@ const bn: Msgs = {
       { q: "আমার কাগজপত্র কি নিরাপদ?", a: "কাগজপত্র গোপনে রাখা হয়। শুধু আপনি, আপনার উকিল ও অ্যাডমিন দেখতে পারেন।" },
     ],
     privacy: "গোপনীয়তা",
-    privacyBody: ["আমরা শুধু মামলার জন্য প্রয়োজনীয় তথ্য সংগ্রহ করি: আপনার ইমেইল, নাম, মামলার বিবরণ ও কাগজপত্র।", "আপনার মামলা ও কাগজপত্র শুধু আপনি, নিযুক্ত উকিল ও অ্যাডমিন দেখতে পারেন। আমরা কারো কাছে তথ্য বিক্রি করি না।", "আপনার তথ্য মুছে ফেলতে চাইলে ‘যোগাযোগ করুন’ থেকে আমাদের লিখুন।"],
+    privacyBody: ["আমরা শুধু মামলার জন্য প্রয়োজনীয় তথ্য সংগ্রহ করি: আপনার ইমেইল, নাম, মামলার বিবরণ ও কাগজপত্র।", "আপনার মামলা ও কাগজপত্র শুধু আপনি, নিযুক্ত উকিল ও অ্যাডমিন দেখতে পারেন। আমরা কারো কাছে তথ্য বিক্রি করি না।", "ভিজিটর গণনার জন্য আমরা একটি বেনামি কুকি ব্যবহার করি, যাতে আপনার পরিচয় থাকে না।", "আপনার তথ্য মুছে ফেলতে চাইলে ‘যোগাযোগ করুন’ থেকে আমাদের লিখুন।"],
     joinLawyer: "উকিল হিসেবে যোগ দিন",
     joinLawyerBody: ["আপনি যদি সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল হন, বিদেশি কর্মীদের মামলায় আমাদের সঙ্গে কাজ করুন।", "লাইসেন্স যাচাইয়ের পর আপনি নতুন মামলা নিতে পারবেন।"],
     joinLawyerCta: "আবেদন করতে যোগাযোগ করুন",
   },
+  inbox: {
+    title: "মামলার ইনবক্স", open: "মামলার ইনবক্স খুলুন", search: "মামলা নম্বর, নাম বা ইমেইল", allTypes: "সব ধরন", allStatus: "সব অবস্থা", anyLawyer: "সব উকিল",
+    assigned: "উকিল আছে", unassigned: "উকিল নেই", awaiting: "উত্তরের অপেক্ষায়", newReply: "নতুন বার্তা", filter: "খুঁজুন", clear: "মুছুন",
+    waiting: (n) => `${n}টি মামলা উত্তরের অপেক্ষায়`, lastActivity: "সর্বশেষ", status: "অবস্থা", client: "ক্লায়েন্ট", results: (n) => `${n}টি মামলা`,
+    notes: "অভ্যন্তরীণ নোট", notesHint: "শুধু উকিল ও অ্যাডমিন দেখতে পান, ক্লায়েন্ট দেখেন না।", addNote: "নোট যোগ করুন", noNotes: "কোনো নোট নেই।",
+    notifySubject: (ref) => `মামলা ${ref}: ক্লায়েন্টের নতুন বার্তা`, notifyBody: (ref, url) => `মামলা ${ref}-এ ক্লায়েন্ট নতুন বার্তা বা কাগজ পাঠিয়েছেন।\n${url}`,
+  },
+  visits: { title: "ভিজিটর", today: "আজ", week: "৭ দিন", month: "৩০ দিন", total: "মোট", visitors: "ভিজিটর", views: "পেজ ভিউ", pages: "সবচেয়ে দেখা পাতা (৩০ দিন)", daily: "গত ১৪ দিন" },
   gallery: { title: "ছবি ও ভিডিও", lead: "আমাদের কাজ ও খবর।", empty: "শিগগিরই ছবি ও ভিডিও আসছে।", add: "ছবি বা ভিডিও যোগ করুন", caption: "ক্যাপশন (ঐচ্ছিক)", file: "ফাইল", hint: "ছবি (JPG, PNG, WEBP) বা ভিডিও (MP4, WEBM), ভিডিও ৫০০ MB পর্যন্ত।", upload: "আপলোড", remove: "সরান", done: "যোগ হয়েছে।", failed: "আপলোড হয়নি।" },
   marks: { scales: "ন্যায়ের দাঁড়িপাল্লা", gavel: "বিচারকের হাতুড়ি", flag: "বাংলাদেশের পতাকা" },
   labour: { more: "শ্রম মামলার সময়সীমা ও বিস্তারিত" },
@@ -192,7 +239,7 @@ const ar: Msgs = {
     bankTitle: "رصيدك في البنك ما زال لك", bankBody: "يُجمّد الحساب بعد 90 يوماً من انتهاء الإقامة، ويُنقل الرصيد إلى حساب موحّد بعد 180 يوماً. المال لا يضيع، ويستطيع المحامي بالوكالة طلب تحويله إلى حسابك في بلدك.",
     insTitle: "قد تستحق تأمين حماية الأجور", insBody: "منذ أكتوبر 2024 يغطي التأمين الرواتب غير المدفوعة وتذكرة العودة عند تعثر المنشأة. يتحقق المحامي من طريقة المطالبة من الخارج.",
     otherTitle: "يحتاج تقييم محامٍ", otherBody: "للقضايا والحوادث والممتلكات، يتابع محامٍ سعودي بالوكالة عبر منصة ناجز.",
-    transTitle: "ترجمة المستندات", transBody: "ترجمة معتمدة إلى العربية لمستنداتك البنغالية أو الإنجليزية (وبالعكس) للمحاكم والجهات السعودية.",
+    transTitle: "ترجمة المستندات ومصادقتها", transBody: "ترجمة معتمدة إلى العربية لمستنداتك البنغالية أو الإنجليزية (وبالعكس)، مع المصادقات اللازمة لقبولها في السعودية: التوثيق، ووزارة الخارجية البنغلاديشية، والسفارة السعودية.",
     hajjTitle: "تأشيرات الحج والعمرة", hajjBody: "التقديم عبر منصة نُسُك والوكلاء المرخصين، والتحقق من عدم وجود منع دخول بسبب إقامتك السابقة.",
     comTitle: "القضايا التجارية", comBody: "المطالبات المالية والعقود وخلافات الشراكة والأعمال، يتابعها محامٍ سعودي بالوكالة أمام المحكمة التجارية عبر ناجز.",
     poaTitle: "إصدار الوكالات", poaBody: "لتوكيل محامٍ أو قريب في السعودية ليتابع عنك. نساعدك خطوة بخطوة: عبر السفارة السعودية في دكا، أو توثيق وكالة محلية وتصديقها.",
@@ -201,7 +248,7 @@ const ar: Msgs = {
     disclaimer: "هذا إرشاد أولي وليس استشارة قانونية. التقييم النهائي يقدمه محامٍ سعودي مرخّص.",
   },
   bankStatus: { active: "قد يكون نشطاً", frozen: "مجمّد غالباً", holding: "الرصيد في حساب موحّد", unclaimed: "غير مطالَب به، والمال ما زال لك" },
-  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات", hajj: "تأشيرات الحج والعمرة", labour: "قضية عمالية (رواتب ونهاية خدمة)", commercial: "قضايا تجارية", general: "قضايا عامة", poa: "إصدار الوكالات", invest: "الاستثمار في السعودية والإقامة المميزة" },
+  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات ومصادقتها", hajj: "تأشيرات الحج والعمرة", labour: "قضية عمالية (رواتب ونهاية خدمة)", commercial: "قضايا تجارية", general: "قضايا عامة", poa: "إصدار الوكالات", invest: "الاستثمار في السعودية والإقامة المميزة" },
   stage: { submitted: "مُقدَّمة", review: "قيد المراجعة", poa: "إعداد الوكالة", filed: "تم التقديم", hearing: "جلسات", judgment: "الحكم / الرد", payout: "التحويل", closed: "مغلقة" },
   auth: {
     title: "الدخول بالبريد الإلكتروني", email: "البريد الإلكتروني", emailHint: "نرسل إلى بريدك رمزاً من 6 أرقام.", send: "أرسل الرمز",
@@ -213,7 +260,7 @@ const ar: Msgs = {
   cases: {
     title: "قضاياي", none: "لا توجد قضايا بعد.", open: "افتح قضية جديدة", type: "نوع المشكلة", employer: "اسم الشركة أو الكفيل",
     exitDate: "تاريخ الخروج", bank: "اسم البنك", description: "الوقائع باختصار", descriptionHint: "ماذا حدث ومتى، باختصار وبأي لغة.",
-    submit: "قدّم القضية", created: "تم تقديم القضية. سيراجعها محامٍ خلال 48 ساعة.", timeline: "المراحل", updates: "التحديثات",
+    submit: "قدّم القضية", whatsTitle: "التواصل عبر واتساب", whatsLead: "للتواصل السريع راسلنا على واتساب، وسيُرسل رقم القضية مع رسالتك.", whatsBtn: "راسلنا على واتساب", whatsMsg: (ref: string) => `السلام عليكم، قدّمت طلبي في منصة حقوقي برقم ${ref}.`, created: "تم تقديم القضية. سيراجعها محامٍ خلال 48 ساعة.", timeline: "المراحل", updates: "التحديثات",
     noUpdates: "لا توجد تحديثات بعد.", documents: "المستندات", upload: "رفع", noDocs: "لم تُرفع مستندات.", lawyer: "المحامي",
     noLawyer: "بانتظار تعيين محامٍ", deadline: "آخر موعد للقضية العمالية", channel: "القناة الرسمية", message: "رسالة للمحامي", send: "إرسال",
     uploadHint: "الجواز، الإقامة، العقد، كشوف الراتب. PDF أو صور أو Word حتى 1000 صفحة (حتى 500 ميجابايت للملف)، ويمكن رفع عدة ملفات معاً.",
@@ -225,6 +272,23 @@ const ar: Msgs = {
     title: "لوحة المحامي", assigned: "قضاياي", unassigned: "قضايا جديدة", take: "استلم القضية", moveTo: "المرحلة التالية", update: "اكتب تحديثاً",
     updateHint: "يراه العميل بلغته.", post: "انشر التحديث", notVerified: "لم يتم التحقق من ترخيصك بعد.",
     license: "رقم الترخيص", firm: "مكتب المحاماة", saveProfile: "حفظ",
+  },
+  article: {
+    title: "مادة اليوم", num: (n) => `المادة ${n}`, note: "شرح مختصر وليس نص النظام حرفياً. استشر محامياً في قضيتك.",
+    manage: "مادة اليوم", manageLead: "تظهر في الصفحة الرئيسية كل يوم مادة واحدة من المواد المنشورة، بالتناوب حسب توقيت الرياض.",
+    law: "اسم النظام", number: "رقم المادة", textAr: "الشرح بالعربي", textBn: "الشرح بالبنغالي", textEn: "الشرح بالإنجليزي", add: "أضف المادة",
+    publish: "نشر", unpublish: "إيقاف النشر", published: "منشورة", draft: "بانتظار المراجعة", remove: "حذف",
+    starter: "أضف الدفعة الأولى من مواد نظام العمل", starterDone: "تمت الإضافة. راجع كل مادة قبل نشرها.", today: "معروضة اليوم",
+  },
+  staff: {
+    nav: "الإدارة", clients: "العملاء وقضاياهم", clientsLead: "كل عميل مع عدد قضاياه وآخر قضية له.",
+    apps: "طلبات المحامين", appsLead: "طلبات المحامين الراغبين بالانضمام. القبول يجعله محامياً موثّقاً.", pending: (n) => `${n} بانتظار القرار`,
+    cases: "القضايا", lastCase: "آخر قضية", joined: "التسجيل", search: "ابحث بالاسم أو البريد أو الجوال أو رقم القضية", noCases: "لا توجد قضايا", openInbox: "عرضها في صندوق القضايا",
+    approve: "قبول", reject: "رفض", approved: "مقبول", rejected: "مرفوض", pendingLabel: "بانتظار القرار", history: "طلبات سابقة",
+    city: "المدينة", years: "سنوات الخبرة", about: "نبذة مختصرة عنك", phone: "الجوال",
+    applyTitle: "طلب الانضمام كمحامٍ", applyLead: "عبّئ بياناتك، وتتحقق الإدارة من الترخيص ثم تقبل الطلب.", applyLogin: "سجّل الدخول بالبريد أولاً لتقديم الطلب",
+    applySend: "أرسل الطلب", applySent: "وصلنا طلبك، وسنبلغك بعد التحقق.", applyError: "أدخل رقم الترخيص ورقم الجوال.",
+    applyStatus: "حالة الطلب", alreadyLawyer: "أنت مسجّل محامياً بالفعل.",
   },
   admin: { title: "الإدارة", lawyers: "المحامون", verify: "توثيق", verified: "موثّق", cases: "كل القضايا", assign: "تعيين محامٍ", none: "لا شيء", makeLawyer: "إضافة كمحامٍ", phone: "الجوال", email: "البريد", reviews: "التقييمات" },
   common: { save: "حفظ", back: "رجوع", required: "هذا الحقل مطلوب.", forbidden: "ليست لديك صلاحية لهذه الصفحة.", notFound: "غير موجود." },
@@ -253,11 +317,19 @@ const ar: Msgs = {
       { q: "هل مستنداتي في أمان؟", a: "المستندات محفوظة بشكل خاص، ولا يطّلع عليها إلا أنت ومحاميك والإدارة." },
     ],
     privacy: "الخصوصية",
-    privacyBody: ["نجمع فقط ما تحتاجه القضية: بريدك، واسمك، وتفاصيل القضية، والمستندات.", "قضيتك ومستنداتك لا يراها إلا أنت والمحامي المكلّف والإدارة، ولا نبيع بياناتك لأي جهة.", "لحذف بياناتك، راسلنا من صفحة «تواصل معنا»."],
+    privacyBody: ["نجمع فقط ما تحتاجه القضية: بريدك، واسمك، وتفاصيل القضية، والمستندات.", "قضيتك ومستنداتك لا يراها إلا أنت والمحامي المكلّف والإدارة، ولا نبيع بياناتك لأي جهة.", "نستخدم معرّفاً مجهولاً في المتصفح لعدّ الزيارات فقط، ولا يحمل أي معلومة عنك.", "لحذف بياناتك، راسلنا من صفحة «تواصل معنا»."],
     joinLawyer: "انضم كمحامٍ",
     joinLawyerBody: ["إذا كنت محامياً سعودياً مرخّصاً، انضم إلينا لمتابعة قضايا العمالة الوافدة.", "بعد التحقق من الترخيص تقدر تستلم القضايا الجديدة."],
     joinLawyerCta: "تواصل معنا للتقديم",
   },
+  inbox: {
+    title: "صندوق القضايا", open: "افتح صندوق القضايا", search: "رقم القضية أو الاسم أو البريد", allTypes: "كل الأنواع", allStatus: "كل الحالات", anyLawyer: "كل المحامين",
+    assigned: "عندها محامٍ", unassigned: "بدون محامٍ", awaiting: "بانتظار الرد", newReply: "رد جديد", filter: "بحث", clear: "مسح",
+    waiting: (n) => `${n} قضية بانتظار الرد`, lastActivity: "آخر نشاط", status: "الحالة", client: "العميل", results: (n) => `${n} قضية`,
+    notes: "ملاحظات داخلية", notesHint: "يراها المحامي والإدارة فقط، ولا يراها العميل.", addNote: "أضف ملاحظة", noNotes: "لا توجد ملاحظات.",
+    notifySubject: (ref) => `القضية ${ref}: رد جديد من العميل`, notifyBody: (ref, url) => `أرسل العميل رسالة أو مستنداً جديداً في القضية ${ref}.\n${url}`,
+  },
+  visits: { title: "الزوار", today: "اليوم", week: "7 أيام", month: "30 يوماً", total: "الإجمالي", visitors: "زائر", views: "مشاهدة", pages: "أكثر الصفحات زيارة (30 يوماً)", daily: "آخر 14 يوماً" },
   gallery: { title: "الصور والفيديوهات", lead: "من أعمالنا وأخبارنا.", empty: "قريباً نضيف الصور والفيديوهات.", add: "إضافة صور أو فيديو", caption: "وصف (اختياري)", file: "الملف", hint: "صور (JPG أو PNG أو WEBP) أو فيديو (MP4 أو WEBM) حتى 500 ميجابايت.", upload: "رفع", remove: "حذف", done: "تمت الإضافة.", failed: "تعذّر الرفع." },
   marks: { scales: "ميزان العدالة", gavel: "مطرقة القاضي", flag: "علم بنغلاديش" },
   labour: { more: "مهلة القضية العمالية وتفاصيلها" },
@@ -289,7 +361,7 @@ const en: Msgs = {
     bankTitle: "Your bank balance is still yours", bankBody: "Accounts are frozen 90 days after the iqama expires, and the balance moves to a holding account after 180 days. The money is not lost. A lawyer with your power of attorney can ask the bank to transfer it home.",
     insTitle: "You may qualify for wage insurance", insBody: "Since October 2024, insurance covers unpaid wages and a ticket home when an employer fails. A lawyer checks how to claim from abroad.",
     otherTitle: "Needs a lawyer's review", otherBody: "For court cases, accidents or property, a Saudi lawyer with your power of attorney works through Najiz.",
-    transTitle: "Document translation", transBody: "Certified Arabic translation of your Bengali or English documents (and back) for Saudi courts and offices.",
+    transTitle: "Document translation & attestation", transBody: "Certified Arabic translation of your Bengali or English documents (and back), with the attestations Saudi offices require: notary, Bangladesh Ministry of Foreign Affairs and the Saudi Embassy.",
     hajjTitle: "Hajj & Umrah visas", hajjBody: "Applying through Nusuk and licensed agents, and checking that your old residency left no entry ban.",
     comTitle: "Commercial cases", comBody: "Money owed, contracts, business or partnership disputes. A Saudi lawyer acts for you in the Commercial Court through Najiz.",
     poaTitle: "Power of attorney", poaBody: "To let a lawyer or relative in Saudi Arabia act for you. We guide you step by step: through the Saudi Embassy in Dhaka, or by notarising and attesting a local power of attorney.",
@@ -298,7 +370,7 @@ const en: Msgs = {
     disclaimer: "This is first guidance, not legal advice. A licensed Saudi lawyer gives the final review.",
   },
   bankStatus: { active: "May still be active", frozen: "Likely frozen", holding: "Balance in holding account", unclaimed: "Unclaimed, but still yours" },
-  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency" },
+  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation & attestation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency" },
   stage: { submitted: "Submitted", review: "Under review", poa: "Power of attorney", filed: "Filed", hearing: "Sessions", judgment: "Decision", payout: "Paid out", closed: "Closed" },
   auth: {
     title: "Log in with your email", email: "Email", emailHint: "We send a 6-digit code to your email.", send: "Send code",
@@ -310,7 +382,7 @@ const en: Msgs = {
   cases: {
     title: "My cases", none: "No cases yet.", open: "Open a new case", type: "Type of problem", employer: "Company or sponsor name",
     exitDate: "Exit date", bank: "Bank name", description: "The facts, in brief", descriptionHint: "What happened and when, briefly, in any language.",
-    submit: "Submit case", created: "Case submitted. A lawyer will review it within 48 hours.", timeline: "Progress", updates: "Updates",
+    submit: "Submit case", whatsTitle: "Contact us on WhatsApp", whatsLead: "For a quick reply, message us on WhatsApp. Your case number is included.", whatsBtn: "Message us on WhatsApp", whatsMsg: (ref: string) => `Hello, I submitted case ${ref} on Huquqi.`, created: "Case submitted. A lawyer will review it within 48 hours.", timeline: "Progress", updates: "Updates",
     noUpdates: "No updates yet.", documents: "Documents", upload: "Upload", noDocs: "No documents uploaded.", lawyer: "Lawyer",
     noLawyer: "Waiting for a lawyer", deadline: "Labour claim deadline", channel: "Official channel", message: "Message your lawyer", send: "Send",
     uploadHint: "Passport, iqama, contract, payslips. PDF, images or Word, up to 1,000 pages (500 MB per file); you can pick several files at once.",
@@ -322,6 +394,23 @@ const en: Msgs = {
     title: "Lawyer panel", assigned: "My cases", unassigned: "New cases", take: "Take case", moveTo: "Next stage", update: "Write an update",
     updateHint: "The client sees it in their language.", post: "Post update", notVerified: "Your licence has not been verified yet.",
     license: "Licence number", firm: "Law firm", saveProfile: "Save",
+  },
+  article: {
+    title: "Article of the day", num: (n) => `Article ${n}`, note: "A short explanation, not the exact legal text. Ask a lawyer about your case.",
+    manage: "Article of the day", manageLead: "Each day the home page shows one published article, in turn, by Riyadh time.",
+    law: "Law", number: "Article number", textAr: "Explanation (Arabic)", textBn: "Explanation (Bengali)", textEn: "Explanation (English)", add: "Add article",
+    publish: "Publish", unpublish: "Unpublish", published: "Published", draft: "Awaiting review", remove: "Delete",
+    starter: "Add the starter Labour Law articles", starterDone: "Added. Review each article before publishing.", today: "Showing today",
+  },
+  staff: {
+    nav: "Admin", clients: "Clients and their cases", clientsLead: "Each client with their case count and latest case.",
+    apps: "Lawyer applications", appsLead: "Lawyers asking to join. Approving makes them a verified lawyer.", pending: (n) => `${n} pending`,
+    cases: "Cases", lastCase: "Latest case", joined: "Joined", search: "Search by name, email, mobile or case number", noCases: "No cases", openInbox: "View in the case inbox",
+    approve: "Approve", reject: "Reject", approved: "Approved", rejected: "Rejected", pendingLabel: "Pending", history: "Earlier applications",
+    city: "City", years: "Years of experience", about: "A short note about you", phone: "Mobile",
+    applyTitle: "Apply as a lawyer", applyLead: "Fill in your details. The admin checks your licence and approves.", applyLogin: "Log in with your email first to apply",
+    applySend: "Send application", applySent: "We received your application and will tell you after checking.", applyError: "Enter your licence number and mobile.",
+    applyStatus: "Application status", alreadyLawyer: "You are already registered as a lawyer.",
   },
   admin: { title: "Admin", lawyers: "Lawyers", verify: "Verify", verified: "Verified", cases: "All cases", assign: "Assign lawyer", none: "Nothing here", makeLawyer: "Add as lawyer", phone: "Mobile", email: "Email", reviews: "Reviews" },
   common: { save: "Save", back: "Back", required: "This field is required.", forbidden: "You don't have access to this page.", notFound: "Not found." },
@@ -350,11 +439,19 @@ const en: Msgs = {
       { q: "Are my documents safe?", a: "Documents are stored privately. Only you, your lawyer and the admins can see them." },
     ],
     privacy: "Privacy",
-    privacyBody: ["We only collect what your case needs: your email, name, case details and documents.", "Only you, the assigned lawyer and the admins can see your case and documents. We never sell your data.", "To have your data deleted, write to us from \"Contact us\"."],
+    privacyBody: ["We only collect what your case needs: your email, name, case details and documents.", "Only you, the assigned lawyer and the admins can see your case and documents. We never sell your data.", "We use an anonymous browser cookie only to count visits; it holds nothing about you.", "To have your data deleted, write to us from \"Contact us\"."],
     joinLawyer: "Join as a lawyer",
     joinLawyerBody: ["If you are a licensed Saudi lawyer, work with us on cases for migrant workers.", "Once your licence is verified you can take new cases."],
     joinLawyerCta: "Contact us to apply",
   },
+  inbox: {
+    title: "Case inbox", open: "Open the case inbox", search: "Case number, name or email", allTypes: "All types", allStatus: "Any status", anyLawyer: "Any lawyer",
+    assigned: "Has a lawyer", unassigned: "No lawyer", awaiting: "Awaiting reply", newReply: "New reply", filter: "Search", clear: "Clear",
+    waiting: (n) => `${n} cases awaiting a reply`, lastActivity: "Last activity", status: "Status", client: "Client", results: (n) => `${n} cases`,
+    notes: "Internal notes", notesHint: "Only lawyers and admins see these, never the client.", addNote: "Add note", noNotes: "No notes yet.",
+    notifySubject: (ref) => `Case ${ref}: new reply from the client`, notifyBody: (ref, url) => `The client sent a new message or document on case ${ref}.\n${url}`,
+  },
+  visits: { title: "Visitors", today: "Today", week: "7 days", month: "30 days", total: "All time", visitors: "visitors", views: "page views", pages: "Top pages (30 days)", daily: "Last 14 days" },
   gallery: { title: "Photos & videos", lead: "Our work and news.", empty: "Photos and videos are coming soon.", add: "Add photos or a video", caption: "Caption (optional)", file: "File", hint: "Images (JPG, PNG, WEBP) or video (MP4, WEBM), up to 500 MB.", upload: "Upload", remove: "Remove", done: "Added.", failed: "Upload failed." },
   marks: { scales: "Scales of justice", gavel: "Judge's gavel", flag: "Flag of Bangladesh" },
   labour: { more: "Labour claim deadline and details" },

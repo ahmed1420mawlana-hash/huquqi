@@ -5,8 +5,9 @@ import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { Stars } from "@/components/Stars";
 import { directUploads } from "@/lib/storage";
+import { whatsappLink } from "@/lib/whatsapp";
 import { takeCase } from "../actions";
-import { MessageForm, ReviewForm, UploadForm } from "./CaseForms";
+import { MessageForm, NoteForm, ReviewForm, UploadForm } from "./CaseForms";
 
 export default async function CasePage({
   params, searchParams,
@@ -21,18 +22,34 @@ export default async function CasePage({
   const isOwner = c.workerId === user.id;
   const worker = canWorkOn(user, c);
   const canTake = !c.lawyerId && isVerifiedLawyer(user);
+  const wa = isOwner ? whatsappLink(t.cases.whatsMsg(c.ref)) : null;
   const deadline = c.exitDate && isLabourType(type) ? labourDeadline(c.exitDate) : null;
 
   return (
     <div className="wrap stack">
       {created && <p className="okmsg" style={{ margin: 0 }}>{t.cases.created}</p>}
+      {wa && (
+        <div className={`card whats${created ? " fresh" : ""}`} id="whatsapp">
+          <div>
+            <b>{t.cases.whatsTitle}</b>
+            <p className="muted" style={{ margin: "4px 0 0" }}>{t.cases.whatsLead}</p>
+          </div>
+          <a className="btn wa" href={wa} target="_blank" rel="noopener noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+            {t.cases.whatsBtn}
+          </a>
+        </div>
+      )}
       {upload === "failed" && <p className="err" role="alert" style={{ margin: 0 }}>{t.cases.uploadFailed}</p>}
       <div className="inline" style={{ justifyContent: "space-between" }}>
         <div>
           <h1 className="page-title">{t.caseType[type]}</h1>
           <p className="muted num" style={{ margin: 0 }}>{c.ref} · {formatDate(c.createdAt, locale)}</p>
         </div>
-        <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
+        <span className="inline" style={{ gap: 6 }}>
+          {!isOwner && c.awaitingReply && <span className="pill new">{t.inbox.newReply}</span>}
+          <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
+        </span>
       </div>
 
       <div className="cols">
@@ -102,6 +119,23 @@ export default async function CasePage({
               </details>
             )}
           </section>
+
+          {worker && !isOwner && (
+            <section className="card stack notes">
+              <div>
+                <h2>{t.inbox.notes}</h2>
+                <p className="hint" style={{ margin: "2px 0 0" }}>{t.inbox.notesHint}</p>
+              </div>
+              {c.notes.length === 0 && <p className="muted" style={{ margin: 0 }}>{t.inbox.noNotes}</p>}
+              {c.notes.map((n) => (
+                <div key={n.id} className="note">
+                  <small className="muted">{who(n.author)} · {formatDate(n.createdAt, locale)}</small>
+                  <p style={{ margin: "2px 0 0", whiteSpace: "pre-wrap" }}>{n.body}</p>
+                </div>
+              ))}
+              <NoteForm caseId={c.id} locale={locale} />
+            </section>
+          )}
 
           {isOwner && c.lawyerId && (
             <section className="card stack">

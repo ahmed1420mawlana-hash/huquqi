@@ -1,29 +1,35 @@
 import Link from "next/link";
-import { formatDate, type CaseType } from "@huquqi/core";
+import { formatDate, localNum } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { Stars } from "@/components/Stars";
 import { directUploads } from "@/lib/storage";
+import { visitStats } from "@/lib/visits";
 import { MediaForm } from "./MediaForm";
+import { AdminNav } from "@/components/AdminNav";
 import { removeMedia } from "./media-actions";
 import { assignLawyer, makeLawyer, setReviewApproved, verifyLawyer } from "./actions";
 
 export default async function Admin() {
   await requireUser(["ADMIN"]);
   const { locale, t } = await getT();
-  const [lawyers, cases, reviews, inbox, media] = await Promise.all([
+  const [lawyers, caseCount, reviews, inbox, media, waiting, visits] = await Promise.all([
     db.user.findMany({ where: { role: "LAWYER" }, include: { lawyerProfile: true }, orderBy: { createdAt: "desc" } }),
-    db.case.findMany({ include: { worker: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 200 }),
+    db.case.count(),
     db.review.findMany({ include: { author: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 100 }),
     db.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
     db.mediaItem.findMany({ orderBy: { createdAt: "desc" } }),
+    db.case.count({ where: { awaitingReply: true } }),
+    visitStats(),
   ]);
+  const maxDay = Math.max(1, ...visits.daily.map((d) => d.views));
   const verified = lawyers.filter((l) => l.lawyerProfile?.verifiedAt);
 
   return (
     <div className="wrap stack">
+      <AdminNav active="home" t={t} locale={locale} />
       <h1 className="page-title">{t.admin.title}</h1>
 
       <section className="card stack">
@@ -60,35 +66,59 @@ export default async function Admin() {
         </div>
       </section>
 
-      <section className="card stack">
-        <h2>{t.admin.cases}</h2>
-        <div className="tablewrap">
-          <table>
-            <thead><tr><th>#</th><th>{t.cases.type}</th><th>{t.auth.name}</th><th>{t.status.open}</th><th>{t.cases.lawyer}</th></tr></thead>
-            <tbody>
-              {cases.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
-              {cases.map((c) => (
-                <tr key={c.id}>
-                  <td className="num"><Link href={`/cases/${c.id}`}>{c.ref}</Link></td>
-                  <td>{t.caseType[c.type as CaseType]}</td>
-                  <td>{who(c.worker)}</td>
-                  <td><span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span></td>
-                  <td>
-                    {c.lawyer ? who(c.lawyer) : (
-                      <form action={assignLawyer.bind(null, c.id)} className="inline">
-                        <select name="lawyerId" aria-label={t.admin.assign} required defaultValue="">
-                          <option value="" disabled>{t.admin.assign}</option>
-                          {verified.map((l) => <option key={l.id} value={l.id}>{who(l)}</option>)}
-                        </select>
-                        <button className="btn small" disabled={!verified.length}>✓</button>
-                      </form>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <section className="card stack visits">
+        <h2>{t.visits.title}</h2>
+        <div className="stat-row">
+          {[
+            [t.visits.today, visits.todayVisitors, visits.todayViews],
+            [t.visits.week, visits.week, null],
+            [t.visits.month, visits.month, null],
+            [t.visits.total, visits.total, visits.totalViews],
+          ].map(([label, n, views]) => (
+            <div key={label as string} className="stat">
+              <span className="muted">{label}</span>
+              <b className="num">{localNum(n as number, locale)}</b>
+              <span className="muted num" style={{ fontSize: 13 }}>
+                {t.visits.visitors}{views !== null ? ` · ${localNum(views as number, locale)} ${t.visits.views}` : ""}
+              </span>
+            </div>
+          ))}
         </div>
+        <div className="cols">
+          <div>
+            <h3 style={{ margin: "0 0 8px" }}>{t.visits.daily}</h3>
+            <div className="bars" role="img" aria-label={t.visits.daily}>
+              {visits.daily.map((d) => (
+                <div key={d.day} title={`${d.day}: ${d.views}`} className="bar">
+                  <i style={{ height: `${Math.round((d.views / maxDay) * 100)}%` }} />
+                  <span className="num">{d.day.slice(8)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 style={{ margin: "0 0 8px" }}>{t.visits.pages}</h3>
+            {visits.pages.length === 0 ? <p className="muted" style={{ margin: 0 }}>{t.admin.none}</p> : (
+              <ul className="list">
+                {visits.pages.map((p) => (
+                  <li key={p.path} className="inline" style={{ justifyContent: "space-between" }}>
+                    <span dir="ltr">{p.path}</span><span className="muted num">{localNum(p.views, locale)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="card inline" style={{ justifyContent: "space-between" }}>
+        <div>
+          <h2>{t.inbox.title}</h2>
+          <p className="muted num" style={{ margin: "4px 0 0" }}>
+            {t.inbox.results(localNum(caseCount, locale))} · {t.inbox.waiting(localNum(waiting, locale))}
+          </p>
+        </div>
+        <Link href="/inbox" className="btn">{t.inbox.open}</Link>
       </section>
 
       <section className="card stack">

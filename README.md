@@ -14,9 +14,12 @@ Bengali, Arabic and English.
 | --- | --- |
 | Home | Scales, gavel and Bangladesh flag emblems; free case check (labour deadline folded inside the labour option, bank account state under SAMA 90/180-day rules); approved client reviews |
 | Login | Customers and lawyers: email + one-time code (sent through Resend). Admins: mobile number + code, via the "Admin login" link, only for numbers in `ADMIN_PHONES` |
-| Worker | Open a case in one of 11 areas (labour: salary and end of service, bank, court, power of attorney, commercial, investment & Premium Residency, accident, property, document translation, Hajj & Umrah visas, general) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
+| Worker | Open a case in one of 9 areas (labour: salary and end of service, bank, court, power of attorney, commercial, investment & Premium Residency, document translation & attestation, Hajj & Umrah visas, general) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
 | Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates, close the case |
 | Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews, read contact messages, suggestions and complaints, add photos and videos to the home page |
+| Case inbox | `/inbox` for admins (all cases) and lawyers (their own and unassigned): search, filters, cases awaiting a reply first, internal notes, email alerts to the lawyer and admins when a client writes (needs `RESEND_API_KEY`) |
+| Visitors | Anonymous visitor and page-view counts on the admin page (team members and bots are not counted) |
+| Moderation | Obscene words (Arabic, Bengali, English) are masked automatically in messages, reviews, notes and contact forms |
 | Site menu | The "Huquqi" name opens: contact us, suggestions & complaints, partners, about us, how it works, FAQ, join as a lawyer, privacy |
 | Languages | Bengali (default), Arabic (right-to-left), English, switchable on every page |
 
@@ -65,6 +68,7 @@ Demo accounts after seeding:
    | `DEMO_PASSWORD` | a password to share with testers |
    | `DEV_SHOW_OTP` | `1` (codes on screen; only works while `DEMO_PASSWORD` is set) |
    | `ADMIN_PHONES` | your mobile number (`+966…` or `+880…`), for admin login by phone |
+   | `WHATSAPP_NUMBER` | optional: the WhatsApp number clients see after submitting a case (defaults to the first `ADMIN_PHONES` number) |
    | `ADMIN_EMAILS` | optional: admin email addresses (comma separated) |
    | `RESEND_API_KEY`, `EMAIL_FROM` | optional: a [Resend](https://resend.com) key and a sender on your verified domain, to email the codes |
 

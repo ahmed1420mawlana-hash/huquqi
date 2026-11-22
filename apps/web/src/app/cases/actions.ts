@@ -2,38 +2,44 @@
 import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { isCaseType } from "@huquqi/core";
+import { censor, isCaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { canWorkOn, isVerifiedLawyer, loadCaseFor } from "@/lib/access";
-import { caseRef } from "@/lib/ref";
+import { nextCaseRef } from "@/lib/ref";
 import { requireUser } from "@/lib/session";
+import { notifyClientActivity } from "@/lib/notify";
 import { blobInfo, saveFile } from "@/lib/storage";
 import { ALLOWED_TYPES, MAX_BLOB_BYTES, MAX_LOCAL_BYTES, cleanFilename, fileType } from "@/lib/documents";
 
 function str(fd: FormData, k: string, max = 2000) {
   return String(fd.get(k) ?? "").trim().slice(0, max);
 }
+/** Free text people write: obscene words are masked before saving. */
+const text = (fd: FormData, k: string, max = 2000) => censor(str(fd, k, max));
 
 export type FormState = { error?: string; id?: string } | undefined;
 
 export async function createCase(_: FormState, fd: FormData): Promise<FormState> {
   const user = await requireUser(["WORKER", "ADMIN"]);
   const type = fd.get("type");
-  const description = str(fd, "description", 5000);
+  const description = text(fd, "description", 5000);
   if (!isCaseType(type) || description.length < 5) return { error: "required" };
   const exit = str(fd, "exitDate", 10);
   const exitDate = /^\d{4}-\d{2}-\d{2}$/.test(exit) ? new Date(exit + "T00:00:00Z") : null;
-  let ref = caseRef();
-  while (await db.case.findUnique({ where: { ref } })) ref = caseRef();
+  let ref = await nextCaseRef();
+  // Guards against a clash with an older case, e.g. if the counter was ever reset.
+  while (await db.case.findUnique({ where: { ref } })) ref = await nextCaseRef();
   const c = await db.case.create({
     data: {
       ref, type, description, exitDate,
-      requests: str(fd, "requests", 3000) || null,
-      employer: str(fd, "employer", 200) || null,
+      requests: text(fd, "requests", 3000) || null,
+      employer: text(fd, "employer", 200) || null,
       bankName: str(fd, "bankName", 100) || null,
       workerId: user.id,
+      awaitingReply: true,
     },
   });
+  await notifyClientActivity(c);
   // The form uploads the documents next, then opens the case.
   return { id: c.id };
 }
@@ -41,7 +47,7 @@ export async function createCase(_: FormState, fd: FormData): Promise<FormState>
 export async function postMessage(caseId: string, _: FormState, fd: FormData): Promise<FormState> {
   const user = await requireUser();
   const c = await loadCaseFor(user, caseId);
-  const body = str(fd, "body", 4000);
+  const body = text(fd, "body", 4000);
   if (!body) return { error: "required" };
   const isOwner = c.workerId === user.id;
   if (!isOwner && !canWorkOn(user, c)) return { error: "forbidden" };
@@ -50,10 +56,20 @@ export async function postMessage(caseId: string, _: FormState, fd: FormData): P
   const close = !isOwner && fd.get("close") === "1" && c.stage !== "closed";
   await db.$transaction([
     db.caseUpdate.create({ data: { caseId: c.id, authorId: user.id, body, stage: close ? "closed" : null } }),
-    ...(close ? [db.case.update({ where: { id: c.id }, data: { stage: "closed" } })] : []),
+    // A client message puts the case in the inbox as awaiting a reply; a lawyer or admin answer clears it.
+    db.case.update({
+      where: { id: c.id },
+      data: { awaitingReply: isOwner, lastActivityAt: new Date(), ...(close ? { stage: "closed" } : {}) },
+    }),
   ]);
+  if (isOwner) await notifyClientActivity(c);
   revalidatePath(`/cases/${c.id}`);
   return {};
+}
+
+async function afterUpload(c: { id: string; ref: string; lawyerId: string | null }, byClient: boolean) {
+  await db.case.update({ where: { id: c.id }, data: { lastActivityAt: new Date(), ...(byClient ? { awaitingReply: true } : {}) } });
+  if (byClient) await notifyClientActivity(c);
 }
 
 /** Local-disk upload through the server action (development, or deployments without Blob). */
@@ -71,6 +87,7 @@ export async function uploadDocument(caseId: string, _: FormState, fd: FormData)
   await db.document.create({
     data: { caseId: c.id, uploaderId: user.id, mime, size: file.size, storageKey, filename: cleanFilename(file.name, ext) },
   });
+  await afterUpload(c, c.workerId === user.id);
   revalidatePath(`/cases/${c.id}`);
   return {};
 }
@@ -90,6 +107,7 @@ export async function registerDocument(caseId: string, pathname: string, name: s
   await db.document.create({
     data: { caseId: c.id, uploaderId: user.id, mime: info.contentType, size: info.size, storageKey, filename: cleanFilename(name, ext) },
   });
+  await afterUpload(c, c.workerId === user.id);
   revalidatePath(`/cases/${c.id}`);
   return {};
 }
@@ -111,13 +129,25 @@ export async function submitReview(caseId: string, _: FormState, fd: FormData): 
   if (c.workerId !== user.id || !c.lawyerId) return { error: "forbidden" };
   const rating = Number(fd.get("rating"));
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "required" };
-  const comment = str(fd, "comment", 1000) || null;
+  const comment = text(fd, "comment", 1000) || null;
   await db.review.upsert({
     where: { caseId: c.id },
     // Editing a review sends it back for approval.
     update: { rating, comment, approvedAt: null },
     create: { caseId: c.id, authorId: user.id, lawyerId: c.lawyerId, rating, comment },
   });
+  revalidatePath(`/cases/${c.id}`);
+  return {};
+}
+
+/** Internal note on a case: lawyers working on it and admins only. */
+export async function addNote(caseId: string, _: FormState, fd: FormData): Promise<FormState> {
+  const user = await requireUser(["LAWYER", "ADMIN"]);
+  const c = await loadCaseFor(user, caseId);
+  if (!canWorkOn(user, c)) return { error: "forbidden" };
+  const body = text(fd, "body", 4000);
+  if (!body) return { error: "required" };
+  await db.caseNote.create({ data: { caseId: c.id, authorId: user.id, body } });
   revalidatePath(`/cases/${c.id}`);
   return {};
 }

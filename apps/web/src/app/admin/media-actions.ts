@@ -2,13 +2,14 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { censor } from "@huquqi/core";
 import { requireUser } from "@/lib/session";
 import { blobInfo, removeFile, saveFile } from "@/lib/storage";
 import { MAX_LOCAL_BYTES, MAX_MEDIA_BYTES, MEDIA_TYPES, fileType } from "@/lib/documents";
 
 export type MediaState = { error?: string } | undefined;
 const kindOf = (mime: string) => (mime.startsWith("video/") ? "video" : "image");
-const caption = (v: FormDataEntryValue | null | string) => String(v ?? "").trim().slice(0, 200) || null;
+const caption = (v: FormDataEntryValue | null | string) => censor(String(v ?? "").trim().slice(0, 200)) || null;
 
 /** Local-disk upload through the server (development, or deployments without Blob). */
 export async function uploadMedia(_: MediaState, fd: FormData): Promise<MediaState> {

@@ -18,60 +18,80 @@ model User {
   locale    String   @default("bn")
   createdAt DateTime @default(now())
 
-  lawyerProfile LawyerProfile?
-  cases         Case[]         @relation("WorkerCases")
-  assigned      Case[]         @relation("LawyerCases")
-  updates       CaseUpdate[]
-  documents     Document[]
-  reviewsGiven  Review[]       @relation("ReviewAuthor")
-  reviewsGot    Review[]       @relation("ReviewLawyer")
+  lawyerProfile      LawyerProfile?
+  cases              Case[]              @relation("WorkerCases")
+  assigned           Case[]              @relation("LawyerCases")
+  updates            CaseUpdate[]
+  documents          Document[]
+  reviewsGiven       Review[]            @relation("ReviewAuthor")
+  reviewsGot         Review[]            @relation("ReviewLawyer")
+  notes              CaseNote[]          @relation("NoteAuthor")
+  lawyerApplications LawyerApplication[]
 }
 
 model LawyerProfile {
   id         String    @id @default(cuid())
   userId     String    @unique
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  licenseNo  String?   // Saudi Ministry of Justice licence number
+  licenseNo  String? // Saudi Ministry of Justice licence number
   firm       String?
   verifiedAt DateTime?
 }
 
 model OtpCode {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   email     String?
-  phone     String?  // legacy: phone codes from the first version
+  phone     String? // legacy: phone codes from the first version
   codeHash  String
   expiresAt DateTime
-  attempts  Int      @default(0)
+  attempts  Int       @default(0)
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   @@index([email])
 }
 
 model Case {
-  id          String    @id @default(cuid())
-  ref         String    @unique // short human reference, e.g. HQ-7K2P9
-  type        String    // labour | bank | court | poa | commercial | invest | accident | property | translation | hajj | general (old cases: salary | eosb)
-  stage       String    @default("submitted")
-  employer    String?
-  bankName    String?
-  exitDate    DateTime?
-  description String    // the facts, in brief
-  requests    String?   // what the worker asks for now
-  workerId    String
-  worker      User      @relation("WorkerCases", fields: [workerId], references: [id])
-  lawyerId    String?
-  lawyer      User?     @relation("LawyerCases", fields: [lawyerId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  ref            String    @unique // case number: year, month, 0, running number, e.g. 20261101 (older cases keep HQ-XXXXXX)
+  type           String // labour | bank | court | poa | commercial | invest | translation | hajj | general (old cases: salary | eosb | accident | property)
+  stage          String    @default("submitted")
+  employer       String?
+  bankName       String?
+  exitDate       DateTime?
+  description    String // the facts, in brief
+  requests       String? // what the worker asks for now
+  workerId       String
+  worker         User      @relation("WorkerCases", fields: [workerId], references: [id])
+  lawyerId       String?
+  lawyer         User?     @relation("LawyerCases", fields: [lawyerId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  /// True when the client wrote or uploaded something that no lawyer or admin has answered yet.
+  awaitingReply  Boolean   @default(false)
+  lastActivityAt DateTime  @default(now())
 
   updates   CaseUpdate[]
+  notes     CaseNote[]
   documents Document[]
   review    Review?
 
   @@index([workerId])
   @@index([lawyerId])
+  @@index([awaitingReply, lastActivityAt])
+}
+
+/// Internal notes on a case, for lawyers and admins only.
+model CaseNote {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("NoteAuthor", fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
 }
 
 model CaseUpdate {
@@ -80,7 +100,7 @@ model CaseUpdate {
   case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
-  stage     String?  // set when this update moved the case to a new stage
+  stage     String? // set when this update moved the case to a new stage
   body      String
   createdAt DateTime @default(now())
 
@@ -95,8 +115,8 @@ model Document {
   uploader   User     @relation(fields: [uploaderId], references: [id])
   filename   String
   mime       String
-  size       Int      // bytes; Int holds up to 2 GB
-  storageKey String   // "blob:<pathname>" for Vercel Blob, otherwise a path inside UPLOAD_DIR
+  size       Int // bytes; Int holds up to 2 GB
+  storageKey String // "blob:<pathname>" for Vercel Blob, otherwise a path inside UPLOAD_DIR
   createdAt  DateTime @default(now())
 
   @@index([caseId])
@@ -111,7 +131,7 @@ model Review {
   author     User      @relation("ReviewAuthor", fields: [authorId], references: [id])
   lawyerId   String
   lawyer     User      @relation("ReviewLawyer", fields: [lawyerId], references: [id])
-  rating     Int       // 1..5
+  rating     Int // 1..5
   comment    String?
   approvedAt DateTime?
   createdAt  DateTime  @default(now())
@@ -122,7 +142,7 @@ model Review {
 /// Messages from the "Contact us" and "Suggestions & complaints" pages, read by admins.
 model ContactMessage {
   id        String   @id @default(cuid())
-  kind      String   // contact | suggestion | complaint
+  kind      String // contact | suggestion | complaint
   name      String
   email     String
   body      String
@@ -135,12 +155,65 @@ model ContactMessage {
 /// Photos and videos an admin adds to the bottom of the home page.
 model MediaItem {
   id         String   @id @default(cuid())
-  kind       String   // image | video
+  kind       String // image | video
   mime       String
   size       Int
-  storageKey String   // "blob:<pathname>" or a path inside UPLOAD_DIR
+  storageKey String // "blob:<pathname>" or a path inside UPLOAD_DIR
   caption    String?
   createdAt  DateTime @default(now())
 
   @@index([createdAt])
+}
+
+/// One page view. `visitor` is a random id kept in a cookie, never linked to an account.
+model PageView {
+  id        String   @id @default(cuid())
+  day       String // YYYY-MM-DD in Riyadh time
+  visitor   String
+  path      String
+  createdAt DateTime @default(now())
+
+  @@index([day])
+  @@index([visitor])
+}
+
+/// Running case number per month (period = "YYYYMM", Riyadh time).
+model RefCounter {
+  period String @id
+  last   Int
+}
+
+/// A lawyer's request to join. Approving makes the user a verified LAWYER.
+model LawyerApplication {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  licenseNo String
+  firm      String?
+  city      String?
+  years     Int?
+  about     String?
+  status    String    @default("pending") // pending | approved | rejected
+  createdAt DateTime  @default(now())
+  decidedAt DateTime?
+
+  @@index([status, createdAt])
+}
+
+/// A short article of a Saudi law with a plain explanation, shown on the home page one per day.
+/// Only published articles are shown; the starter set is added unpublished for review.
+model LegalArticle {
+  id        String   @id @default(cuid())
+  law       String // law name in Arabic, e.g. "نظام العمل"
+  number    String // article number, e.g. "84"
+  ar        String // short explanation in Arabic
+  bn        String?
+  en        String?
+  starter   String?  @unique // key of a starter article, so the set is added only once
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([published, createdAt])
 }

@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { saveLawyerProfile } from "./actions";
 
-type Row = { id: string; ref: string; type: string; stage: string; createdAt: Date; worker: { name: string | null; email: string | null; phone: string | null } };
+type Row = { id: string; ref: string; type: string; stage: string; createdAt: Date; awaitingReply: boolean; worker: { name: string | null; email: string | null; phone: string | null } };
 
 function CaseList({ rows, t, locale, empty }: { rows: Row[]; t: Awaited<ReturnType<typeof getT>>["t"]; locale: Awaited<ReturnType<typeof getT>>["locale"]; empty: string }) {
   if (!rows.length) return <p className="muted" style={{ margin: 0 }}>{empty}</p>;
@@ -20,7 +20,10 @@ function CaseList({ rows, t, locale, empty }: { rows: Row[]; t: Awaited<ReturnTy
               <b>{t.caseType[c.type as CaseType]}</b>
               <span className="muted num" style={{ fontSize: 14 }}>{c.ref} · {who(c.worker)} · {formatDate(c.createdAt, locale)}</span>
             </span>
-            <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span>
+            <span className="inline" style={{ gap: 6 }}>
+              {c.awaitingReply && <span className="pill new">{t.inbox.newReply}</span>}
+              <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span>
+            </span>
           </Link>
         </li>
       ))}
@@ -34,7 +37,7 @@ export default async function LawyerPanel() {
   const verified = isVerifiedLawyer(user);
   const include = { worker: { select: { name: true, email: true, phone: true } } };
   const [mine, open] = await Promise.all([
-    db.case.findMany({ where: { lawyerId: user.id }, include, orderBy: { updatedAt: "desc" } }),
+    db.case.findMany({ where: { lawyerId: user.id }, include, orderBy: [{ awaitingReply: "desc" }, { lastActivityAt: "desc" }] }),
     verified || user.role === "ADMIN"
       ? db.case.findMany({ where: { lawyerId: null }, include, orderBy: { createdAt: "asc" } })
       : Promise.resolve([]),

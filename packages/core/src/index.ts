@@ -3,3 +3,4 @@ export * from "./deadlines";
 export * from "./phone";
 export * from "./email";
 export * from "./i18n";
+export * from "./profanity";

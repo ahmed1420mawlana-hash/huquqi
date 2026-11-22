@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
-import { normaliseEmail, normalisePhone } from "@huquqi/core";
+import { censor, normaliseEmail, normalisePhone } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getLocale } from "@/lib/locale";
 import { issueOtp, verifyOtp } from "@/lib/otp";
@@ -41,7 +41,7 @@ export async function loginAction(prev: LoginState, fd: FormData): Promise<Login
   if (!(await verifyOtp(target, String(fd.get("code") ?? "")))) return { ...prev, error: "badCode" };
 
   const locale = await getLocale();
-  const name = String(fd.get("name") ?? "").trim().slice(0, 80) || null;
+  const name = censor(String(fd.get("name") ?? "").trim().slice(0, 80)) || null;
   const user =
     prev.via === "phone"
       ? await db.user.upsert({
