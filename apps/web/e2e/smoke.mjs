@@ -53,6 +53,23 @@ try {
   ok(!(await w.locator("#case-salary details.more .res").first().isVisible()), "and folded away");
   await w.click('.starter-head[data-type="hajj"]');
   ok(await seen(w, "#case-hajj .res >> text=নুসুক"), "Hajj and Umrah option explains itself");
+  // The "Huquqi" name opens the site menu; the contact and feedback forms reach the admin.
+  await w.click("button.brand");
+  ok(await w.locator("#site-menu a").count() === 9, "brand menu lists contact, feedback, partners, about and more");
+  await w.click('#site-menu a[href="/feedback"]');
+  await w.waitForURL("**/feedback");
+  ok(await w.locator("#site-menu").waitFor({ state: "detached", timeout: 5000 }).then(() => true, () => false), "menu closes after choosing");
+  const complaint = `Slow reply test ${Date.now()}`;
+  await w.click('label.chip:has(input[value="complaint"])');
+  await w.fill("#c-name", "Rahim");
+  await w.fill("#c-email", "rahim@example.com");
+  await w.fill("#c-body", complaint);
+  await w.click("form:has(#c-body) button.btn");
+  ok(await seen(w, ".okmsg"), "complaint sent");
+  for (const p of ["/contact", "/partners", "/about", "/how", "/faq", "/join", "/privacy"]) {
+    ok((await w.goto(BASE + p)).status() === 200 && (await w.locator("h1").count()) === 1, `${p} page loads`);
+  }
+
   await w.goto(BASE + "/login");
   await w.fill("#email", "not-an-email");
   await w.click('button[value="send"]');
@@ -181,6 +198,26 @@ try {
   await a.click('button[value="verify"]');
   await a.waitForURL("**/admin");
   ok(true, "admin logged in by phone");
+  ok(await seen(a, `td >> text=${complaint}`), "admin sees the complaint");
+
+  // Admin adds a photo and a video; they show at the bottom of the home page.
+  const png = path.join(tmpdir(), "hq-photo.png");
+  writeFileSync(png, Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64"));
+  const vid = path.join(tmpdir(), "hq-clip.webm");
+  writeFileSync(vid, Buffer.alloc(4096, 1));
+  const cap = `Gallery test ${Date.now()}`;
+  await a.setInputFiles("#media-file", [png, vid]);
+  await a.fill("#media-caption", cap);
+  await a.click("form:has(#media-file) button");
+  await a.waitForFunction((c) => [...document.querySelectorAll(".gallery-grid.admin p")].filter((p) => p.textContent === c).length === 2, cap);
+  ok(true, "admin uploaded a photo and a video");
+  const anonHome = await (await newPage()).newPage();
+  await anonHome.goto(BASE + "/");
+  ok(await seen(anonHome, `.gallery >> text=${cap}`), "photos and videos show on the home page");
+  ok(await anonHome.locator(".gallery video").count() >= 1, "video player on the home page");
+  const vsrc = await anonHome.locator(".gallery video").first().getAttribute("src");
+  const part = await anonHome.request.get(BASE + vsrc, { headers: { Range: "bytes=0-99" } });
+  ok(part.status() === 206 && (await part.body()).length === 100, "video supports seeking (range requests)");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");
   await a.click(`tr:has-text("${reviewText}") button >> nth=0`);
   await a.waitForLoadState("networkidle");

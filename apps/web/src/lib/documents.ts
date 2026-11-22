@@ -29,3 +29,11 @@ export function fileType(name: string, type: string): string {
 export function cleanFilename(name: string, ext = ""): string {
   return name.replace(/[^\p{L}\p{N}._ -]/gu, "_").slice(0, 120) || `document${ext}`;
 }
+
+/** Photos and videos for the home page gallery. */
+export const MEDIA_TYPES = new Map([
+  ["image/jpeg", ".jpg"], ["image/png", ".png"], ["image/webp", ".webp"],
+  ["video/mp4", ".mp4"], ["video/webm", ".webm"], ["video/quicktime", ".mov"],
+]);
+export const MEDIA_ACCEPT = [...MEDIA_TYPES.keys()].join(",");
+export const MAX_MEDIA_BYTES = 500 * 1024 * 1024;

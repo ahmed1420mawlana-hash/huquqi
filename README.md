@@ -16,7 +16,8 @@ Bengali, Arabic and English.
 | Login | Customers and lawyers: email + one-time code (sent through Resend). Admins: mobile number + code, via the "Admin login" link, only for numbers in `ADMIN_PHONES` |
 | Worker | Open a case in one of 8 areas (salary, end of service, bank, court, accident, property, document translation, Hajj & Umrah visas) with three boxes: the facts in brief, the requests, and documents (PDF, images or Word, several at once, up to 500 MB / about 1,000 pages per file). Message the lawyer, rate the lawyer |
 | Lawyer | Profile with licence number, take unassigned cases (after admin verification), post updates, close the case |
-| Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews |
+| Admin | Add lawyers by email, verify licences, assign cases, publish or hide reviews, read contact messages, suggestions and complaints, add photos and videos to the home page |
+| Site menu | The "Huquqi" name opens: contact us, suggestions & complaints, partners, about us, how it works, FAQ, join as a lawyer, privacy |
 | Languages | Bengali (default), Arabic (right-to-left), English, switchable on every page |
 
 Not yet built: payments (bKash/Nagad), the Expo mobile app, machine translation

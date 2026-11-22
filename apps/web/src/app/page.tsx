@@ -3,6 +3,7 @@ import { getT } from "@/lib/locale";
 import { currentUser } from "@/lib/session";
 import { Marks } from "@/components/Marks";
 import { Reviews } from "@/components/Reviews";
+import { Gallery } from "@/components/Gallery";
 import { CaseStarter } from "@/components/CaseStarter";
 import { directUploads } from "@/lib/storage";
 
@@ -33,6 +34,7 @@ export default async function Home() {
         </div>
       </div>
       <Reviews t={t} locale={locale} />
+      <Gallery t={t} />
     </>
   );
 }

@@ -118,3 +118,29 @@ model Review {
 
   @@index([approvedAt])
 }
+
+/// Messages from the "Contact us" and "Suggestions & complaints" pages, read by admins.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  kind      String   // contact | suggestion | complaint
+  name      String
+  email     String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+}
+
+/// Photos and videos an admin adds to the bottom of the home page.
+model MediaItem {
+  id         String   @id @default(cuid())
+  kind       String   // image | video
+  mime       String
+  size       Int
+  storageKey String   // "blob:<pathname>" or a path inside UPLOAD_DIR
+  caption    String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

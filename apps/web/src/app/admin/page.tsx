@@ -1,19 +1,24 @@
 import Link from "next/link";
-import { type CaseType } from "@huquqi/core";
+import { formatDate, type CaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
 import { who } from "@/lib/who";
 import { Stars } from "@/components/Stars";
+import { directUploads } from "@/lib/storage";
+import { MediaForm } from "./MediaForm";
+import { removeMedia } from "./media-actions";
 import { assignLawyer, makeLawyer, setReviewApproved, verifyLawyer } from "./actions";
 
 export default async function Admin() {
   await requireUser(["ADMIN"]);
-  const { t } = await getT();
-  const [lawyers, cases, reviews] = await Promise.all([
+  const { locale, t } = await getT();
+  const [lawyers, cases, reviews, inbox, media] = await Promise.all([
     db.user.findMany({ where: { role: "LAWYER" }, include: { lawyerProfile: true }, orderBy: { createdAt: "desc" } }),
     db.case.findMany({ include: { worker: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 200 }),
     db.review.findMany({ include: { author: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 100 }),
+    db.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
+    db.mediaItem.findMany({ orderBy: { createdAt: "desc" } }),
   ]);
   const verified = lawyers.filter((l) => l.lawyerProfile?.verifiedAt);
 
@@ -104,6 +109,48 @@ export default async function Admin() {
                       <button className={`btn small ${r.approvedAt ? "ghost" : ""}`}>{r.approvedAt ? t.reviews.hide : t.reviews.approve}</button>
                     </form>
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="card stack">
+        <h2>{t.gallery.title}</h2>
+        <MediaForm locale={locale} direct={directUploads()} />
+        {media.length > 0 && (
+          <ul className="gallery-grid admin">
+            {media.map((m) => (
+              <li key={m.id} className="card">
+                {m.kind === "video" ? (
+                  <video src={`/api/media/${m.id}`} controls preload="metadata" playsInline />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/api/media/${m.id}`} alt={m.caption ?? ""} loading="lazy" />
+                )}
+                {m.caption && <p>{m.caption}</p>}
+                <form action={removeMedia.bind(null, m.id)}><button className="btn small ghost">{t.gallery.remove}</button></form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="card stack">
+        <h2>{t.info.inbox}</h2>
+        <div className="tablewrap">
+          <table>
+            <thead><tr><th>{t.info.kind}</th><th>{t.info.name}</th><th>{t.info.email}</th><th>{t.info.message}</th><th /></tr></thead>
+            <tbody>
+              {inbox.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
+              {inbox.map((m) => (
+                <tr key={m.id}>
+                  <td><span className={`pill ${m.kind === "complaint" ? "closed" : ""}`}>{m.kind === "complaint" ? t.info.complaint : m.kind === "suggestion" ? t.info.suggestion : t.info.contact}</span></td>
+                  <td>{m.name}</td>
+                  <td dir="ltr" style={{ textAlign: "start" }}><a href={`mailto:${m.email}`}>{m.email}</a></td>
+                  <td style={{ whiteSpace: "pre-wrap", maxWidth: 420 }}>{m.body}</td>
+                  <td className="muted num" style={{ fontSize: 13 }}>{formatDate(m.createdAt, locale)}</td>
                 </tr>
               ))}
             </tbody>

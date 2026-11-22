@@ -57,6 +57,15 @@ type Msgs = {
   };
   admin: { title: string; lawyers: string; verify: string; verified: string; cases: string; assign: string; none: string; makeLawyer: string; phone: string; email: string; reviews: string };
   common: { save: string; back: string; required: string; forbidden: string; notFound: string };
+  info: {
+    menu: string; contact: string; contactLead: string; feedback: string; feedbackLead: string;
+    suggestion: string; complaint: string; kind: string; partners: string; partnersLead: string; partnersBody: string[];
+    about: string; aboutBody: string[]; name: string; email: string; message: string; send: string; sent: string;
+    error: string; inbox: string; becomePartner: string;
+    how: string; howSteps: { title: string; body: string }[]; faq: string; faqItems: { q: string; a: string }[];
+    privacy: string; privacyBody: string[]; joinLawyer: string; joinLawyerBody: string[]; joinLawyerCta: string;
+  };
+  gallery: { title: string; lead: string; add: string; caption: string; file: string; hint: string; upload: string; remove: string; done: string; failed: string };
   marks: { scales: string; gavel: string; flag: string };
   labour: { more: string };
   status: { open: string; closed: string; close: string };
@@ -118,6 +127,37 @@ const bn: Msgs = {
   },
   admin: { title: "অ্যাডমিন", lawyers: "উকিল", verify: "যাচাই করুন", verified: "যাচাইকৃত", cases: "সব মামলা", assign: "উকিল দিন", none: "কিছু নেই", makeLawyer: "উকিল হিসেবে যোগ করুন", phone: "মোবাইল", email: "ইমেইল", reviews: "মূল্যায়ন" },
   common: { save: "সংরক্ষণ", back: "পেছনে", required: "এই ঘরটি পূরণ করুন।", forbidden: "এই পাতায় আপনার প্রবেশাধিকার নেই।", notFound: "পাওয়া যায়নি।" },
+  info: {
+    menu: "মেনু", contact: "যোগাযোগ করুন", contactLead: "প্রশ্ন বা সাহায্যের জন্য লিখুন। আমরা ইমেইলে উত্তর দেব।",
+    feedback: "পরামর্শ ও অভিযোগ", feedbackLead: "আমাদের আরও ভালো করতে আপনার পরামর্শ বা অভিযোগ জানান।",
+    suggestion: "পরামর্শ", complaint: "অভিযোগ", kind: "ধরন",
+    partners: "আমাদের অংশীদার", partnersLead: "যাঁদের সঙ্গে আমরা কাজ করি।",
+    partnersBody: ["সৌদি আরবের লাইসেন্সপ্রাপ্ত আইনজীবী ও ল ফার্ম, যাঁরা ওকালার মাধ্যমে মামলা চালান।", "প্রত্যয়িত অনুবাদ অফিস, আদালত ও দপ্তরের কাগজপত্রের জন্য।", "বাংলাদেশে প্রবাসী ও ফেরত আসা কর্মীদের সেবা দেওয়া প্রতিষ্ঠান।"],
+    about: "আমাদের সম্পর্কে",
+    aboutBody: ["হুকুকি সৌদি আরব থেকে ফেরা বাংলাদেশি প্রবাসীদের সেখানে রেখে আসা অধিকার আদায়ে সাহায্য করে: বকেয়া বেতন, খিদমা, ব্যাংকের টাকা, মামলা, দুর্ঘটনার ক্ষতিপূরণ, কাগজপত্র অনুবাদ এবং হজ ও উমরাহ ভিসা।", "সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল আপনার হয়ে কাজ করেন, আর আপনি বাংলাদেশে বসে নিজের ভাষায় সব দেখতে পান।"],
+    name: "নাম", email: "ইমেইল", message: "বার্তা", send: "পাঠান", sent: "ধন্যবাদ, আপনার বার্তা পৌঁছেছে।", error: "নাম, সঠিক ইমেইল ও বার্তা লিখুন।",
+    inbox: "বার্তা, পরামর্শ ও অভিযোগ", becomePartner: "অংশীদার হতে চাইলে যোগাযোগ করুন",
+    how: "কীভাবে কাজ করে",
+    howSteps: [
+      { title: "বিষয় বেছে নিন", body: "মামলার ধরন বেছে নিয়ে তিনটি ঘর পূরণ করুন: ঘটনা, দাবি ও কাগজপত্র।" },
+      { title: "উকিল দেখবেন", body: "সৌদি আরবের একজন লাইসেন্সপ্রাপ্ত উকিল মামলাটি পর্যালোচনা করে নেবেন।" },
+      { title: "ওকালা (পাওয়ার অব অ্যাটর্নি)", body: "প্রয়োজনে উকিল আপনার পক্ষে কাজ করার জন্য ওকালা প্রস্তুত করবেন।" },
+      { title: "অগ্রগতি দেখুন", body: "উকিলের প্রতিটি আপডেট আপনি নিজের ভাষায় দেখবেন এবং বার্তা পাঠাতে পারবেন।" },
+    ],
+    faq: "সাধারণ প্রশ্ন",
+    faqItems: [
+      { q: "সৌদি ছেড়ে আসার পরও কি অধিকার আদায় সম্ভব?", a: "হ্যাঁ। একজন সৌদি উকিল ওকালার মাধ্যমে আপনার হয়ে কাজ করতে পারেন। আপনাকে সৌদিতে যেতে হবে না।" },
+      { q: "ব্যাংকের টাকা কি হারিয়ে যায়?", a: "না। ইকামার মেয়াদ শেষ হলে অ্যাকাউন্ট ফ্রিজ হয়, কিন্তু টাকা আপনারই থাকে।" },
+      { q: "শ্রম মামলার কি সময়সীমা আছে?", a: "হ্যাঁ, চাকরি শেষ হওয়ার ১২ মাসের মধ্যে মামলা করতে হয়। তাই দেরি করবেন না।" },
+      { q: "আমার কাগজপত্র কি নিরাপদ?", a: "কাগজপত্র গোপনে রাখা হয়। শুধু আপনি, আপনার উকিল ও অ্যাডমিন দেখতে পারেন।" },
+    ],
+    privacy: "গোপনীয়তা",
+    privacyBody: ["আমরা শুধু মামলার জন্য প্রয়োজনীয় তথ্য সংগ্রহ করি: আপনার ইমেইল, নাম, মামলার বিবরণ ও কাগজপত্র।", "আপনার মামলা ও কাগজপত্র শুধু আপনি, নিযুক্ত উকিল ও অ্যাডমিন দেখতে পারেন। আমরা কারো কাছে তথ্য বিক্রি করি না।", "আপনার তথ্য মুছে ফেলতে চাইলে ‘যোগাযোগ করুন’ থেকে আমাদের লিখুন।"],
+    joinLawyer: "উকিল হিসেবে যোগ দিন",
+    joinLawyerBody: ["আপনি যদি সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল হন, বিদেশি কর্মীদের মামলায় আমাদের সঙ্গে কাজ করুন।", "লাইসেন্স যাচাইয়ের পর আপনি নতুন মামলা নিতে পারবেন।"],
+    joinLawyerCta: "আবেদন করতে যোগাযোগ করুন",
+  },
+  gallery: { title: "ছবি ও ভিডিও", lead: "আমাদের কাজ ও খবর।", add: "ছবি বা ভিডিও যোগ করুন", caption: "ক্যাপশন (ঐচ্ছিক)", file: "ফাইল", hint: "ছবি (JPG, PNG, WEBP) বা ভিডিও (MP4, WEBM), ভিডিও ৫০০ MB পর্যন্ত।", upload: "আপলোড", remove: "সরান", done: "যোগ হয়েছে।", failed: "আপলোড হয়নি।" },
   marks: { scales: "ন্যায়ের দাঁড়িপাল্লা", gavel: "বিচারকের হাতুড়ি", flag: "বাংলাদেশের পতাকা" },
   labour: { more: "শ্রম মামলার সময়সীমা ও বিস্তারিত" },
   status: { open: "চলমান", closed: "বন্ধ", close: "মামলা বন্ধ করুন" },
@@ -180,6 +220,37 @@ const ar: Msgs = {
   },
   admin: { title: "الإدارة", lawyers: "المحامون", verify: "توثيق", verified: "موثّق", cases: "كل القضايا", assign: "تعيين محامٍ", none: "لا شيء", makeLawyer: "إضافة كمحامٍ", phone: "الجوال", email: "البريد", reviews: "التقييمات" },
   common: { save: "حفظ", back: "رجوع", required: "هذا الحقل مطلوب.", forbidden: "ليست لديك صلاحية لهذه الصفحة.", notFound: "غير موجود." },
+  info: {
+    menu: "القائمة", contact: "تواصل معنا", contactLead: "اكتب لنا سؤالك أو طلبك، ونرد عليك على بريدك.",
+    feedback: "المقترحات والشكاوى", feedbackLead: "شاركنا مقترحك أو شكواك لنحسّن خدمتنا.",
+    suggestion: "مقترح", complaint: "شكوى", kind: "النوع",
+    partners: "شركاؤنا", partnersLead: "الجهات التي نعمل معها.",
+    partnersBody: ["محامون ومكاتب محاماة سعودية مرخصة، يتابعون القضايا بالوكالة.", "مكاتب ترجمة معتمدة لمستندات المحاكم والجهات الرسمية.", "جهات في بنغلاديش تخدم العمالة المغتربة والعائدة."],
+    about: "التعريف بنا",
+    aboutBody: ["حقوقي منصة تساعد العمالة البنغلاديشية العائدة من السعودية على استرداد حقوقها هناك: الرواتب المتأخرة، ومكافأة نهاية الخدمة، والأرصدة البنكية، والقضايا، وتعويضات الحوادث، وترجمة المستندات، وتأشيرات الحج والعمرة.", "يعمل محامٍ سعودي مرخّص نيابةً عن العميل، والعميل يتابع كل شيء من بلده وبلغته."],
+    name: "الاسم", email: "البريد الإلكتروني", message: "الرسالة", send: "إرسال", sent: "شكراً، وصلتنا رسالتك.", error: "اكتب الاسم وبريداً صحيحاً والرسالة.",
+    inbox: "الرسائل والمقترحات والشكاوى", becomePartner: "للانضمام كشريك تواصل معنا",
+    how: "كيف تعمل المنصة",
+    howSteps: [
+      { title: "اختر نوع القضية", body: "اختر الخيار المناسب وعبّئ الخانات الثلاث: الوقائع، والطلبات، والمستندات." },
+      { title: "مراجعة المحامي", body: "يراجع القضية محامٍ سعودي مرخّص ويستلمها." },
+      { title: "الوكالة", body: "عند الحاجة يجهّز المحامي وكالة ليعمل نيابةً عنك." },
+      { title: "تابع قضيتك", body: "تصلك تحديثات المحامي بلغتك، وتقدر تراسله من المنصة." },
+    ],
+    faq: "الأسئلة الشائعة",
+    faqItems: [
+      { q: "هل أقدر أطالب بحقوقي بعد ما غادرت السعودية؟", a: "نعم. يقدر محامٍ سعودي يتابع عنك بالوكالة، وما تحتاج ترجع للسعودية." },
+      { q: "هل تضيع فلوسي في البنك؟", a: "لا. الحساب يُجمَّد بعد انتهاء الإقامة، لكن المال يبقى حقك." },
+      { q: "هل للقضية العمالية مهلة؟", a: "نعم، تُرفع خلال 12 شهراً من انتهاء العلاقة العمالية، فلا تتأخر." },
+      { q: "هل مستنداتي في أمان؟", a: "المستندات محفوظة بشكل خاص، ولا يطّلع عليها إلا أنت ومحاميك والإدارة." },
+    ],
+    privacy: "الخصوصية",
+    privacyBody: ["نجمع فقط ما تحتاجه القضية: بريدك، واسمك، وتفاصيل القضية، والمستندات.", "قضيتك ومستنداتك لا يراها إلا أنت والمحامي المكلّف والإدارة، ولا نبيع بياناتك لأي جهة.", "لحذف بياناتك، راسلنا من صفحة «تواصل معنا»."],
+    joinLawyer: "انضم كمحامٍ",
+    joinLawyerBody: ["إذا كنت محامياً سعودياً مرخّصاً، انضم إلينا لمتابعة قضايا العمالة الوافدة.", "بعد التحقق من الترخيص تقدر تستلم القضايا الجديدة."],
+    joinLawyerCta: "تواصل معنا للتقديم",
+  },
+  gallery: { title: "الصور والفيديوهات", lead: "من أعمالنا وأخبارنا.", add: "إضافة صور أو فيديو", caption: "وصف (اختياري)", file: "الملف", hint: "صور (JPG أو PNG أو WEBP) أو فيديو (MP4 أو WEBM) حتى 500 ميجابايت.", upload: "رفع", remove: "حذف", done: "تمت الإضافة.", failed: "تعذّر الرفع." },
   marks: { scales: "ميزان العدالة", gavel: "مطرقة القاضي", flag: "علم بنغلاديش" },
   labour: { more: "مهلة القضية العمالية وتفاصيلها" },
   status: { open: "قائمة", closed: "مغلقة", close: "إغلاق القضية" },
@@ -242,6 +313,37 @@ const en: Msgs = {
   },
   admin: { title: "Admin", lawyers: "Lawyers", verify: "Verify", verified: "Verified", cases: "All cases", assign: "Assign lawyer", none: "Nothing here", makeLawyer: "Add as lawyer", phone: "Mobile", email: "Email", reviews: "Reviews" },
   common: { save: "Save", back: "Back", required: "This field is required.", forbidden: "You don't have access to this page.", notFound: "Not found." },
+  info: {
+    menu: "Menu", contact: "Contact us", contactLead: "Write to us with a question or request. We reply by email.",
+    feedback: "Suggestions & complaints", feedbackLead: "Tell us your suggestion or complaint so we can do better.",
+    suggestion: "Suggestion", complaint: "Complaint", kind: "Type",
+    partners: "Our partners", partnersLead: "Who we work with.",
+    partnersBody: ["Licensed Saudi lawyers and law firms, who act under power of attorney.", "Certified translation offices, for court and government documents.", "Organisations in Bangladesh that serve migrant and returning workers."],
+    about: "About us",
+    aboutBody: ["Huquqi helps Bangladeshi workers who have returned from Saudi Arabia recover what they are owed there: unpaid salary, end-of-service benefit, bank balances, court cases, accident compensation, document translation and Hajj & Umrah visas.", "A licensed Saudi lawyer acts on the client's behalf, and the client follows everything from home, in their own language."],
+    name: "Name", email: "Email", message: "Message", send: "Send", sent: "Thank you, we received your message.", error: "Enter your name, a valid email and a message.",
+    inbox: "Messages, suggestions & complaints", becomePartner: "To become a partner, contact us",
+    how: "How it works",
+    howSteps: [
+      { title: "Pick your case", body: "Choose the type of case and fill in the three boxes: the facts, your requests and the documents." },
+      { title: "A lawyer reviews it", body: "A licensed Saudi lawyer reviews the case and takes it on." },
+      { title: "Power of attorney", body: "When needed, the lawyer prepares a power of attorney to act for you." },
+      { title: "Follow your case", body: "You see every update from the lawyer in your language, and can message them." },
+    ],
+    faq: "Questions",
+    faqItems: [
+      { q: "Can I still claim after leaving Saudi Arabia?", a: "Yes. A Saudi lawyer can act for you under a power of attorney. You do not need to travel back." },
+      { q: "Is the money in my bank account lost?", a: "No. The account is frozen after the iqama expires, but the money is still yours." },
+      { q: "Is there a deadline for labour claims?", a: "Yes, a claim must be filed within 12 months of the end of employment, so do not wait." },
+      { q: "Are my documents safe?", a: "Documents are stored privately. Only you, your lawyer and the admins can see them." },
+    ],
+    privacy: "Privacy",
+    privacyBody: ["We only collect what your case needs: your email, name, case details and documents.", "Only you, the assigned lawyer and the admins can see your case and documents. We never sell your data.", "To have your data deleted, write to us from \"Contact us\"."],
+    joinLawyer: "Join as a lawyer",
+    joinLawyerBody: ["If you are a licensed Saudi lawyer, work with us on cases for migrant workers.", "Once your licence is verified you can take new cases."],
+    joinLawyerCta: "Contact us to apply",
+  },
+  gallery: { title: "Photos & videos", lead: "Our work and news.", add: "Add photos or a video", caption: "Caption (optional)", file: "File", hint: "Images (JPG, PNG, WEBP) or video (MP4, WEBM), up to 500 MB.", upload: "Upload", remove: "Remove", done: "Added.", failed: "Upload failed." },
   marks: { scales: "Scales of justice", gavel: "Judge's gavel", flag: "Flag of Bangladesh" },
   labour: { more: "Labour claim deadline and details" },
   status: { open: "Open", closed: "Closed", close: "Close case" },
