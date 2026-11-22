@@ -126,7 +126,7 @@ const bn: Msgs = {
     disclaimer: "এটি একটি প্রাথমিক নির্দেশিকা, আইনি পরামর্শ নয়। চূড়ান্ত মূল্যায়ন করবেন সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল।",
   },
   bankStatus: { active: "এখনো চালু থাকতে পারে", frozen: "সম্ভবত ফ্রিজ", holding: "টাকা আলাদা অ্যাকাউন্টে", unclaimed: "দাবিহীন, কিন্তু টাকা আপনারই" },
-  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ ও সত্যায়ন", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "অন্যান্য বিষয়", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি" },
+  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ ও সত্যায়ন", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "সাধারণ মামলা", poa: "ওকালা (পাওয়ার অব অ্যাটর্নি) তৈরি", invest: "সৌদিতে বিনিয়োগ ও প্রিমিয়াম রেসিডেন্সি" },
   stage: { submitted: "জমা হয়েছে", review: "উকিল দেখছেন", poa: "ওকালা প্রস্তুত", filed: "আবেদন জমা", hearing: "বৈঠক / শুনানি", judgment: "রায় / উত্তর", payout: "টাকা পাঠানো", closed: "বন্ধ" },
   auth: {
     title: "ইমেইল দিয়ে লগইন", email: "ইমেইল", emailHint: "আমরা আপনার ইমেইলে একটি ৬ সংখ্যার কোড পাঠাব।", send: "কোড পাঠান",
@@ -370,7 +370,7 @@ const en: Msgs = {
     disclaimer: "This is first guidance, not legal advice. A licensed Saudi lawyer gives the final review.",
   },
   bankStatus: { active: "May still be active", frozen: "Likely frozen", holding: "Balance in holding account", unclaimed: "Unclaimed, but still yours" },
-  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation & attestation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency" },
+  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation & attestation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General cases", poa: "Power of attorney", invest: "Investing in Saudi Arabia & Premium Residency" },
   stage: { submitted: "Submitted", review: "Under review", poa: "Power of attorney", filed: "Filed", hearing: "Sessions", judgment: "Decision", payout: "Paid out", closed: "Closed" },
   auth: {
     title: "Log in with your email", email: "Email", emailHint: "We send a 6-digit code to your email.", send: "Send code",

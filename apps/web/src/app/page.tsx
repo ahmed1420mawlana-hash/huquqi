@@ -6,6 +6,7 @@ import { Reviews } from "@/components/Reviews";
 import { Gallery } from "@/components/Gallery";
 import { CaseStarter } from "@/components/CaseStarter";
 import { DailyArticle } from "@/components/DailyArticle";
+import { HeroSkyline } from "@/components/HeroSkyline";
 import { directUploads } from "@/lib/storage";
 
 export default async function Home() {
@@ -16,7 +17,8 @@ export default async function Home() {
     <>
       <div className="hero">
         <div className="wrap hero-grid">
-          <div className="stack">
+          <div className="stack hero-text">
+            <HeroSkyline />
             <Marks labels={t.marks} />
             <div className="eyebrow">{t.home.eyebrow}</div>
             <h1>{t.home.title}</h1>
