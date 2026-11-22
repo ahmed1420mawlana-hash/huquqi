@@ -67,7 +67,9 @@ Demo accounts after seeding:
    | `ADMIN_EMAILS` | optional: admin email addresses (comma separated) |
    | `RESEND_API_KEY`, `EMAIL_FROM` | optional: a [Resend](https://resend.com) key and a sender on your verified domain, to email the codes |
 
-4. Deploy. The `vercel-build` script creates the tables in Neon before building.
+4. Deploy. The `vercel-build` script creates or updates the tables in Neon before building. It never
+   passes `--accept-data-loss`: `prisma/pre-push.sql` first adds new unique columns (such as `User.email`)
+   in a way that keeps existing rows, so `prisma db push` can apply the rest safely.
 5. **Storage**: in the Vercel project, Storage → Create → Blob, and connect it to the project. This adds
    `BLOB_READ_WRITE_TOKEN`; the browser then uploads documents straight to private blobs (large files in parts,
    so 1,000-page PDFs work despite Vercel's 4.5 MB request limit). Redeploy after connecting.
