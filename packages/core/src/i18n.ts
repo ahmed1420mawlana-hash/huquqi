@@ -2,6 +2,9 @@ import type { CaseType, Stage, } from "./cases";
 import type { BankStatus } from "./deadlines";
 
 export const LOCALES = ["bn", "ar", "en"] as const;
+export const PROVIDER_SERVICES = ["consultant", "translator", "agent", "expert", "office", "other"] as const;
+export type ProviderService = (typeof PROVIDER_SERVICES)[number];
+
 type OfferedType = "general" | "court" | "commercial" | "invest" | "realestate" | "poa" | "translation" | "hajj" | "labour" | "bank";
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "bn";
@@ -69,6 +72,8 @@ type Msgs = {
     city: string; years: string; about: string; phone: string;
     applyTitle: string; applyLead: string; applyLogin: string; applySend: string; applySent: string; applyError: string;
     applyStatus: string; alreadyLawyer: string;
+    provTitle: string; provLead: string; provError: string; service: string; services: Record<ProviderService, string>;
+    licenseOpt: string; kindLawyer: string; kindProvider: string; provApproveNote: string;
   };
   admin: { title: string; lawyers: string; verify: string; verified: string; cases: string; assign: string; none: string; makeLawyer: string; phone: string; email: string; reviews: string };
   common: { save: string; back: string; required: string; forbidden: string; notFound: string };
@@ -79,6 +84,7 @@ type Msgs = {
     error: string; inbox: string; becomePartner: string;
     how: string; howSteps: { title: string; body: string }[]; faq: string; faqItems: { q: string; a: string }[];
     privacy: string; privacyBody: string[]; joinLawyer: string; joinLawyerBody: string[]; joinLawyerCta: string;
+    joinProvider: string; joinProviderBody: string[];
   };
   inbox: {
     title: string; open: string; search: string; allTypes: string; allStatus: string; anyLawyer: string;
@@ -194,13 +200,17 @@ const bn: Msgs = {
   },
   staff: {
     nav: "পরিচালনা", clients: "গ্রাহক ও তাদের মামলা", clientsLead: "প্রতিটি গ্রাহক, তাদের মামলা সংখ্যা ও সর্বশেষ মামলা।",
-    apps: "উকিলদের আবেদন", appsLead: "যোগ দিতে চাওয়া উকিলদের আবেদন। গ্রহণ করলে তিনি যাচাইকৃত উকিল হবেন।", pending: (n) => `${n}টি অপেক্ষমাণ`,
+    apps: "যোগদানের আবেদন", appsLead: "যোগ দিতে চাওয়া উকিল ও সেবাদাতাদের আবেদন। উকিলকে গ্রহণ করলে তিনি যাচাইকৃত উকিল হবেন।", pending: (n) => `${n}টি অপেক্ষমাণ`,
     cases: "মামলা", lastCase: "সর্বশেষ মামলা", joined: "যোগদান", search: "নাম, ইমেইল, মোবাইল বা মামলা নম্বর দিয়ে খুঁজুন", noCases: "কোনো মামলা নেই", openInbox: "মামলার ইনবক্সে দেখুন",
     approve: "গ্রহণ করুন", reject: "প্রত্যাখ্যান", approved: "গৃহীত", rejected: "প্রত্যাখ্যাত", pendingLabel: "অপেক্ষমাণ", history: "আগের আবেদন",
     city: "শহর", years: "অভিজ্ঞতার বছর", about: "আপনার সম্পর্কে সংক্ষেপে", phone: "মোবাইল",
     applyTitle: "উকিল হিসেবে আবেদন", applyLead: "তথ্য দিন। অ্যাডমিন লাইসেন্স যাচাই করে আবেদন গ্রহণ করবেন।", applyLogin: "আবেদন করতে আগে ইমেইল দিয়ে লগইন করুন",
     applySend: "আবেদন পাঠান", applySent: "আপনার আবেদন পৌঁছেছে। যাচাইয়ের পর জানানো হবে।", applyError: "লাইসেন্স নম্বর ও মোবাইল দিন।",
     applyStatus: "আবেদনের অবস্থা", alreadyLawyer: "আপনি ইতিমধ্যে উকিল হিসেবে নিবন্ধিত।",
+    provTitle: "সেবাদাতা হিসেবে আবেদন", provLead: "আপনি কোন সেবা দেন তা বেছে নিন ও তথ্য দিন। অ্যাডমিন যাচাই করে যোগাযোগ করবেন।", provError: "সেবার ধরন ও মোবাইল দিন।",
+    service: "সেবার ধরন", licenseOpt: "লাইসেন্স বা নিবন্ধন নম্বর (থাকলে)", kindLawyer: "উকিল", kindProvider: "সেবাদাতা",
+    provApproveNote: "গ্রহণ করলে আবেদন গৃহীত হিসেবে চিহ্নিত হবে; সেবাদাতার সঙ্গে যোগাযোগ করুন।",
+    services: { consultant: "আইন পরামর্শক", translator: "অনুমোদিত অনুবাদক", agent: "সরকারি কাজের প্রতিনিধি (মুআক্কিব)", expert: "অভিজ্ঞ ব্যক্তি", office: "সেবা অফিস", other: "অন্যান্য" },
   },
   admin: { title: "অ্যাডমিন", lawyers: "উকিল", verify: "যাচাই করুন", verified: "যাচাইকৃত", cases: "সব মামলা", assign: "উকিল দিন", none: "কিছু নেই", makeLawyer: "উকিল হিসেবে যোগ করুন", phone: "মোবাইল", email: "ইমেইল", reviews: "মূল্যায়ন" },
   common: { save: "সংরক্ষণ", back: "পেছনে", required: "এই ঘরটি পূরণ করুন।", forbidden: "এই পাতায় আপনার প্রবেশাধিকার নেই।", notFound: "পাওয়া যায়নি।" },
@@ -233,6 +243,8 @@ const bn: Msgs = {
     joinLawyer: "উকিল হিসেবে যোগ দিন",
     joinLawyerBody: ["আপনি যদি সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল হন, বিদেশি কর্মীদের মামলায় আমাদের সঙ্গে কাজ করুন।", "লাইসেন্স যাচাইয়ের পর আপনি নতুন মামলা নিতে পারবেন।"],
     joinLawyerCta: "আবেদন করতে যোগাযোগ করুন",
+    joinProvider: "সেবাদাতা হিসেবে যোগ দিন",
+    joinProviderBody: ["আপনি যদি আইন পরামর্শক, অনুমোদিত অনুবাদক, মুআক্কিব বা কোনো বিষয়ে অভিজ্ঞ হন, বিদেশি কর্মীদের সেবায় আমাদের সঙ্গে যোগ দিন।", "আবেদন যাচাইয়ের পর আমরা আপনার সঙ্গে যোগাযোগ করব।"],
   },
   inbox: {
     replied: "উত্তর দেওয়া হয়েছে", notReplied: "উত্তর বাকি", markReplied: "উত্তর দেওয়া হয়েছে চিহ্ন দিন", unmarkReplied: "চিহ্ন সরান", anyReplied: "উত্তর: সব", overdue: "১০ দিন পার", days: (n) => `${n} দিন`,
@@ -349,13 +361,17 @@ const ar: Msgs = {
   },
   staff: {
     nav: "الإدارة", clients: "العملاء وقضاياهم", clientsLead: "كل عميل مع عدد قضاياه وآخر قضية له.",
-    apps: "طلبات المحامين", appsLead: "طلبات المحامين الراغبين بالانضمام. القبول يجعله محامياً موثّقاً.", pending: (n) => `${n} بانتظار القرار`,
+    apps: "طلبات الانضمام", appsLead: "طلبات المحامين ومقدّمي الخدمات الراغبين بالانضمام. قبول المحامي يجعله محامياً موثّقاً.", pending: (n) => `${n} بانتظار القرار`,
     cases: "القضايا", lastCase: "آخر قضية", joined: "التسجيل", search: "ابحث بالاسم أو البريد أو الجوال أو رقم القضية", noCases: "لا توجد قضايا", openInbox: "عرضها في صندوق القضايا",
     approve: "قبول", reject: "رفض", approved: "مقبول", rejected: "مرفوض", pendingLabel: "بانتظار القرار", history: "طلبات سابقة",
     city: "المدينة", years: "سنوات الخبرة", about: "نبذة مختصرة عنك", phone: "الجوال",
     applyTitle: "طلب الانضمام كمحامٍ", applyLead: "عبّئ بياناتك، وتتحقق الإدارة من الترخيص ثم تقبل الطلب.", applyLogin: "سجّل الدخول بالبريد أولاً لتقديم الطلب",
     applySend: "أرسل الطلب", applySent: "وصلنا طلبك، وسنبلغك بعد التحقق.", applyError: "أدخل رقم الترخيص ورقم الجوال.",
     applyStatus: "حالة الطلب", alreadyLawyer: "أنت مسجّل محامياً بالفعل.",
+    provTitle: "طلب الانضمام كمقدّم خدمة", provLead: "اختر نوع الخدمة التي تقدمها وعبّئ بياناتك، وتراجع الإدارة الطلب وتتواصل معك.", provError: "اختر نوع الخدمة وأدخل رقم الجوال.",
+    service: "نوع الخدمة", licenseOpt: "رقم الترخيص أو السجل (إن وجد)", kindLawyer: "محامٍ", kindProvider: "مقدّم خدمة",
+    provApproveNote: "القبول يعلّم الطلب مقبولاً فقط، وتتواصل أنت مع مقدّم الخدمة.",
+    services: { consultant: "مستشار قانوني", translator: "مترجم معتمد", agent: "معقّب معاملات", expert: "صاحب خبرة", office: "مكتب خدمات", other: "أخرى" },
   },
   admin: { title: "الإدارة", lawyers: "المحامون", verify: "توثيق", verified: "موثّق", cases: "كل القضايا", assign: "تعيين محامٍ", none: "لا شيء", makeLawyer: "إضافة كمحامٍ", phone: "الجوال", email: "البريد", reviews: "التقييمات" },
   common: { save: "حفظ", back: "رجوع", required: "هذا الحقل مطلوب.", forbidden: "ليست لديك صلاحية لهذه الصفحة.", notFound: "غير موجود." },
@@ -388,6 +404,8 @@ const ar: Msgs = {
     joinLawyer: "انضم كمحامٍ",
     joinLawyerBody: ["إذا كنت محامياً سعودياً مرخّصاً، انضم إلينا لمتابعة قضايا العمالة الوافدة.", "بعد التحقق من الترخيص تقدر تستلم القضايا الجديدة."],
     joinLawyerCta: "تواصل معنا للتقديم",
+    joinProvider: "انضم كمقدّم خدمة",
+    joinProviderBody: ["إذا كنت مستشاراً قانونياً أو مترجماً معتمداً أو معقّباً أو صاحب خبرة، انضم إلينا لخدمة العمالة الوافدة.", "بعد مراجعة طلبك نتواصل معك."],
   },
   inbox: {
     replied: "تم الرد", notReplied: "لم يُرد بعد", markReplied: "علّم بأنه تم الرد", unmarkReplied: "إلغاء العلامة", anyReplied: "الرد: الكل", overdue: "تجاوز 10 أيام", days: (n) => `${n} يوم`,
@@ -504,13 +522,17 @@ const en: Msgs = {
   },
   staff: {
     nav: "Admin", clients: "Clients and their cases", clientsLead: "Each client with their case count and latest case.",
-    apps: "Lawyer applications", appsLead: "Lawyers asking to join. Approving makes them a verified lawyer.", pending: (n) => `${n} pending`,
+    apps: "Join applications", appsLead: "Lawyers and service providers asking to join. Approving a lawyer makes them a verified lawyer.", pending: (n) => `${n} pending`,
     cases: "Cases", lastCase: "Latest case", joined: "Joined", search: "Search by name, email, mobile or case number", noCases: "No cases", openInbox: "View in the case inbox",
     approve: "Approve", reject: "Reject", approved: "Approved", rejected: "Rejected", pendingLabel: "Pending", history: "Earlier applications",
     city: "City", years: "Years of experience", about: "A short note about you", phone: "Mobile",
     applyTitle: "Apply as a lawyer", applyLead: "Fill in your details. The admin checks your licence and approves.", applyLogin: "Log in with your email first to apply",
     applySend: "Send application", applySent: "We received your application and will tell you after checking.", applyError: "Enter your licence number and mobile.",
     applyStatus: "Application status", alreadyLawyer: "You are already registered as a lawyer.",
+    provTitle: "Apply as a service provider", provLead: "Pick the service you offer and fill in your details. The admin reviews it and contacts you.", provError: "Pick a service and enter your mobile.",
+    service: "Service", licenseOpt: "Licence or registration number (if any)", kindLawyer: "Lawyer", kindProvider: "Service provider",
+    provApproveNote: "Approving only marks the application approved; you then contact the provider.",
+    services: { consultant: "Legal consultant", translator: "Certified translator", agent: "Paperwork agent (muaqqib)", expert: "Experienced specialist", office: "Services office", other: "Other" },
   },
   admin: { title: "Admin", lawyers: "Lawyers", verify: "Verify", verified: "Verified", cases: "All cases", assign: "Assign lawyer", none: "Nothing here", makeLawyer: "Add as lawyer", phone: "Mobile", email: "Email", reviews: "Reviews" },
   common: { save: "Save", back: "Back", required: "This field is required.", forbidden: "You don't have access to this page.", notFound: "Not found." },
@@ -543,6 +565,8 @@ const en: Msgs = {
     joinLawyer: "Join as a lawyer",
     joinLawyerBody: ["If you are a licensed Saudi lawyer, work with us on cases for migrant workers.", "Once your licence is verified you can take new cases."],
     joinLawyerCta: "Contact us to apply",
+    joinProvider: "Join as a service provider",
+    joinProviderBody: ["If you are a legal consultant, certified translator, paperwork agent or experienced specialist, join us in serving migrant workers.", "We will contact you after reviewing your application."],
   },
   inbox: {
     replied: "Replied", notReplied: "Not replied yet", markReplied: "Mark as replied", unmarkReplied: "Remove mark", anyReplied: "Reply: all", overdue: "Over 10 days", days: (n) => `${n} days`,

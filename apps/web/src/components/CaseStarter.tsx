@@ -1,4 +1,5 @@
 "use client";
+import { CaseIcon } from "./CaseIcon";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -94,7 +95,7 @@ export function CaseStarter({
               data-type={type}
               onClick={() => { setOpen(isOpen ? null : type); setError(null); setExit(d?.exitDate ?? ""); }}
             >
-              <span>{t.caseType[type]}</span>
+              <span className="starter-title"><CaseIcon type={type} /><span>{t.caseType[type]}</span></span>
               <span aria-hidden="true" className="chev">{isOpen ? "−" : "+"}</span>
             </button>
             {isOpen && (

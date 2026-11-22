@@ -33,6 +33,7 @@ export function BrandMenu({ locale }: { locale: Locale }) {
       { href: "/how", label: t.info.how },
       { href: "/faq", label: t.info.faq },
       { href: "/join", label: t.info.joinLawyer },
+      { href: "/join/provider", label: t.info.joinProvider },
       { href: "/privacy", label: t.info.privacy },
     ],
   ];

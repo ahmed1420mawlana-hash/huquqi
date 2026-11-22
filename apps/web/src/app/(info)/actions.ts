@@ -1,5 +1,5 @@
 "use server";
-import { censor, normaliseEmail } from "@huquqi/core";
+import { censor, normaliseEmail, PROVIDER_SERVICES } from "@huquqi/core";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/session";
@@ -29,12 +29,16 @@ export async function applyLawyer(_: ApplyState, fd: FormData): Promise<ApplySta
   const field = (k: string, n: number) => censor(String(fd.get(k) ?? "").trim().slice(0, n));
   const name = field("name", 100) || user.name || "";
   const phone = String(fd.get("phone") ?? "").replace(/[^\d+ ]/g, "").trim().slice(0, 20);
+  const kind = fd.get("kind") === "provider" ? "provider" : "lawyer";
+  const serviceRaw = String(fd.get("service") ?? "");
+  const service = kind === "provider" && (PROVIDER_SERVICES as readonly string[]).includes(serviceRaw) ? serviceRaw : null;
   const licenseNo = String(fd.get("licenseNo") ?? "").trim().slice(0, 40);
   const yearsRaw = parseInt(String(fd.get("years") ?? ""), 10);
-  if (!name || phone.replace(/\D/g, "").length < 8 || !licenseNo) return { error: true };
-  const open = await db.lawyerApplication.findFirst({ where: { userId: user.id, status: "pending" } });
+  if (!name || phone.replace(/\D/g, "").length < 8) return { error: true };
+  if (kind === "lawyer" ? !licenseNo : !service) return { error: true };
+  const open = await db.lawyerApplication.findFirst({ where: { userId: user.id, status: "pending", kind } });
   const data = {
-    name, phone, licenseNo,
+    kind, service, name, phone, licenseNo,
     firm: field("firm", 150) || null,
     city: field("city", 80) || null,
     years: Number.isFinite(yearsRaw) && yearsRaw >= 0 && yearsRaw < 70 ? yearsRaw : null,
@@ -43,5 +47,6 @@ export async function applyLawyer(_: ApplyState, fd: FormData): Promise<ApplySta
   if (open) await db.lawyerApplication.update({ where: { id: open.id }, data });
   else await db.lawyerApplication.create({ data: { ...data, userId: user.id } });
   revalidatePath("/admin/lawyers");
+  revalidatePath("/admin");
   return { ok: true };
 }

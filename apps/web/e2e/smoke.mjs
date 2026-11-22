@@ -71,7 +71,7 @@ try {
   ok(await seen(w, "#case-hajj .res >> text=নুসুক"), "Hajj and Umrah option explains itself");
   // The "Huquqi" name opens the site menu; the contact and feedback forms reach the admin.
   await w.click("button.brand");
-  ok(await w.locator("#site-menu a").count() === 9, "brand menu lists contact, feedback, partners, about and more");
+  ok(await w.locator("#site-menu a").count() === 10, "brand menu lists contact, feedback, partners, about and more");
   await w.click('#site-menu a[href="/feedback"]');
   await w.waitForURL("**/feedback");
   ok(await w.locator("#site-menu").waitFor({ state: "detached", timeout: 5000 }).then(() => true, () => false), "menu closes after choosing");
@@ -82,7 +82,7 @@ try {
   await w.fill("#c-body", complaint);
   await w.click("form:has(#c-body) button.btn");
   ok(await seen(w, ".okmsg"), "complaint sent");
-  for (const p of ["/contact", "/partners", "/about", "/how", "/faq", "/join", "/privacy"]) {
+  for (const p of ["/contact", "/partners", "/about", "/how", "/faq", "/join", "/join/provider", "/privacy"]) {
     ok((await w.goto(BASE + p)).status() === 200 && (await w.locator("h1").count()) === 1, `${p} page loads`);
   }
 
@@ -309,6 +309,23 @@ try {
   await lp.goto(BASE + "/lawyer");
   ok(!lp.url().endsWith("/forbidden") && (await lp.locator("#licenseNo").inputValue()) === "MOJ-12345", "approved applicant is now a lawyer with their licence");
   ok(await lp.locator(".devcode").count() === 0, "approved lawyer is verified");
+
+  // A service provider applies from /join/provider; approving does not make them a lawyer.
+  const pp = await (await newPage()).newPage();
+  const provName = `Provider ${Date.now()}`;
+  await login(pp, `provider${Date.now()}@example.com`, provName);
+  await pp.goto(BASE + "/join/provider");
+  await pp.fill("#a-phone", "+966559876543");
+  await pp.selectOption("#a-service", "translator");
+  await pp.click("#apply button.btn");
+  ok(await seen(pp, ".okmsg"), "service provider application sent without a licence number");
+  await a.goto(BASE + "/admin/lawyers");
+  const pcard = a.locator(`.app-card:has-text("${provName}")`);
+  ok(await pcard.locator(".pill", { hasText: /সেবাদাতা|مقدّم خدمة|Service provider/ }).count() > 0, "admin sees it marked as a service provider");
+  await pcard.locator("button.btn:not(.ghost)").click();
+  await pcard.locator("button").first().waitFor({ state: "detached", timeout: 30000 });
+  await pp.goto(BASE + "/lawyer");
+  ok(pp.url().endsWith("/forbidden") || !(await pp.locator("#licenseNo").count()), "approved provider does not get the lawyer area");
 
   // Article of the day: the starter set arrives unpublished; publishing one shows it on the home page.
   await a.goto(BASE + "/admin/articles");
