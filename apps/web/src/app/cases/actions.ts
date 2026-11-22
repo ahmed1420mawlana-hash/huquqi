@@ -2,18 +2,19 @@
 import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { isCaseType, isStage, nextStages, type Stage } from "@huquqi/core";
+import { isCaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { canWorkOn, isVerifiedLawyer, loadCaseFor } from "@/lib/access";
 import { caseRef } from "@/lib/ref";
 import { requireUser } from "@/lib/session";
-import { saveFile } from "@/lib/storage";
+import { blobInfo, saveFile } from "@/lib/storage";
+import { ALLOWED_TYPES, MAX_BLOB_BYTES, MAX_LOCAL_BYTES, cleanFilename, fileType } from "@/lib/documents";
 
 function str(fd: FormData, k: string, max = 2000) {
   return String(fd.get(k) ?? "").trim().slice(0, max);
 }
 
-export type FormState = { error?: string } | undefined;
+export type FormState = { error?: string; id?: string } | undefined;
 
 export async function createCase(_: FormState, fd: FormData): Promise<FormState> {
   const user = await requireUser(["WORKER", "ADMIN"]);
@@ -27,12 +28,14 @@ export async function createCase(_: FormState, fd: FormData): Promise<FormState>
   const c = await db.case.create({
     data: {
       ref, type, description, exitDate,
+      requests: str(fd, "requests", 3000) || null,
       employer: str(fd, "employer", 200) || null,
       bankName: str(fd, "bankName", 100) || null,
       workerId: user.id,
     },
   });
-  redirect(`/cases/${c.id}?created=1`);
+  // The form uploads the documents next, then opens the case.
+  return { id: c.id };
 }
 
 export async function postMessage(caseId: string, _: FormState, fd: FormData): Promise<FormState> {
@@ -43,41 +46,49 @@ export async function postMessage(caseId: string, _: FormState, fd: FormData): P
   const isOwner = c.workerId === user.id;
   if (!isOwner && !canWorkOn(user, c)) return { error: "forbidden" };
 
-  let stage: Stage | null = null;
-  const requested = fd.get("stage");
-  if (requested && !isOwner) {
-    if (!isStage(requested) || !nextStages(c.stage as Stage).includes(requested)) return { error: "stage" };
-    stage = requested;
-  }
+  // Lawyers can close the case with their update; there is no stage tracking otherwise.
+  const close = !isOwner && fd.get("close") === "1" && c.stage !== "closed";
   await db.$transaction([
-    db.caseUpdate.create({ data: { caseId: c.id, authorId: user.id, body, stage } }),
-    ...(stage ? [db.case.update({ where: { id: c.id }, data: { stage } })] : []),
+    db.caseUpdate.create({ data: { caseId: c.id, authorId: user.id, body, stage: close ? "closed" : null } }),
+    ...(close ? [db.case.update({ where: { id: c.id }, data: { stage: "closed" } })] : []),
   ]);
   revalidatePath(`/cases/${c.id}`);
   return {};
 }
 
-const ALLOWED = new Map([
-  ["application/pdf", ".pdf"], ["image/jpeg", ".jpg"], ["image/png", ".png"],
-  ["image/webp", ".webp"], ["image/heic", ".heic"],
-]);
-const MAX_BYTES = 10 * 1024 * 1024;
-
+/** Local-disk upload through the server action (development, or deployments without Blob). */
 export async function uploadDocument(caseId: string, _: FormState, fd: FormData): Promise<FormState> {
   const user = await requireUser();
   const c = await loadCaseFor(user, caseId);
   if (c.workerId !== user.id && !canWorkOn(user, c)) return { error: "forbidden" };
   const file = fd.get("file");
   if (!(file instanceof File) || file.size === 0) return { error: "required" };
-  const ext = ALLOWED.get(file.type);
-  if (!ext || file.size > MAX_BYTES) return { error: "file" };
+  const mime = fileType(file.name, file.type);
+  const ext = ALLOWED_TYPES.get(mime);
+  if (!ext || file.size > MAX_LOCAL_BYTES) return { error: "file" };
 
-  const storageKey = await saveFile(`${c.id}/${randomUUID()}${ext}`, Buffer.from(await file.arrayBuffer()), file.type);
+  const storageKey = await saveFile(`${c.id}/${randomUUID()}${ext}`, Buffer.from(await file.arrayBuffer()), mime);
   await db.document.create({
-    data: {
-      caseId: c.id, uploaderId: user.id, mime: file.type, size: file.size, storageKey,
-      filename: file.name.replace(/[^\p{L}\p{N}._ -]/gu, "_").slice(0, 120) || `document${ext}`,
-    },
+    data: { caseId: c.id, uploaderId: user.id, mime, size: file.size, storageKey, filename: cleanFilename(file.name, ext) },
+  });
+  revalidatePath(`/cases/${c.id}`);
+  return {};
+}
+
+/** Records a document the browser uploaded straight to Vercel Blob (see /api/upload). */
+export async function registerDocument(caseId: string, pathname: string, name: string): Promise<FormState> {
+  const user = await requireUser();
+  const c = await loadCaseFor(user, caseId);
+  if (c.workerId !== user.id && !canWorkOn(user, c)) return { error: "forbidden" };
+  if (!pathname.startsWith(`documents/${c.id}/`) || pathname.includes("..")) return { error: "file" };
+  const storageKey = `blob:${pathname}`;
+  if (await db.document.findFirst({ where: { storageKey } })) return {};
+  const info = await blobInfo(pathname);
+  if (!info) return { error: "file" };
+  const ext = ALLOWED_TYPES.get(info.contentType);
+  if (!ext || info.size > MAX_BLOB_BYTES) return { error: "file" };
+  await db.document.create({
+    data: { caseId: c.id, uploaderId: user.id, mime: info.contentType, size: info.size, storageKey, filename: cleanFilename(name, ext) },
   });
   revalidatePath(`/cases/${c.id}`);
   return {};
@@ -87,12 +98,26 @@ export async function takeCase(caseId: string) {
   const user = await requireUser(["LAWYER", "ADMIN"]);
   if (!isVerifiedLawyer(user)) redirect("/lawyer");
   // Only claim if still unassigned, so two lawyers can't take the same case.
-  const r = await db.case.updateMany({
+  await db.case.updateMany({
     where: { id: caseId, lawyerId: null },
-    data: { lawyerId: user.id, stage: "review" },
+    data: { lawyerId: user.id },
   });
-  if (r.count) {
-    await db.caseUpdate.create({ data: { caseId, authorId: user.id, stage: "review", body: "" } });
-  }
   redirect(`/cases/${caseId}`);
+}
+
+export async function submitReview(caseId: string, _: FormState, fd: FormData): Promise<FormState> {
+  const user = await requireUser(["WORKER", "ADMIN"]);
+  const c = await loadCaseFor(user, caseId);
+  if (c.workerId !== user.id || !c.lawyerId) return { error: "forbidden" };
+  const rating = Number(fd.get("rating"));
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "required" };
+  const comment = str(fd, "comment", 1000) || null;
+  await db.review.upsert({
+    where: { caseId: c.id },
+    // Editing a review sends it back for approval.
+    update: { rating, comment, approvedAt: null },
+    create: { caseId: c.id, authorId: user.id, lawyerId: c.lawyerId, rating, comment },
+  });
+  revalidatePath(`/cases/${c.id}`);
+  return {};
 }

@@ -86,13 +86,7 @@ textarea{min-height:110px;resize:vertical}
 
 .cols{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:start}
 .cols>*{min-width:0}
-.track{display:grid;gap:0;list-style:none;padding:0;margin:0}
-.track li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:center;padding-block:6px;position:relative}
 .dot{width:24px;height:24px;border-radius:50%;border:3px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:11px;font-weight:700}
-.track li.done .dot{background:var(--green);border-color:var(--green);color:var(--green-ink)}
-.track li.now .dot{border-color:var(--green)}
-.track li.now span{font-weight:700}
-.track li:not(.done):not(.now) span{color:var(--muted)}
 .update{background:var(--paper);border-radius:10px;padding:12px 14px;font-size:15px;border-inline-start:4px solid var(--line)}
 .update.lawyer{border-inline-start-color:var(--green)}
 .update small{color:var(--muted);display:block;margin-bottom:2px}
@@ -107,3 +101,67 @@ th,td{text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);vert
 
 @media (max-width:860px){.hero-grid,.cols{grid-template-columns:1fr}}
 @media (max-width:560px){.row2{grid-template-columns:1fr}}
+
+/* emblems */
+.marks{display:flex;gap:10px;list-style:none;padding:0;margin:0;flex-wrap:wrap}
+.marks li{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px 14px 8px 10px;color:var(--band-ink)}
+.marks li span{font-size:13px;color:var(--band-muted)}
+.marks svg{flex:none}
+/* collapsible details */
+details.more{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--card)}
+details.more summary{cursor:pointer;font-weight:600;font-size:14.5px}
+/* stars and reviews */
+.stars{display:inline-flex;gap:2px;font-size:18px;line-height:1;color:var(--line)}
+.stars .on{color:#E0A100}
+.star-input{display:flex;gap:4px}
+.star-input label{cursor:pointer;font-size:28px;line-height:1;color:var(--line);position:relative}
+.star-input input{position:absolute;opacity:0;width:1px;height:1px}
+.star-input .on{color:#E0A100}
+.star-input input:focus-visible+span{outline:3px solid var(--green);outline-offset:2px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.reviews{margin-bottom:24px}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;list-style:none;padding:0;margin:0}
+@media (max-width:860px){.review-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.review-grid{grid-template-columns:1fr}.marks li span{display:none}}
+
+/* Three boxes on every case: facts, requests, documents */
+.box3 { display: grid; gap: 14px; }
+.box3 > .f { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.box-title { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.box-title b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: var(--green-ink); font-size: 12.5px; }
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:13.5px;text-decoration:underline;cursor:pointer;justify-self:start;align-self:flex-start}
+/* Case types; each opens the three boxes under it */
+.starter{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.starter li{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.starter li.open{border-color:var(--green)}
+.starter-head{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px 16px;font-weight:600;cursor:pointer}
+.starter-head:focus-visible{outline:3px solid var(--green);outline-offset:-3px}
+.starter-head .chev{font-size:20px;color:var(--green)}
+.starter .box3{padding:0 16px 16px}
+/* Menu under the "Huquqi" name */
+.brand-menu{position:relative}
+button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
+.brand .caret{font-size:12px;opacity:.7}
+.site-menu{position:absolute;inset-inline-start:0;top:calc(100% + 10px);z-index:50;min-width:250px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:8px}
+.site-menu ul{list-style:none;margin:0;padding:4px 0}
+.site-menu ul+ul{border-top:1px solid var(--line)}
+.site-menu a{display:block;padding:9px 12px;border-radius:9px;color:inherit;text-decoration:none;font-weight:500}
+.site-menu a:hover,.site-menu a[aria-current=page]{background:var(--paper)}
+.narrow{max-width:760px;padding-block:24px}
+.info-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.steps li{display:flex;gap:14px;align-items:flex-start}
+.steps li>b{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--green);color:var(--green-ink)}
+.steps h2{margin:0 0 4px}
+.faq summary{cursor:pointer;font-weight:600}
+.about-marks .marks{margin:0}
+/* Home page photos and videos */
+.gallery{padding-block:8px 40px}
+.gallery-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gallery-grid li{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.gallery-grid img,.gallery-grid video{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#000}
+.gallery-grid p{margin:0;padding:10px 14px;font-size:14.5px}
+.gallery-grid.admin form{padding:0 14px 12px}
+@media (max-width:860px){.gallery-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.gallery-grid{grid-template-columns:1fr}}
+.gallery-empty{text-align:center;padding-block:36px}

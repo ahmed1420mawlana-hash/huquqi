@@ -22,6 +22,7 @@ export async function loadCaseFor(user: SessionUser, caseId: string) {
       lawyer: { include: { lawyerProfile: true } },
       updates: { include: { author: true }, orderBy: { createdAt: "asc" } },
       documents: { orderBy: { createdAt: "desc" } },
+      review: true,
     },
   });
   if (!c) notFound();

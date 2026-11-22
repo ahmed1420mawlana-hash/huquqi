@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate, type CaseType, type Stage } from "@huquqi/core";
+import { formatDate, type CaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
@@ -25,7 +25,7 @@ export default async function MyCases() {
                   <b>{t.caseType[c.type as CaseType]}</b>
                   <span className="muted num" style={{ fontSize: 14 }}>{c.ref} · {formatDate(c.createdAt, locale)}</span>
                 </span>
-                <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{t.stage[c.stage as Stage]}</span>
+                <span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span>
               </Link>
             </li>
           ))}

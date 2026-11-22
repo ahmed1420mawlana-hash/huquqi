@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BrandMenu } from "@/components/BrandMenu";
 import { dir, LOCALES } from "@huquqi/core";
 import { getT } from "@/lib/locale";
 import { currentUser } from "@/lib/session";
@@ -30,10 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <header className="top">
           <div className="wrap">
-            <Link href="/" className="brand">
-              <span className="mark" aria-hidden="true">ح</span>
-              <span>{t.brand}</span>
-            </Link>
+            <BrandMenu locale={locale} />
             <nav className="nav" aria-label="Main">
               {user?.role === "WORKER" && <Link href="/cases">{t.nav.myCases}</Link>}
               {user?.role === "LAWYER" && <Link href="/lawyer">{t.nav.lawyer}</Link>}

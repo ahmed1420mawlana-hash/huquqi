@@ -1,16 +1,24 @@
 import Link from "next/link";
-import { type CaseType, type Stage } from "@huquqi/core";
+import { formatDate, type CaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { getT } from "@/lib/locale";
 import { requireUser } from "@/lib/session";
-import { assignLawyer, makeLawyer, verifyLawyer } from "./actions";
+import { who } from "@/lib/who";
+import { Stars } from "@/components/Stars";
+import { directUploads } from "@/lib/storage";
+import { MediaForm } from "./MediaForm";
+import { removeMedia } from "./media-actions";
+import { assignLawyer, makeLawyer, setReviewApproved, verifyLawyer } from "./actions";
 
 export default async function Admin() {
   await requireUser(["ADMIN"]);
-  const { t } = await getT();
-  const [lawyers, cases] = await Promise.all([
+  const { locale, t } = await getT();
+  const [lawyers, cases, reviews, inbox, media] = await Promise.all([
     db.user.findMany({ where: { role: "LAWYER" }, include: { lawyerProfile: true }, orderBy: { createdAt: "desc" } }),
     db.case.findMany({ include: { worker: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 200 }),
+    db.review.findMany({ include: { author: true, lawyer: true }, orderBy: { createdAt: "desc" }, take: 100 }),
+    db.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 100 }),
+    db.mediaItem.findMany({ orderBy: { createdAt: "desc" } }),
   ]);
   const verified = lawyers.filter((l) => l.lawyerProfile?.verifiedAt);
 
@@ -21,19 +29,19 @@ export default async function Admin() {
       <section className="card stack">
         <h2>{t.admin.lawyers}</h2>
         <form action={makeLawyer} className="inline">
-          <input name="phone" type="tel" placeholder="+9665XXXXXXXX" dir="ltr" aria-label={t.admin.phone} style={{ maxWidth: 220 }} required />
+          <input name="email" type="email" placeholder="lawyer@example.com" dir="ltr" aria-label={t.admin.email} style={{ maxWidth: 240 }} required />
           <input name="name" type="text" placeholder={t.auth.name} aria-label={t.auth.name} style={{ maxWidth: 220 }} />
           <button className="btn small">{t.admin.makeLawyer}</button>
         </form>
         <div className="tablewrap">
           <table>
-            <thead><tr><th>{t.auth.name}</th><th>{t.admin.phone}</th><th>{t.lawyer.license}</th><th>{t.lawyer.firm}</th><th /></tr></thead>
+            <thead><tr><th>{t.auth.name}</th><th>{t.admin.email}</th><th>{t.lawyer.license}</th><th>{t.lawyer.firm}</th><th /></tr></thead>
             <tbody>
               {lawyers.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
               {lawyers.map((l) => (
                 <tr key={l.id}>
                   <td>{l.name ?? "—"}</td>
-                  <td dir="ltr" style={{ textAlign: "start" }}>{l.phone}</td>
+                  <td dir="ltr" style={{ textAlign: "start" }}>{l.email ?? l.phone}</td>
                   <td>{l.lawyerProfile?.licenseNo ?? "—"}</td>
                   <td>{l.lawyerProfile?.firm ?? "—"}</td>
                   <td>
@@ -56,26 +64,93 @@ export default async function Admin() {
         <h2>{t.admin.cases}</h2>
         <div className="tablewrap">
           <table>
-            <thead><tr><th>#</th><th>{t.cases.type}</th><th>{t.auth.name}</th><th>{t.cases.timeline}</th><th>{t.cases.lawyer}</th></tr></thead>
+            <thead><tr><th>#</th><th>{t.cases.type}</th><th>{t.auth.name}</th><th>{t.status.open}</th><th>{t.cases.lawyer}</th></tr></thead>
             <tbody>
               {cases.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
               {cases.map((c) => (
                 <tr key={c.id}>
                   <td className="num"><Link href={`/cases/${c.id}`}>{c.ref}</Link></td>
                   <td>{t.caseType[c.type as CaseType]}</td>
-                  <td>{c.worker.name ?? c.worker.phone}</td>
-                  <td><span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{t.stage[c.stage as Stage]}</span></td>
+                  <td>{who(c.worker)}</td>
+                  <td><span className={`pill ${c.stage === "closed" ? "closed" : ""}`}>{c.stage === "closed" ? t.status.closed : t.status.open}</span></td>
                   <td>
-                    {c.lawyer ? (c.lawyer.name ?? c.lawyer.phone) : (
+                    {c.lawyer ? who(c.lawyer) : (
                       <form action={assignLawyer.bind(null, c.id)} className="inline">
                         <select name="lawyerId" aria-label={t.admin.assign} required defaultValue="">
                           <option value="" disabled>{t.admin.assign}</option>
-                          {verified.map((l) => <option key={l.id} value={l.id}>{l.name ?? l.phone}</option>)}
+                          {verified.map((l) => <option key={l.id} value={l.id}>{who(l)}</option>)}
                         </select>
                         <button className="btn small" disabled={!verified.length}>✓</button>
                       </form>
                     )}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="card stack">
+        <h2>{t.admin.reviews}</h2>
+        <div className="tablewrap">
+          <table>
+            <thead><tr><th>{t.reviews.rating}</th><th>{t.reviews.comment}</th><th>{t.auth.name}</th><th>{t.cases.lawyer}</th><th /></tr></thead>
+            <tbody>
+              {reviews.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
+              {reviews.map((r) => (
+                <tr key={r.id}>
+                  <td><Stars value={r.rating} label={t.reviews.stars(r.rating)} /></td>
+                  <td style={{ maxWidth: 320 }}>{r.comment ?? "—"}</td>
+                  <td>{who(r.author)}</td>
+                  <td>{who(r.lawyer)}</td>
+                  <td>
+                    <form action={setReviewApproved.bind(null, r.id, !r.approvedAt)}>
+                      <button className={`btn small ${r.approvedAt ? "ghost" : ""}`}>{r.approvedAt ? t.reviews.hide : t.reviews.approve}</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="card stack">
+        <h2>{t.gallery.title}</h2>
+        <MediaForm locale={locale} direct={directUploads()} />
+        {media.length > 0 && (
+          <ul className="gallery-grid admin">
+            {media.map((m) => (
+              <li key={m.id} className="card">
+                {m.kind === "video" ? (
+                  <video src={`/api/media/${m.id}`} controls preload="metadata" playsInline />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/api/media/${m.id}`} alt={m.caption ?? ""} loading="lazy" />
+                )}
+                {m.caption && <p>{m.caption}</p>}
+                <form action={removeMedia.bind(null, m.id)}><button className="btn small ghost">{t.gallery.remove}</button></form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="card stack">
+        <h2>{t.info.inbox}</h2>
+        <div className="tablewrap">
+          <table>
+            <thead><tr><th>{t.info.kind}</th><th>{t.info.name}</th><th>{t.info.email}</th><th>{t.info.message}</th><th /></tr></thead>
+            <tbody>
+              {inbox.length === 0 && <tr><td colSpan={5} className="muted">{t.admin.none}</td></tr>}
+              {inbox.map((m) => (
+                <tr key={m.id}>
+                  <td><span className={`pill ${m.kind === "complaint" ? "closed" : ""}`}>{m.kind === "complaint" ? t.info.complaint : m.kind === "suggestion" ? t.info.suggestion : t.info.contact}</span></td>
+                  <td>{m.name}</td>
+                  <td dir="ltr" style={{ textAlign: "start" }}><a href={`mailto:${m.email}`}>{m.email}</a></td>
+                  <td style={{ whiteSpace: "pre-wrap", maxWidth: 420 }}>{m.body}</td>
+                  <td className="muted num" style={{ fontSize: 13 }}>{formatDate(m.createdAt, locale)}</td>
                 </tr>
               ))}
             </tbody>

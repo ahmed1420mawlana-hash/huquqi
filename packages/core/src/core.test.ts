@@ -65,3 +65,12 @@ describe("i18n", () => {
     expect(localNum(242, "bn")).toBe("২৪২");
   });
 });
+
+import { normaliseEmail } from "./email";
+describe("email", () => {
+  it("normalises and validates", () => {
+    expect(normaliseEmail("  Karim@Example.COM ")).toBe("karim@example.com");
+    expect(normaliseEmail("karim@example")).toBeNull();
+    expect(normaliseEmail("not an email")).toBeNull();
+  });
+});
