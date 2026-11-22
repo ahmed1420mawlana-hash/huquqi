@@ -10,7 +10,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Huquqi · حقوقي · হুকুকি",
-  description: "Follow your salary, end-of-service, bank and court matters in Saudi Arabia from home.",
+  description: "Your cases and money in Saudi Arabia, followed wherever you are, with a licensed Saudi lawyer.",
 };
 
 const LANG_LABEL = { bn: "বাংলা", ar: "العربية", en: "English" } as const;
