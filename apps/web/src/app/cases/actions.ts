@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { censor, isCaseType } from "@huquqi/core";
 import { db } from "@/lib/db";
 import { canWorkOn, isVerifiedLawyer, loadCaseFor } from "@/lib/access";
-import { caseRef } from "@/lib/ref";
+import { nextCaseRef } from "@/lib/ref";
 import { requireUser } from "@/lib/session";
 import { notifyClientActivity } from "@/lib/notify";
 import { blobInfo, saveFile } from "@/lib/storage";
@@ -26,8 +26,9 @@ export async function createCase(_: FormState, fd: FormData): Promise<FormState>
   if (!isCaseType(type) || description.length < 5) return { error: "required" };
   const exit = str(fd, "exitDate", 10);
   const exitDate = /^\d{4}-\d{2}-\d{2}$/.test(exit) ? new Date(exit + "T00:00:00Z") : null;
-  let ref = caseRef();
-  while (await db.case.findUnique({ where: { ref } })) ref = caseRef();
+  let ref = await nextCaseRef();
+  // Guards against a clash with an older case, e.g. if the counter was ever reset.
+  while (await db.case.findUnique({ where: { ref } })) ref = await nextCaseRef();
   const c = await db.case.create({
     data: {
       ref, type, description, exitDate,

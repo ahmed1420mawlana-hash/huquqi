@@ -52,7 +52,7 @@ model OtpCode {
 
 model Case {
   id             String    @id @default(cuid())
-  ref            String    @unique // short human reference, e.g. HQ-7K2P9
+  ref            String    @unique // case number: year, month, 0, running number, e.g. 20261101 (older cases keep HQ-XXXXXX)
   type           String // labour | bank | court | poa | commercial | invest | translation | hajj | general (old cases: salary | eosb | accident | property)
   stage          String    @default("submitted")
   employer       String?
@@ -174,4 +174,10 @@ model PageView {
 
   @@index([day])
   @@index([visitor])
+}
+
+/// Running case number per month (period = "YYYYMM", Riyadh time).
+model RefCounter {
+  period String @id
+  last   Int
 }

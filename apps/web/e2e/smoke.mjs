@@ -119,7 +119,7 @@ try {
   await w.click("#case-labour button.btn");
   await w.waitForURL(/\/cases\/[^/]+\?created=1/, { timeout: 60000 });
   const caseUrl = w.url().split("?")[0];
-  const ref = (await w.locator("p.num").first().textContent()).match(/HQ-[A-Z0-9]+/)[0];
+  const ref = (await w.locator("p.num").first().textContent()).match(/\b20\d{4}0\d+\b/)[0];
   ok(await w.locator(".okmsg").isVisible(), "case created");
   const wa = await w.locator("#whatsapp a.btn.wa").getAttribute("href");
   ok(/^https:\/\/wa\.me\/8801700000000\?text=/.test(wa) && decodeURIComponent(wa).includes(ref), "whatsapp link with case ref");
