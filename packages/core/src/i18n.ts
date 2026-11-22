@@ -2,6 +2,7 @@ import type { CaseType, Stage, } from "./cases";
 import type { BankStatus } from "./deadlines";
 
 export const LOCALES = ["bn", "ar", "en"] as const;
+type OfferedType = "general" | "court" | "commercial" | "invest" | "realestate" | "poa" | "translation" | "hajj" | "labour" | "bank";
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "bn";
 
@@ -45,11 +46,11 @@ type Msgs = {
   };
   cases: {
     title: string; none: string; open: string; type: string; employer: string; exitDate: string;
-    bank: string; description: string; descriptionHint: string; submit: string; created: string;
+    bank: string; description: string; descriptionHint: string; submit: string; created: string; replyWindow: string;
     whatsTitle: string; whatsLead: string; whatsBtn: string; whatsMsg: (ref: string) => string;
     timeline: string; updates: string; noUpdates: string; documents: string; upload: string;
     noDocs: string; lawyer: string; noLawyer: string; deadline: string; channel: string;
-    message: string; send: string; uploadHint: string;
+    message: string; send: string; uploadHint: string; formats: string; box: Record<OfferedType, { facts: string; requests: string; docs: string }>;
     requests: string; requestsHint: string; uploading: (a: string, b: string) => string; uploadFailed: string; uploadDone: string; loginToSend: string; reattach: string;
   };
   lawyer: {
@@ -82,6 +83,7 @@ type Msgs = {
   inbox: {
     title: string; open: string; search: string; allTypes: string; allStatus: string; anyLawyer: string;
     assigned: string; unassigned: string; awaiting: string; newReply: string; filter: string; clear: string;
+    replied: string; notReplied: string; markReplied: string; unmarkReplied: string; anyReplied: string; overdue: string; days: (n: string) => string;
     waiting: (n: string) => string; lastActivity: string; results: (n: string) => string; status: string; client: string;
     notes: string; notesHint: string; addNote: string; noNotes: string;
     notifySubject: (ref: string) => string; notifyBody: (ref: string, url: string) => string;
@@ -157,9 +159,22 @@ const bn: Msgs = {
   cases: {
     title: "আমার মামলা", none: "এখনো কোনো মামলা নেই।", open: "নতুন মামলা খুলুন", type: "সমস্যার ধরন", employer: "কোম্পানি বা কফিলের নাম",
     exitDate: "সৌদি ছাড়ার তারিখ", bank: "ব্যাংকের নাম", description: "সংক্ষেপে ঘটনা", descriptionHint: "কী হয়েছে এবং কবে, সংক্ষেপে যেকোনো ভাষায় লিখুন।",
-    submit: "মামলা জমা দিন", whatsTitle: "হোয়াটসঅ্যাপে যোগাযোগ", whatsLead: "দ্রুত যোগাযোগের জন্য আমাদের হোয়াটসঅ্যাপে মেসেজ দিন। মামলা নম্বর সাথে যাবে।", whatsBtn: "হোয়াটসঅ্যাপে মেসেজ দিন", whatsMsg: (ref: string) => `আসসালামু আলাইকুম, আমি হুকুকি-তে মামলা ${ref} জমা দিয়েছি।`, created: "মামলা জমা হয়েছে। ৪৮ ঘণ্টার মধ্যে একজন উকিল দেখবেন।", timeline: "অগ্রগতি", updates: "আপডেট",
+    submit: "মামলা জমা দিন", whatsTitle: "হোয়াটসঅ্যাপে যোগাযোগ", whatsLead: "দ্রুত যোগাযোগের জন্য আমাদের হোয়াটসঅ্যাপে মেসেজ দিন। মামলা নম্বর সাথে যাবে।", whatsBtn: "হোয়াটসঅ্যাপে মেসেজ দিন", whatsMsg: (ref: string) => `আসসালামু আলাইকুম, আমি হুকুকি-তে মামলা ${ref} জমা দিয়েছি।`, created: "মামলা জমা হয়েছে। ৩ দিনের মধ্যে উত্তর দেওয়া হবে, সর্বোচ্চ ১০ দিনের মধ্যে।", replyWindow: "উত্তর আসবে ৩ দিনের মধ্যে, সর্বোচ্চ ১০ দিনের মধ্যে।", timeline: "অগ্রগতি", updates: "আপডেট",
     noUpdates: "এখনো কোনো আপডেট নেই।", documents: "কাগজপত্র", upload: "আপলোড", noDocs: "কোনো কাগজ আপলোড হয়নি।", lawyer: "উকিল",
     noLawyer: "উকিল নিয়োগের অপেক্ষায়", deadline: "শ্রম মামলার শেষ তারিখ", channel: "সরকারি মাধ্যম", message: "উকিলকে বার্তা", send: "পাঠান",
+    formats: "PDF, ছবি বা Word, ১০০০ পৃষ্ঠা পর্যন্ত (প্রতি ফাইল ৫০০ MB পর্যন্ত), একসাথে কয়েকটি ফাইল দেওয়া যায়।",
+    box: {
+      general: { facts: "বিষয়টি কী, কবে শুরু, আর অন্য পক্ষ কে (যদি থাকে)।", requests: "আপনি কী চান? যেমন: আইনি মতামত, দাবি করা, বা কোনো প্রক্রিয়া শেষ করা।", docs: "পাসপোর্ট বা পরিচয়পত্র, ইকামা, আর বিষয়টির সঙ্গে সম্পর্কিত কাগজ।" },
+      court: { facts: "নাজিজে মামলা নম্বর (যদি থাকে), আদালত, পক্ষগণ, আর শেষ শুনানি বা রায়।", requests: "আপনি কী চান? যেমন: আপনার হয়ে মামলা চালানো, শুনানিতে হাজির থাকা, বা রায়ের বিরুদ্ধে আপত্তি।", docs: "মামলার আবেদন, শুনানির কার্যবিবরণী, রায় বা আদালতের সিদ্ধান্ত, পাসপোর্ট।" },
+      commercial: { facts: "ব্যবসা বা চুক্তির ধরন, পক্ষগণ, বিরোধের টাকার পরিমাণ ও তারিখ।", requests: "আপনি কী চান? যেমন: পাওনা আদায়, চুক্তি বাতিল, অংশীদারি গুটিয়ে নেওয়া, বা ক্ষতিপূরণ।", docs: "চুক্তি, ইনভয়েস, বাণিজ্যিক নিবন্ধন, চিঠিপত্র, আর পেমেন্টের প্রমাণ।" },
+      invest: { facts: "কোন ব্যবসা বা বিনিয়োগের পরিকল্পনা, আর সৌদিতে আপনার বর্তমান অবস্থা।", requests: "আপনি কী চান? যেমন: বিনিয়োগ মন্ত্রণালয়ের লাইসেন্স, প্রিমিয়াম রেসিডেন্সির আবেদন, বা কোম্পানি গঠন।", docs: "পাসপোর্ট, ইকামা (যদি থাকে), ব্যাংক স্টেটমেন্ট বা আর্থিক সামর্থ্যের প্রমাণ, ব্যবসার পরিকল্পনা।" },
+      realestate: { facts: "শহর ও এলাকা, সম্পত্তির ধরন (জমি, ফ্ল্যাট, বাড়ি), আর আপনার ইকামার ধরন (সাধারণ, প্রিমিয়াম, বা সৌদিতে থাকেন না)।", requests: "আপনি কী চান? যেমন: মালিকানার যোগ্যতা যাচাই, ক্রয় চুক্তি পর্যালোচনা, মালিকানা হস্তান্তর ও নিবন্ধন, বা মক্কা-মদিনায় ব্যবহারের অধিকার।", docs: "পাসপোর্ট, ইকামা, সম্পত্তির দলিল বা তথ্য, আর বিক্রয় চুক্তি বা অগ্রিমের কাগজ (যদি থাকে)।" },
+      poa: { facts: "কাকে ওকালা দিতে চান, কী কাজের জন্য, আর আপনি সৌদির ভেতরে না বাইরে।", requests: "আপনি কী চান? যেমন: মামলার জন্য উকিলকে ওকালা, পাওনা তোলার জন্য, বা কেনাবেচার জন্য।", docs: "পাসপোর্ট বা পরিচয়পত্র, ইকামা, আর যাকে ওকালা দেবেন তার নাম ও পরিচয় নম্বর।" },
+      translation: { facts: "কোন কাগজ অনুবাদ করাতে চান, কোন ভাষা থেকে কোন ভাষায়, আর কোথায় জমা দেবেন।", requests: "আপনি কী চান? যেমন: সত্যায়িত অনুবাদ, পররাষ্ট্র মন্ত্রণালয় বা দূতাবাসের সত্যায়ন, বা দুটোই।", docs: "যে কাগজ অনুবাদ ও সত্যায়ন করাতে চান তার পরিষ্কার ছবি।" },
+      hajj: { facts: "হজ না উমরাহ, সম্ভাব্য সময়, আর কতজন যাবেন।", requests: "আপনি কী চান? যেমন: ভিসা করানো, আগের আবেদনের সমস্যা সমাধান, বা শর্ত জানা।", docs: "পাসপোর্ট, ছবি, আর প্রয়োজনীয় টিকার সনদ।" },
+      labour: { facts: "নিয়োগকর্তার নাম, পেশা, কাজ শুরু ও শেষের তারিখ, আর চুক্তি শেষ হওয়ার কারণ।", requests: "আপনি কী চান? যেমন: বকেয়া বেতন, খিদমা (সার্ভিস বেনিফিট), বা চাকরিচ্যুতির ক্ষতিপূরণ।", docs: "পাসপোর্ট, ইকামা, কাজের চুক্তি, বেতনের স্লিপ বা ট্রান্সফারের প্রমাণ, আর নিয়োগকর্তার সঙ্গে চিঠিপত্র।" },
+      bank: { facts: "ব্যাংকের নাম, অ্যাকাউন্ট বন্ধ না জব্দ, আর সৌদি ছাড়ার তারিখ।", requests: "আপনি কী চান? যেমন: টাকা বাংলাদেশে পাঠানো, অ্যাকাউন্ট বন্ধ করা, বা জব্দ তুলে নেওয়া।", docs: "পাসপোর্ট, ইকামা, ব্যাংক স্টেটমেন্ট বা এটিএম কার্ড, আর আইবান নম্বর (যদি থাকে)।" },
+    },
     uploadHint: "পাসপোর্ট, ইকামা, চুক্তি, বেতনের স্লিপ। PDF, ছবি বা Word, ১০০০ পৃষ্ঠা পর্যন্ত (প্রতি ফাইল ৫০০ MB পর্যন্ত), একসাথে কয়েকটি ফাইল দেওয়া যায়।",
     requests: "আপনার দাবি", requestsHint: "আপনি এখন কী চান? যেমন: বকেয়া বেতন আদায়, ব্যাংকের টাকা দেশে পাঠানো।",
     uploading: (a, b) => `ফাইল আপলোড হচ্ছে ${a} / ${b}…`, uploadFailed: "কিছু ফাইল আপলোড হয়নি। মামলার পাতা থেকে আবার চেষ্টা করুন।", uploadDone: "ফাইল আপলোড হয়েছে।",
@@ -220,6 +235,7 @@ const bn: Msgs = {
     joinLawyerCta: "আবেদন করতে যোগাযোগ করুন",
   },
   inbox: {
+    replied: "উত্তর দেওয়া হয়েছে", notReplied: "উত্তর বাকি", markReplied: "উত্তর দেওয়া হয়েছে চিহ্ন দিন", unmarkReplied: "চিহ্ন সরান", anyReplied: "উত্তর: সব", overdue: "১০ দিন পার", days: (n) => `${n} দিন`,
     title: "মামলার ইনবক্স", open: "মামলার ইনবক্স খুলুন", search: "মামলা নম্বর, নাম বা ইমেইল", allTypes: "সব ধরন", allStatus: "সব অবস্থা", anyLawyer: "সব উকিল",
     assigned: "উকিল আছে", unassigned: "উকিল নেই", awaiting: "উত্তরের অপেক্ষায়", newReply: "নতুন বার্তা", filter: "খুঁজুন", clear: "মুছুন",
     waiting: (n) => `${n}টি মামলা উত্তরের অপেক্ষায়`, lastActivity: "সর্বশেষ", status: "অবস্থা", client: "ক্লায়েন্ট", results: (n) => `${n}টি মামলা`,
@@ -298,9 +314,22 @@ const ar: Msgs = {
   cases: {
     title: "قضاياي", none: "لا توجد قضايا بعد.", open: "افتح قضية جديدة", type: "نوع المشكلة", employer: "اسم الشركة أو الكفيل",
     exitDate: "تاريخ الخروج", bank: "اسم البنك", description: "الوقائع باختصار", descriptionHint: "ماذا حدث ومتى، باختصار وبأي لغة.",
-    submit: "قدّم القضية", whatsTitle: "التواصل عبر واتساب", whatsLead: "للتواصل السريع راسلنا على واتساب، وسيُرسل رقم القضية مع رسالتك.", whatsBtn: "راسلنا على واتساب", whatsMsg: (ref: string) => `السلام عليكم، قدّمت طلبي في منصة حقوقي برقم ${ref}.`, created: "تم تقديم القضية. سيراجعها محامٍ خلال 48 ساعة.", timeline: "المراحل", updates: "التحديثات",
+    submit: "قدّم القضية", whatsTitle: "التواصل عبر واتساب", whatsLead: "للتواصل السريع راسلنا على واتساب، وسيُرسل رقم القضية مع رسالتك.", whatsBtn: "راسلنا على واتساب", whatsMsg: (ref: string) => `السلام عليكم، قدّمت طلبي في منصة حقوقي برقم ${ref}.`, created: "تم تقديم طلبك. سيكون الرد خلال 3 أيام، وفي الحد الأقصى 10 أيام.", replyWindow: "سيكون الرد خلال 3 أيام، وفي الحد الأقصى 10 أيام.", timeline: "المراحل", updates: "التحديثات",
     noUpdates: "لا توجد تحديثات بعد.", documents: "المستندات", upload: "رفع", noDocs: "لم تُرفع مستندات.", lawyer: "المحامي",
     noLawyer: "بانتظار تعيين محامٍ", deadline: "آخر موعد للقضية العمالية", channel: "القناة الرسمية", message: "رسالة للمحامي", send: "إرسال",
+    formats: "PDF أو صور أو Word حتى 1000 صفحة (حتى 500 ميجابايت للملف)، ويمكن رفع عدة ملفات معاً.",
+    box: {
+      general: { facts: "ما الموضوع، ومتى بدأ، ومن الطرف الآخر إن وجد.", requests: "ماذا تريد؟ مثلاً: رأي قانوني، أو مطالبة، أو إنهاء إجراء.", docs: "الهوية أو الجواز، والإقامة، وأي ورقة تتعلق بالموضوع." },
+      court: { facts: "رقم القضية في ناجز إن وجد، والمحكمة، والأطراف، وآخر جلسة أو حكم.", requests: "ماذا تريد؟ مثلاً: متابعة القضية نيابةً عنك، أو حضور الجلسات، أو الاعتراض على الحكم.", docs: "صحيفة الدعوى، ومحاضر الجلسات، والحكم أو قرار المحكمة، والهوية أو الجواز." },
+      commercial: { facts: "طبيعة النشاط أو العقد، والأطراف، والمبلغ المتنازع عليه، والتواريخ.", requests: "ماذا تريد؟ مثلاً: تحصيل دين، أو فسخ عقد، أو تصفية شراكة، أو تعويض.", docs: "العقد، والفواتير، والسجل التجاري، والمراسلات، وإثباتات الدفع." },
+      invest: { facts: "نوع النشاط أو الاستثمار الذي تخطط له، ووضعك الحالي في السعودية.", requests: "ماذا تريد؟ مثلاً: ترخيص من وزارة الاستثمار، أو التقديم على الإقامة المميزة، أو تأسيس شركة.", docs: "الجواز، والإقامة إن وجدت، وكشف حساب أو إثبات ملاءة مالية، وخطة العمل إن وجدت." },
+      realestate: { facts: "المدينة والحي، ونوع العقار (أرض، شقة، منزل)، ونوع إقامتك (عادية أو مميزة أو غير مقيم).", requests: "ماذا تريد؟ مثلاً: التحقق من أهليتك للتملك، أو مراجعة عقد الشراء، أو نقل الملكية وتسجيلها، أو حق انتفاع في مكة أو المدينة.", docs: "الجواز، والإقامة، وصك العقار أو بياناته، وعقد البيع أو العربون إن وجد." },
+      poa: { facts: "لمن تريد الوكالة، وفي أي غرض، وهل أنت داخل السعودية أو خارجها.", requests: "ماذا تريد؟ مثلاً: وكالة لمحامٍ في قضية، أو لاستلام مستحقات، أو لبيع وشراء.", docs: "الجواز أو الهوية، والإقامة، وبيانات الوكيل (الاسم ورقم الهوية)." },
+      translation: { facts: "ما المستندات التي تريد ترجمتها، ومن أي لغة إلى أي لغة، والجهة التي ستقدمها لها.", requests: "ماذا تريد؟ مثلاً: ترجمة معتمدة، أو مصادقة من الخارجية أو السفارة، أو الاثنين.", docs: "صور واضحة من المستندات المطلوب ترجمتها ومصادقتها." },
+      hajj: { facts: "حج أم عمرة، والموعد المتوقع، وعدد الأشخاص.", requests: "ماذا تريد؟ مثلاً: إصدار التأشيرة، أو حل مشكلة في طلب سابق، أو الاستفسار عن الشروط.", docs: "الجوازات، والصور الشخصية، وشهادات التطعيم المطلوبة." },
+      labour: { facts: "اسم صاحب العمل، والمهنة، وتاريخ بداية العمل ونهايته، وسبب انتهاء العقد.", requests: "ماذا تريد؟ مثلاً: صرف الرواتب المتأخرة، أو مكافأة نهاية الخدمة، أو تعويض الفصل.", docs: "الجواز، والإقامة، وعقد العمل، وكشوف الراتب أو التحويلات، وأي مراسلات مع صاحب العمل." },
+      bank: { facts: "اسم البنك، وهل الحساب مجمّد أو مغلق، وتاريخ خروجك من السعودية.", requests: "ماذا تريد؟ مثلاً: تحويل الرصيد إلى بنغلاديش، أو إغلاق الحساب، أو فك التجميد.", docs: "الجواز، والإقامة، وكشف الحساب أو بطاقة الصراف، ورقم الآيبان إن وجد." },
+    },
     uploadHint: "الجواز، الإقامة، العقد، كشوف الراتب. PDF أو صور أو Word حتى 1000 صفحة (حتى 500 ميجابايت للملف)، ويمكن رفع عدة ملفات معاً.",
     requests: "الطلبات", requestsHint: "ماذا تطلب الآن؟ مثلاً: صرف الرواتب المتأخرة، تحويل رصيد البنك إلى بنغلاديش.",
     uploading: (a, b) => `جاري رفع الملفات ${a} من ${b}…`, uploadFailed: "تعذّر رفع بعض الملفات. حاول مرة أخرى من صفحة القضية.", uploadDone: "تم رفع الملفات.",
@@ -361,6 +390,7 @@ const ar: Msgs = {
     joinLawyerCta: "تواصل معنا للتقديم",
   },
   inbox: {
+    replied: "تم الرد", notReplied: "لم يُرد بعد", markReplied: "علّم بأنه تم الرد", unmarkReplied: "إلغاء العلامة", anyReplied: "الرد: الكل", overdue: "تجاوز 10 أيام", days: (n) => `${n} يوم`,
     title: "صندوق القضايا", open: "افتح صندوق القضايا", search: "رقم القضية أو الاسم أو البريد", allTypes: "كل الأنواع", allStatus: "كل الحالات", anyLawyer: "كل المحامين",
     assigned: "عندها محامٍ", unassigned: "بدون محامٍ", awaiting: "بانتظار الرد", newReply: "رد جديد", filter: "بحث", clear: "مسح",
     waiting: (n) => `${n} قضية بانتظار الرد`, lastActivity: "آخر نشاط", status: "الحالة", client: "العميل", results: (n) => `${n} قضية`,
@@ -439,9 +469,22 @@ const en: Msgs = {
   cases: {
     title: "My cases", none: "No cases yet.", open: "Open a new case", type: "Type of problem", employer: "Company or sponsor name",
     exitDate: "Exit date", bank: "Bank name", description: "The facts, in brief", descriptionHint: "What happened and when, briefly, in any language.",
-    submit: "Submit case", whatsTitle: "Contact us on WhatsApp", whatsLead: "For a quick reply, message us on WhatsApp. Your case number is included.", whatsBtn: "Message us on WhatsApp", whatsMsg: (ref: string) => `Hello, I submitted case ${ref} on Huquqi.`, created: "Case submitted. A lawyer will review it within 48 hours.", timeline: "Progress", updates: "Updates",
+    submit: "Submit case", whatsTitle: "Contact us on WhatsApp", whatsLead: "For a quick reply, message us on WhatsApp. Your case number is included.", whatsBtn: "Message us on WhatsApp", whatsMsg: (ref: string) => `Hello, I submitted case ${ref} on Huquqi.`, created: "Case submitted. You will get a reply within 3 days, and at most 10 days.", replyWindow: "You will get a reply within 3 days, and at most 10 days.", timeline: "Progress", updates: "Updates",
     noUpdates: "No updates yet.", documents: "Documents", upload: "Upload", noDocs: "No documents uploaded.", lawyer: "Lawyer",
     noLawyer: "Waiting for a lawyer", deadline: "Labour claim deadline", channel: "Official channel", message: "Message your lawyer", send: "Send",
+    formats: "PDF, images or Word, up to 1,000 pages (500 MB per file); you can pick several files at once.",
+    box: {
+      general: { facts: "What the matter is, when it started, and who the other party is, if any.", requests: "What do you want? For example: a legal opinion, a claim, or finishing a procedure.", docs: "ID or passport, iqama, and any paper related to the matter." },
+      court: { facts: "Najiz case number if you have one, the court, the parties, and the last hearing or judgment.", requests: "What do you want? For example: a lawyer to follow the case for you, attend hearings, or appeal the judgment.", docs: "The claim, hearing minutes, the judgment or court decision, and your passport." },
+      commercial: { facts: "The business or contract, the parties, the amount in dispute, and the dates.", requests: "What do you want? For example: collect a debt, end a contract, wind up a partnership, or compensation.", docs: "The contract, invoices, commercial registration, correspondence, and proof of payment." },
+      invest: { facts: "The business or investment you plan, and your current status in Saudi Arabia.", requests: "What do you want? For example: a MISA licence, a Premium Residency application, or setting up a company.", docs: "Passport, iqama if any, a bank statement or proof of funds, and a business plan if you have one." },
+      realestate: { facts: "City and district, the type of property (land, flat, house), and your residency (ordinary, Premium, or non-resident).", requests: "What do you want? For example: check you are allowed to own, review a purchase contract, transfer and register the title, or a right of use in Makkah or Madinah.", docs: "Passport, iqama, the title deed or property details, and the sale contract or deposit receipt if any." },
+      poa: { facts: "Who the power of attorney is for, what for, and whether you are inside or outside Saudi Arabia.", requests: "What do you want? For example: a POA for a lawyer in a case, to collect dues, or to buy and sell.", docs: "Passport or ID, iqama, and the agent's name and ID number." },
+      translation: { facts: "Which documents, from which language into which, and where you will submit them.", requests: "What do you want? For example: certified translation, Foreign Ministry or embassy attestation, or both.", docs: "Clear copies of the documents to translate and attest." },
+      hajj: { facts: "Hajj or Umrah, the expected date, and how many people.", requests: "What do you want? For example: issue the visa, fix a problem with an earlier application, or check the requirements.", docs: "Passports, photos, and the required vaccination certificates." },
+      labour: { facts: "Employer's name, your job, start and end dates, and why the contract ended.", requests: "What do you want? For example: unpaid salary, end-of-service benefit, or compensation for dismissal.", docs: "Passport, iqama, employment contract, payslips or transfers, and any messages with the employer." },
+      bank: { facts: "Bank name, whether the account is frozen or closed, and the date you left Saudi Arabia.", requests: "What do you want? For example: send the balance to Bangladesh, close the account, or lift the freeze.", docs: "Passport, iqama, a bank statement or ATM card, and the IBAN if you have it." },
+    },
     uploadHint: "Passport, iqama, contract, payslips. PDF, images or Word, up to 1,000 pages (500 MB per file); you can pick several files at once.",
     requests: "Your requests", requestsHint: "What do you want now? For example: unpaid salary paid, bank balance sent to Bangladesh.",
     uploading: (a, b) => `Uploading files ${a} of ${b}…`, uploadFailed: "Some files did not upload. Try again from the case page.", uploadDone: "Files uploaded.",
@@ -502,6 +545,7 @@ const en: Msgs = {
     joinLawyerCta: "Contact us to apply",
   },
   inbox: {
+    replied: "Replied", notReplied: "Not replied yet", markReplied: "Mark as replied", unmarkReplied: "Remove mark", anyReplied: "Reply: all", overdue: "Over 10 days", days: (n) => `${n} days`,
     title: "Case inbox", open: "Open the case inbox", search: "Case number, name or email", allTypes: "All types", allStatus: "Any status", anyLawyer: "Any lawyer",
     assigned: "Has a lawyer", unassigned: "No lawyer", awaiting: "Awaiting reply", newReply: "New reply", filter: "Search", clear: "Clear",
     waiting: (n) => `${n} cases awaiting a reply`, lastActivity: "Last activity", status: "Status", client: "Client", results: (n) => `${n} cases`,

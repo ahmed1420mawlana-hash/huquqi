@@ -6,6 +6,7 @@ import { who } from "@/lib/who";
 import { Stars } from "@/components/Stars";
 import { directUploads } from "@/lib/storage";
 import { whatsappLink } from "@/lib/whatsapp";
+import { RepliedToggle } from "@/components/RepliedToggle";
 import { takeCase } from "../actions";
 import { MessageForm, NoteForm, ReviewForm, UploadForm } from "./CaseForms";
 
@@ -28,6 +29,7 @@ export default async function CasePage({
   return (
     <div className="wrap stack">
       {created && <p className="okmsg" style={{ margin: 0 }}>{t.cases.created}</p>}
+      {isOwner && !created && !c.replied && !closed && <p className="hint" style={{ margin: 0 }}>{t.cases.replyWindow}</p>}
       {wa && (
         <div className={`card whats${created ? " fresh" : ""}`} id="whatsapp">
           <div>
@@ -48,6 +50,7 @@ export default async function CasePage({
         </div>
         <span className="inline" style={{ gap: 6 }}>
           {!isOwner && c.awaitingReply && <span className="pill new">{t.inbox.newReply}</span>}
+          {user.role === "ADMIN" && <RepliedToggle c={c} t={t} locale={locale} admin />}
           <span className={`pill ${closed ? "closed" : ""}`}>{closed ? t.status.closed : t.status.open}</span>
         </span>
       </div>
@@ -168,7 +171,7 @@ export default async function CasePage({
                 ))}
               </ul>
             )}
-            {(isOwner || worker) && <UploadForm caseId={c.id} locale={locale} direct={directUploads()} />}
+            {(isOwner || worker) && <UploadForm caseId={c.id} locale={locale} direct={directUploads()} type={c.type} />}
           </section>
         </div>
       </div>

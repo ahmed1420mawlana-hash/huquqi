@@ -103,17 +103,17 @@ export function CaseStarter({
                 <TypeInfo type={type} exit={exit} locale={locale} />
                 <label className="f" htmlFor="description">
                   <span className="box-title"><b className="num">{localNum(1, locale)}</b>{t.cases.description}</span>
-                  <span className="hint">{t.cases.descriptionHint}</span>
+                  <span className="hint">{t.cases.box[type].facts}</span>
                   <textarea id="description" name="description" required defaultValue={d?.description ?? ""} />
                 </label>
                 <label className="f" htmlFor="requests">
                   <span className="box-title"><b className="num">{localNum(2, locale)}</b>{t.cases.requests}</span>
-                  <span className="hint">{t.cases.requestsHint}</span>
+                  <span className="hint">{t.cases.box[type].requests}</span>
                   <textarea id="requests" name="requests" required defaultValue={d?.requests ?? ""} />
                 </label>
                 <label className="f" htmlFor="files">
                   <span className="box-title"><b className="num">{localNum(3, locale)}</b>{t.cases.documents}</span>
-                  <span className="hint">{t.cases.uploadHint}</span>
+                  <span className="hint">{t.cases.box[type].docs} {t.cases.formats}</span>
                   <input id="files" name="files" type="file" multiple accept={ACCEPT} />
                 </label>
                 {(isLabourType(type) || type === "bank") && (

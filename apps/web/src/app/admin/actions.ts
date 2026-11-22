@@ -59,3 +59,11 @@ export async function decideApplication(id: string, approve: boolean) {
   revalidatePath("/admin/lawyers");
   revalidatePath("/admin");
 }
+
+/** Admin marks by hand whether the client has been answered (the green tick in the inbox). */
+export async function setReplied(caseId: string, replied: boolean) {
+  await requireUser(["ADMIN"]);
+  await db.case.update({ where: { id: caseId }, data: { replied, repliedAt: replied ? new Date() : null } });
+  revalidatePath("/inbox");
+  revalidatePath(`/cases/${caseId}`);
+}

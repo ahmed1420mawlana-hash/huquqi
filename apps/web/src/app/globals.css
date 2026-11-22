@@ -213,3 +213,10 @@ button.brand{background:none;border:0;padding:0;cursor:pointer;font-family:inher
 .res details.holy figure p{margin:4px 0 0}
 .res details.holy .recite{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;font-size:13.5px;color:var(--green);font-weight:600}
 .res details.holy .recite audio{width:100%;max-width:320px;height:36px}
+/* Manual "client answered" tick */
+.replied-cell{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tick{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-weight:800;cursor:pointer;padding:0}
+.tick:hover{border-color:#1f9d55;color:#1f9d55}
+.tick.on{background:#1f9d55;border-color:#1f9d55;color:#fff}
+.pill.late{background:var(--alert-bg);color:var(--alert)}
+.pill.warn{background:#fff3cd;color:#8a6100}
