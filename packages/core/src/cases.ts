@@ -2,15 +2,16 @@
 
 /** Case types a returnee can open, in the order they are offered. */
 export const CASE_TYPES = [
-  "labour", // unpaid salary and end-of-service benefit, one labour claim
-  "bank", // balance left in a Saudi bank account
+  // Most general first, most specific last.
+  "general", // general cases
   "court", // an existing court case
-  "poa", // issuing a power of attorney
   "commercial", // commercial disputes: debts, contracts, a business or partnership
   "invest", // investing in Saudi Arabia and Premium Residency
+  "poa", // issuing a power of attorney
   "translation", // certified translation and attestation of documents
   "hajj", // Hajj and Umrah visas
-  "general", // anything else
+  "labour", // unpaid salary and end-of-service benefit, one labour claim
+  "bank", // balance left in a Saudi bank account
 ] as const;
 /** Types from earlier versions, still shown on old cases but no longer offered. */
 export const LEGACY_CASE_TYPES = ["salary", "eosb", "accident", "property"] as const;
