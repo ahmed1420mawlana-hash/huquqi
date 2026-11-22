@@ -26,7 +26,7 @@ export function formatDate(d: Date, l: Locale): string {
 type Msgs = {
   brand: string;
   nav: { home: string; myCases: string; newCase: string; lawyer: string; admin: string; login: string; logout: string };
-  home: { eyebrow: string; title: string; lead: string; cta: string; checkTitle: string; checkLead: string };
+  home: { eyebrow: string; title: string; lead: string; cta: string; checkTitle: string; checkLead: string; pick: string; pickLead: string };
   check: {
     issues: string; exitDate: string; bank: string; stopped: string; empty: string;
     labourTitle: string; daysLeft: (n: string) => string; labourBody: (date: string) => string;
@@ -49,7 +49,7 @@ type Msgs = {
     timeline: string; updates: string; noUpdates: string; documents: string; upload: string;
     noDocs: string; lawyer: string; noLawyer: string; deadline: string; channel: string;
     message: string; send: string; uploadHint: string;
-    requests: string; requestsHint: string; uploading: (a: string, b: string) => string; uploadFailed: string; uploadDone: string;
+    requests: string; requestsHint: string; uploading: (a: string, b: string) => string; uploadFailed: string; uploadDone: string; loginToSend: string; reattach: string;
   };
   lawyer: {
     title: string; assigned: string; unassigned: string; take: string; moveTo: string; update: string;
@@ -76,8 +76,7 @@ const bn: Msgs = {
     lead: "বেতন, খিদমা, ব্যাংকের টাকা বা আদালতের মামলা। সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল আপনার হয়ে কাজ করবেন, আর আপনি বাংলায় প্রতিটি ধাপ দেখবেন।",
     cta: "মামলা শুরু করুন",
     checkTitle: "বিনামূল্যে আপনার অবস্থা যাচাই করুন",
-    checkLead: "৩টি প্রশ্নের উত্তর দিন। আমরা জানাব কোন অধিকার এখনো আদায় করা যায় এবং কত সময় বাকি।",
-  },
+    checkLead: "৩টি প্রশ্নের উত্তর দিন। আমরা জানাব কোন অধিকার এখনো আদায় করা যায় এবং কত সময় বাকি।", pick: "কোন বিষয়ে সাহায্য চান?", pickLead: "একটি বিষয় বেছে নিন, তারপর তিনটি ঘর পূরণ করুন: ঘটনা, দাবি ও কাগজপত্র।" },
   check: {
     issues: "সৌদিতে আপনার কী আটকে আছে?", exitDate: "সৌদি ছাড়ার তারিখ (ফাইনাল এক্সিট)", bank: "সৌদি ব্যাংকে টাকা আছে",
     stopped: "কোম্পানি বেতন দেওয়া বন্ধ করেছে বা বন্ধ হয়ে গেছে", empty: "অন্তত একটি সমস্যা বেছে নিন।",
@@ -110,6 +109,7 @@ const bn: Msgs = {
     uploadHint: "পাসপোর্ট, ইকামা, চুক্তি, বেতনের স্লিপ। PDF, ছবি বা Word, ১০০০ পৃষ্ঠা পর্যন্ত (প্রতি ফাইল ৫০০ MB পর্যন্ত), একসাথে কয়েকটি ফাইল দেওয়া যায়।",
     requests: "আপনার দাবি", requestsHint: "আপনি এখন কী চান? যেমন: বকেয়া বেতন আদায়, ব্যাংকের টাকা দেশে পাঠানো।",
     uploading: (a, b) => `ফাইল আপলোড হচ্ছে ${a} / ${b}…`, uploadFailed: "কিছু ফাইল আপলোড হয়নি। মামলার পাতা থেকে আবার চেষ্টা করুন।", uploadDone: "ফাইল আপলোড হয়েছে।",
+    loginToSend: "লগইন করে জমা দিন", reattach: "আপনার লেখা রাখা আছে। লগইনের পর কাগজপত্র আবার বেছে নিন।",
   },
   lawyer: {
     title: "উকিল প্যানেল", assigned: "আমার মামলা", unassigned: "নতুন মামলা", take: "মামলা নিন", moveTo: "পরবর্তী ধাপ", update: "আপডেট লিখুন",
@@ -138,8 +138,7 @@ const ar: Msgs = {
     lead: "رواتب، مكافأة نهاية خدمة، رصيد بنكي، أو قضية في المحكمة. محامٍ سعودي مرخّص يعمل نيابةً عنك، وأنت تتابع كل خطوة بلغتك.",
     cta: "ابدأ قضيتك",
     checkTitle: "افحص حالتك مجاناً",
-    checkLead: "أجب عن 3 أسئلة، ونخبرك بما يمكن استرداده وكم بقي من الوقت.",
-  },
+    checkLead: "أجب عن 3 أسئلة، ونخبرك بما يمكن استرداده وكم بقي من الوقت.", pick: "بماذا نساعدك؟", pickLead: "اختر نوع القضية، ثم عبّئ الخانات الثلاث: الوقائع، والطلبات، والمستندات." },
   check: {
     issues: "ما الذي بقي لك في السعودية؟", exitDate: "تاريخ الخروج النهائي", bank: "لدي رصيد في بنك سعودي",
     stopped: "الشركة توقفت عن دفع الرواتب أو أغلقت", empty: "اختر مشكلة واحدة على الأقل.",
@@ -172,6 +171,7 @@ const ar: Msgs = {
     uploadHint: "الجواز، الإقامة، العقد، كشوف الراتب. PDF أو صور أو Word حتى 1000 صفحة (حتى 500 ميجابايت للملف)، ويمكن رفع عدة ملفات معاً.",
     requests: "الطلبات", requestsHint: "ماذا تطلب الآن؟ مثلاً: صرف الرواتب المتأخرة، تحويل رصيد البنك إلى بنغلاديش.",
     uploading: (a, b) => `جاري رفع الملفات ${a} من ${b}…`, uploadFailed: "تعذّر رفع بعض الملفات. حاول مرة أخرى من صفحة القضية.", uploadDone: "تم رفع الملفات.",
+    loginToSend: "سجّل الدخول وأرسل", reattach: "حفظنا ما كتبته. اختر المستندات مرة أخرى بعد الدخول.",
   },
   lawyer: {
     title: "لوحة المحامي", assigned: "قضاياي", unassigned: "قضايا جديدة", take: "استلم القضية", moveTo: "المرحلة التالية", update: "اكتب تحديثاً",
@@ -200,8 +200,7 @@ const en: Msgs = {
     lead: "Unpaid salary, end-of-service benefit, a bank balance or a court case. A licensed Saudi lawyer acts for you, and you follow every step in your language.",
     cta: "Start your case",
     checkTitle: "Check your situation for free",
-    checkLead: "Answer 3 questions. We tell you what you can still recover and how much time is left.",
-  },
+    checkLead: "Answer 3 questions. We tell you what you can still recover and how much time is left.", pick: "What do you need help with?", pickLead: "Pick a type of case, then fill in the three boxes: the facts, your requests and the documents." },
   check: {
     issues: "What did you leave behind in Saudi Arabia?", exitDate: "Final exit date", bank: "I have money in a Saudi bank",
     stopped: "The company stopped paying salaries or closed down", empty: "Pick at least one issue.",
@@ -234,6 +233,7 @@ const en: Msgs = {
     uploadHint: "Passport, iqama, contract, payslips. PDF, images or Word, up to 1,000 pages (500 MB per file); you can pick several files at once.",
     requests: "Your requests", requestsHint: "What do you want now? For example: unpaid salary paid, bank balance sent to Bangladesh.",
     uploading: (a, b) => `Uploading files ${a} of ${b}…`, uploadFailed: "Some files did not upload. Try again from the case page.", uploadDone: "Files uploaded.",
+    loginToSend: "Log in and send", reattach: "We kept what you wrote. Pick the documents again after logging in.",
   },
   lawyer: {
     title: "Lawyer panel", assigned: "My cases", unassigned: "New cases", take: "Take case", moveTo: "Next stage", update: "Write an update",

@@ -55,5 +55,8 @@ export async function loginAction(prev: LoginState, fd: FormData): Promise<Login
           create: { email: prev.target, name, locale, role: adminEmails().includes(prev.target) ? "ADMIN" : "WORKER" },
         });
   await createSession(user.id);
+  // Back to where the visitor was going (e.g. a case they started before logging in).
+  const next = String(fd.get("next") ?? "");
+  if (user.role !== "LAWYER" && /^\/(?!\/)[\w\-/?=&]*$/.test(next)) redirect(next);
   redirect(user.role === "WORKER" ? "/cases" : user.role === "ADMIN" ? "/admin" : "/lawyer");
 }

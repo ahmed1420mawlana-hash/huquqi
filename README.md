@@ -86,7 +86,7 @@ BASE_URL=http://localhost:3000 NODE_PATH=$(npm root -g) node apps/web/e2e/smoke.
 # (a local production build over http also needs INSECURE_COOKIES=1 on the server)
 ```
 
-The smoke test needs Playwright installed globally. It walks through the home emblems and case check, email login,
+The smoke test needs Playwright installed globally. It walks through the home emblems and case options (three boxes each, labour details folded inside), email login,
 case creation with the three boxes and two documents (one of 15 MB), access control (anonymous and other
 workers get 401/404), a lawyer taking and closing the case in Arabic, a review, and admin approval.
 

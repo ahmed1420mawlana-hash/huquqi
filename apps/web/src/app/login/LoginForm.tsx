@@ -3,7 +3,7 @@ import { useActionState } from "react";
 import { messages, type Locale } from "@huquqi/core";
 import { loginAction, type LoginState } from "./actions";
 
-export function LoginForm({ locale }: { locale: Locale }) {
+export function LoginForm({ locale, next }: { locale: Locale; next?: string }) {
   const t = messages[locale];
   const [state, action, pending] = useActionState<LoginState, FormData>(loginAction, { step: "email" });
 
@@ -47,6 +47,7 @@ export function LoginForm({ locale }: { locale: Locale }) {
         {t.auth.name}
         <input id="name" name="name" type="text" autoComplete="name" />
       </label>
+      {next && <input type="hidden" name="next" value={next} />}
       {state.error === "badCode" && <p className="err" role="alert">{t.auth.badCode}</p>}
       <button className="btn" name="intent" value="verify" disabled={pending}>{t.auth.verify}</button>
     </form>
