@@ -52,7 +52,7 @@ model OtpCode {
 model Case {
   id          String    @id @default(cuid())
   ref         String    @unique // short human reference, e.g. HQ-7K2P9
-  type        String    // salary | eosb | bank | court | accident | property | translation | hajj
+  type        String    // labour | bank | court | commercial | accident | property | translation | hajj | general (old cases: salary | eosb)
   stage       String    @default("submitted")
   employer    String?
   bankName    String?

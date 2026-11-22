@@ -32,7 +32,7 @@ type Msgs = {
     labourTitle: string; daysLeft: (n: string) => string; labourBody: (date: string) => string;
     labourLateTitle: string; labourLateBody: string;
     bankTitle: string; bankBody: string; insTitle: string; insBody: string;
-    otherTitle: string; otherBody: string; transTitle: string; transBody: string; hajjTitle: string; hajjBody: string; disclaimer: string;
+    otherTitle: string; otherBody: string; transTitle: string; transBody: string; hajjTitle: string; hajjBody: string; comTitle: string; comBody: string; genTitle: string; genBody: string; disclaimer: string;
   };
   bankStatus: Record<BankStatus, string>;
   caseType: Record<CaseType, string>;
@@ -97,10 +97,12 @@ const bn: Msgs = {
     otherTitle: "উকিলের মূল্যায়ন দরকার", otherBody: "মামলা, দুর্ঘটনা বা সম্পত্তির জন্য ওকালা দিয়ে একজন সৌদি উকিল নাজিজ (Najiz)-এ কাজ করবেন।",
     transTitle: "কাগজপত্র অনুবাদ", transBody: "সৌদি আদালত ও দপ্তরের জন্য বাংলা বা ইংরেজি কাগজপত্রের প্রত্যয়িত আরবি অনুবাদ (এবং উল্টোটাও)।",
     hajjTitle: "হজ ও উমরাহ ভিসা", hajjBody: "নুসুক (Nusuk) ও লাইসেন্সপ্রাপ্ত এজেন্টের মাধ্যমে আবেদন, আর আগের ইকামা থেকে কোনো প্রবেশ নিষেধাজ্ঞা আছে কিনা তা যাচাই।",
+    comTitle: "ব্যবসায়িক মামলা", comBody: "পাওনা টাকা, চুক্তি, ব্যবসা বা অংশীদারিত্বের বিরোধ। সৌদি উকিল বাণিজ্যিক আদালতে (নাজিজ) ওকালার মাধ্যমে কাজ করবেন।",
+    genTitle: "অন্যান্য বিষয়", genBody: "উপরের কোনোটির সঙ্গে না মিললে এখানে লিখুন। একজন উকিল দেখে জানাবেন কী করা যায়।",
     disclaimer: "এটি একটি প্রাথমিক নির্দেশিকা, আইনি পরামর্শ নয়। চূড়ান্ত মূল্যায়ন করবেন সৌদি আরবের লাইসেন্সপ্রাপ্ত উকিল।",
   },
   bankStatus: { active: "এখনো চালু থাকতে পারে", frozen: "সম্ভবত ফ্রিজ", holding: "টাকা আলাদা অ্যাকাউন্টে", unclaimed: "দাবিহীন, কিন্তু টাকা আপনারই" },
-  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ", hajj: "হজ ও উমরাহ ভিসা" },
+  caseType: { salary: "বকেয়া বেতন", eosb: "খিদমা (সার্ভিস বেনিফিট)", bank: "ব্যাংকের টাকা", court: "চলমান মামলা", accident: "দুর্ঘটনার ক্ষতিপূরণ", property: "গাড়ি বা সম্পত্তি", translation: "কাগজপত্র অনুবাদ", hajj: "হজ ও উমরাহ ভিসা", labour: "শ্রম মামলা (বেতন ও খিদমা)", commercial: "ব্যবসায়িক মামলা", general: "অন্যান্য বিষয়" },
   stage: { submitted: "জমা হয়েছে", review: "উকিল দেখছেন", poa: "ওকালা প্রস্তুত", filed: "আবেদন জমা", hearing: "বৈঠক / শুনানি", judgment: "রায় / উত্তর", payout: "টাকা পাঠানো", closed: "বন্ধ" },
   auth: {
     title: "ইমেইল দিয়ে লগইন", email: "ইমেইল", emailHint: "আমরা আপনার ইমেইলে একটি ৬ সংখ্যার কোড পাঠাব।", send: "কোড পাঠান",
@@ -190,10 +192,12 @@ const ar: Msgs = {
     otherTitle: "يحتاج تقييم محامٍ", otherBody: "للقضايا والحوادث والممتلكات، يتابع محامٍ سعودي بالوكالة عبر منصة ناجز.",
     transTitle: "ترجمة المستندات", transBody: "ترجمة معتمدة إلى العربية لمستنداتك البنغالية أو الإنجليزية (وبالعكس) للمحاكم والجهات السعودية.",
     hajjTitle: "تأشيرات الحج والعمرة", hajjBody: "التقديم عبر منصة نُسُك والوكلاء المرخصين، والتحقق من عدم وجود منع دخول بسبب إقامتك السابقة.",
+    comTitle: "القضايا التجارية", comBody: "المطالبات المالية والعقود وخلافات الشراكة والأعمال، يتابعها محامٍ سعودي بالوكالة أمام المحكمة التجارية عبر ناجز.",
+    genTitle: "قضايا عامة", genBody: "إذا لم تجد خياراً يناسب مشكلتك فاكتبها هنا، ويراجعها محامٍ ويخبرك بما يمكن عمله.",
     disclaimer: "هذا إرشاد أولي وليس استشارة قانونية. التقييم النهائي يقدمه محامٍ سعودي مرخّص.",
   },
   bankStatus: { active: "قد يكون نشطاً", frozen: "مجمّد غالباً", holding: "الرصيد في حساب موحّد", unclaimed: "غير مطالَب به، والمال ما زال لك" },
-  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات", hajj: "تأشيرات الحج والعمرة" },
+  caseType: { salary: "رواتب متأخرة", eosb: "مكافأة نهاية الخدمة", bank: "رصيد بنكي", court: "قضية قائمة", accident: "تعويض حادث", property: "سيارة أو ممتلكات", translation: "ترجمة المستندات", hajj: "تأشيرات الحج والعمرة", labour: "قضية عمالية (رواتب ونهاية خدمة)", commercial: "قضايا تجارية", general: "قضايا عامة" },
   stage: { submitted: "مُقدَّمة", review: "قيد المراجعة", poa: "إعداد الوكالة", filed: "تم التقديم", hearing: "جلسات", judgment: "الحكم / الرد", payout: "التحويل", closed: "مغلقة" },
   auth: {
     title: "الدخول بالبريد الإلكتروني", email: "البريد الإلكتروني", emailHint: "نرسل إلى بريدك رمزاً من 6 أرقام.", send: "أرسل الرمز",
@@ -283,10 +287,12 @@ const en: Msgs = {
     otherTitle: "Needs a lawyer's review", otherBody: "For court cases, accidents or property, a Saudi lawyer with your power of attorney works through Najiz.",
     transTitle: "Document translation", transBody: "Certified Arabic translation of your Bengali or English documents (and back) for Saudi courts and offices.",
     hajjTitle: "Hajj & Umrah visas", hajjBody: "Applying through Nusuk and licensed agents, and checking that your old residency left no entry ban.",
+    comTitle: "Commercial cases", comBody: "Money owed, contracts, business or partnership disputes. A Saudi lawyer acts for you in the Commercial Court through Najiz.",
+    genTitle: "General", genBody: "If nothing above fits, describe it here. A lawyer reviews it and tells you what can be done.",
     disclaimer: "This is first guidance, not legal advice. A licensed Saudi lawyer gives the final review.",
   },
   bankStatus: { active: "May still be active", frozen: "Likely frozen", holding: "Balance in holding account", unclaimed: "Unclaimed, but still yours" },
-  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation", hajj: "Hajj & Umrah visas" },
+  caseType: { salary: "Unpaid salary", eosb: "End-of-service benefit", bank: "Bank balance", court: "Open court case", accident: "Accident compensation", property: "Car or property", translation: "Document translation", hajj: "Hajj & Umrah visas", labour: "Labour claim (salary & end of service)", commercial: "Commercial cases", general: "General" },
   stage: { submitted: "Submitted", review: "Under review", poa: "Power of attorney", filed: "Filed", hearing: "Sessions", judgment: "Decision", payout: "Paid out", closed: "Closed" },
   auth: {
     title: "Log in with your email", email: "Email", emailHint: "We send a 6-digit code to your email.", send: "Send code",

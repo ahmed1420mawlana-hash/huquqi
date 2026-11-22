@@ -14,7 +14,7 @@ type Draft = { type: CaseType; description: string; requests: string; exitDate: 
 function readDraft(): Draft | null {
   try {
     const d = JSON.parse(sessionStorage.getItem(DRAFT) ?? "null");
-    return d && CASE_TYPES.includes(d.type) ? d : null;
+    return d && (CASE_TYPES as readonly string[]).includes(d.type) ? d : null;
   } catch {
     return null;
   }
@@ -169,6 +169,8 @@ function TypeInfo({ type, exit, locale }: { type: CaseType; exit: string; locale
     type === "bank" ? { title: t.check.bankTitle, body: t.check.bankBody, tag: t.bankStatus[exitDate ? bankStatus(exitDate) : "frozen"] }
     : type === "translation" ? { title: t.check.transTitle, body: t.check.transBody }
     : type === "hajj" ? { title: t.check.hajjTitle, body: t.check.hajjBody }
+    : type === "commercial" ? { title: t.check.comTitle, body: t.check.comBody }
+    : type === "general" ? { title: t.check.genTitle, body: t.check.genBody }
     : { title: t.check.otherTitle, body: t.check.otherBody };
   return (
     <div className={`res ${type === "bank" ? "ok" : ""}`}>

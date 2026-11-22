@@ -48,9 +48,11 @@ try {
   ok((await w.locator("html").getAttribute("lang")) === "bn", "default language is Bengali");
   ok(await w.locator(".marks li").count() === 3, "home shows scales, gavel and flag");
   ok(await w.locator(".hero details.more, .hero .res").count() === 0, "no labour details on the home page itself");
-  await w.click('.starter-head[data-type="salary"]');
-  ok(await w.locator("#case-salary details.more").count() === 1, "labour details are inside the labour option");
-  ok(!(await w.locator("#case-salary details.more .res").first().isVisible()), "and folded away");
+  ok(await w.locator(".starter-head").count() === 9, "nine options, salary and end of service merged");
+  ok(await w.locator('.starter-head[data-type="commercial"]').count() === 1 && await w.locator('.starter-head[data-type="general"]').count() === 1, "commercial and general options");
+  await w.click('.starter-head[data-type="labour"]');
+  ok(await w.locator("#case-labour details.more").count() === 1, "labour details are inside the labour option");
+  ok(!(await w.locator("#case-labour details.more .res").first().isVisible()), "and folded away");
   await w.click('.starter-head[data-type="hajj"]');
   ok(await seen(w, "#case-hajj .res >> text=নুসুক"), "Hajj and Umrah option explains itself");
   // The "Huquqi" name opens the site menu; the contact and feedback forms reach the admin.
@@ -97,10 +99,10 @@ try {
   await v.close();
 
   await w.goto(BASE + "/cases/new");
-  await w.click('.starter-head[data-type="eosb"]');
+  await w.click('.starter-head[data-type="labour"]');
   const exit = new Date(); exit.setMonth(exit.getMonth() - 2);
   await w.fill("#exitDate", exit.toISOString().slice(0, 10));
-  ok(await w.locator("#case-eosb textarea, #case-eosb input[type=file]").count() === 3, "three boxes: facts, requests, documents");
+  ok(await w.locator("#case-labour textarea, #case-labour input[type=file]").count() === 3, "three boxes: facts, requests, documents");
   await w.fill("#description", "আমার খিদমার টাকা পাইনি। test");
   await w.fill("#requests", "খিদমার টাকা আদায় করুন।");
   const f = path.join(tmpdir(), "hq-test.pdf");
@@ -108,7 +110,7 @@ try {
   const big = path.join(tmpdir(), "hq-big.pdf");
   writeFileSync(big, Buffer.concat([Buffer.from("%PDF-1.4\n"), Buffer.alloc(15 * 1024 * 1024, 32)]));
   await w.setInputFiles("#files", [f, big]);
-  await w.click("#case-eosb button.btn");
+  await w.click("#case-labour button.btn");
   await w.waitForURL(/\/cases\/[^/]+\?created=1/, { timeout: 60000 });
   const caseUrl = w.url().split("?")[0];
   ok(await w.locator(".okmsg").isVisible(), "case created");
@@ -219,8 +221,9 @@ try {
   const part = await anonHome.request.get(BASE + vsrc, { headers: { Range: "bytes=0-99" } });
   ok(part.status() === 206 && (await part.body()).length === 100, "video supports seeking (range requests)");
   ok(await a.locator("table").first().isVisible(), "admin dashboard loads");
-  await a.click(`tr:has-text("${reviewText}") button >> nth=0`);
   await a.waitForLoadState("networkidle");
+  await a.click(`tr:has-text("${reviewText}") button >> nth=0`);
+  await a.locator(`tr:has-text("${reviewText}") button.ghost`).waitFor({ timeout: 10000 });
   await w.goto(BASE + "/");
   ok(await seen(w, `.reviews >> text=${reviewText}`), "approved review shows on the home page");
   await w.goto(BASE + "/admin");
